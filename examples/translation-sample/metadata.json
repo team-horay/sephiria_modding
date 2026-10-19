@@ -1,0 +1,19 @@
+{
+  "info": {
+    "title": { "ko-KR": "번역 모드 예제", "en-US": "Translation Mod Sample" },
+    "description": {
+      "ko-KR": "타이틀 화면의 버튼 문구를 바꾸는 예제입니다. WorkshopLocal/에 복사해 확인하세요.",
+      "en-US": "Changes the title screen button text. Copy into WorkshopLocal/ to try it."
+    }
+  },
+  "mod": {
+    "schemaVersion": 1,
+    "modId": "sephiria.example.translation",
+    "version": "1.0.0",
+    "author": "TEAM HORAY",
+    "multiplayer": { "installation": "local_only", "support": "supported" },
+    "modules": [
+      { "type": "localization", "path": "Localization" }
+    ]
+  }
+}
