@@ -1,14 +1,13 @@
 # 코스튬 모드
 
-코드 없이 PNG와 JSON만으로 코스튬을 추가하는 모드입니다. 두 가지를 만들 수 있습니다.
+코드 없이 PNG와 JSON만으로 코스튬 추가해 봅시다. 이 모드로 추가할 수 있는 건 다음 두 경우입니다.
 
-- **새 코스튬**: 코스튬 패널에 새 칸이 생깁니다. 외형, 스탯, 시작 아이템, 기본 무기를 정할 수 있습니다.
-- **기존 코스튬의 스킨**: 분홍 토끼 같은 내장 코스튬에 외형만 하나 더 붙입니다. 스탯은 원래 코스튬 것을 따릅니다.
+- **새 코스튬**: 새로운 코스튬을 생성합니다. 외형, 스탯, 시작 아이템 등을 정할 수 있습니다.
+- **기존 코스튬의 외형**: 분홍 토끼 같은 기존 코스튬에 외형을 추가합니다.
 
-필요한 그림은 **가만히 있는 모습(idle)과 걷는 모습(move) 두 장**이 최소입니다. 더 그리면 더 좋아지고, 안 그린 동작은 있는 그림으로 대신합니다.
+[`examples/costume-sample`](../../examples/costume-sample)에 그대로 `WorkshopLocal/`에 복사해 볼 수 있는 완성 예제가 있습니다. 이 예제를 내려받아 모드 구조를 파악하세요.
 
-
-## 폴더 구조
+## 모드 구조
 
 ```
 my-costume-mod/
@@ -31,14 +30,15 @@ my-costume-mod/
 ```json
 {
   "info": {
-    "title": { "ko-KR": "숲고양이 코스튬", "en-US": "Forest Cat Costume" },
-    "description": { "ko-KR": "숲고양이 코스튬을 추가합니다.", "en-US": "Adds the Forest Cat costume." }
+    "title": { "ko-KR": "내 첫 코스튬", "en-US": "My First Costume" },
+    "description": { "ko-KR": "새로운 코스튬입니다.", "en-US": "It's a new costume." }
   },
   "mod": {
     "schemaVersion": 1,
-    "modId": "yourname.forestcat",
+    "modId": "yourname.newcostume",
     "version": "1.0.0",
     "author": "Your Name",
+    "multiplayer": { "installation": "everyone" },
     "modules": [
       { "type": "costume", "path": "Costumes" },
       { "type": "localization", "path": "Localization" }
@@ -47,19 +47,44 @@ my-costume-mod/
 }
 ```
 
-`multiplayer`는 적지 않아도 됩니다. 코스튬 모드는 자동으로 `everyone`(참가자 전원 설치)으로 처리됩니다.
+## 필요한 애니메이션
 
+- 코스튬에 필요한 모든 모션을 나열하면 준비해야 할 모션이 많습니다.
+- 처음 만들어 보는 분들은 `idle, move, airborne, fall`만으로 간단한 코스튬 제작을 시도해 보세요.
 
-## 그림 규칙
+| 모션 | 내용 | 필수 여부 |
+|---|---|---|
+| `idle` | 대기 | 필수 |
+| `move` | 이동 | 필수 |
+| `airborne` | 공중에 뜸 | 선택 |
+| `fall` | 쓰러짐 | 선택 |
+| `attack` | 공격 | 선택 |
+| `greatsword_lower` | 회전하며 휘두르기 | 선택 |
+| `greatsword_sweep` | 빙글 돌기 | 선택 |
+| `hitfeedback` | 피격 | 선택 |
 
-- **PNG, 가로 스트립.** 한 동작의 프레임을 가로로 이어 붙인 그림 한 장입니다. 그림 높이는 프레임 높이와 같고, 폭은 프레임 폭의 배수여야 합니다. 프레임 수는 폭 ÷ 프레임 폭으로 자동 계산됩니다.
-- **프레임 크기는 기본 16×16.** 내장 코스튬이 전부 이 크기입니다. `frameSize`로 바꿀 수 있고 최대 256입니다.
-- **pivot은 픽셀 단위, 왼쪽 아래 기준.** 캐릭터가 땅을 딛는 점입니다. 기본값은 `[프레임 폭/2, 0]`이고, 보통 `[8, 0]` 근처면 됩니다.
-- 아이콘(`icon.png`)은 코스튬 패널에 보이는 그림입니다. 크기 제한은 없지만 내장 아이콘은 18×19 정도입니다.
-- `face.png`는 파티 UI에 보이는 작은 얼굴입니다. 없으면 idle의 첫 프레임을 씁니다.
+### 뒷모습 애니메이션
 
+- 더욱 자연스러운 코스튬을 위해 뒷모습을 그릴 수 있습니다. 이는 선택 사항입니다.
+- 뒷모습을 추가하기로 결정했다면, `idle_back, move_back` 모션이 필수로 포함되어야 합니다.
+- 뒷모습 애니메이션은 다음과 같이 정의됩니다.
 
-## costume.json
+| 모션 | 내용 |
+|---|---|
+| `idle_back` | 대기 (뒷모습) |
+| `move_back` | 이동 (뒷모습) |
+| `attack_back` | 공격 (뒷모습) |
+| `greatsword_upper` | 회전하며 휘두르기 (뒷모습) |
+
+## 그림 준비하기
+
+- 한 동작의 프레임을 가로로 이어 붙인 스프라이트 PNG 시트를 제작하여 각 모션별로 준비하세요.
+- 모든 개별 이미지는 동일한 사이즈를 기반으로 작업하는 것이 권장됩니다.
+*이미지 예시*
+
+### 새 코스튬 정보 작성하기
+
+`costume.json` 파일을 작성하여 자신만의 코스튬을 정의합니다.
 
 ```json
 {
@@ -73,10 +98,10 @@ my-costume-mod/
   "pivot": [8, 0],
 
   "animations": {
-    "idle":      { "file": "idle.png", "fps": 12 },
+    "idle":      { "file": "idle.png", "fps": 12  },
     "move":      { "file": "move.png", "fps": 12, "footstepFrames": [1, 4] },
-    "idle_back": { "file": "idle_back.png" },
-    "move_back": { "file": "move_back.png", "footstepFrames": [1, 4] },
+    "idle_back": { "file": "idle_back.png", "fps": 12 },
+    "move_back": { "file": "move_back.png", "fps": 12, "footstepFrames": [1, 4] },
     "attack":    { "file": "attack.png", "fps": 16 }
   },
 
@@ -89,51 +114,65 @@ my-costume-mod/
 
 | 필드 | 필수 | 내용 |
 |---|---|---|
-| `schemaVersion` | 예 | 정수 `1`. |
-| `id` | 예 | 소문자 영문·숫자·밑줄·하이픈, 1~31자. 게임 안에서는 `<modId>:<id>`로 등록됩니다. |
-| `name` | 예 | 코스튬 이름의 **번역 키**. 글이 아니라 키입니다. 아래 [이름과 설명](#이름과-설명) 참고. |
-| `flavorText` | 아니오 | 설명의 번역 키. |
-| `icon` | 예 | 아이콘 PNG 경로. |
-| `face` | 아니오 | 파티 UI 얼굴 PNG 경로. |
+| `schemaVersion` | 예 | 버전 구분자. 정수 `1`을 입력하세요. |
+| `id` | 예 | 소문자 영문, 숫자, 밑줄, 하이픈, 1~31자를 사용하세요. 충돌 방지를 위해 게임 안에서는 `<modId>:<id>`로 등록됩니다. |
+| `name` | 예 | 코스튬 이름의 **번역 키**. 아래 [번역 파일 준비](#번역-파일-준비) 참고. |
+| `flavorText` | 아니오 | 코스튬 설명의 **번역 키**. 아래 [번역 파일 준비](#번역-파일-준비) 참고. |
+| `icon` | 예 | 코스튬 미리보기 아이콘 PNG 경로. |
+| `face` | 아니오 | 멀티플레이 HUD UI 얼굴 PNG 경로. |
 | `frameSize` | 아니오 | `[가로, 세로]` 픽셀. 기본 `[16, 16]`. |
 | `pivot` | 아니오 | `[x, y]` 픽셀, 왼쪽 아래 기준. 기본 `[가로/2, 0]`. |
-| `animations` | 예 | 동작별 그림. `idle`, `move`는 필수. 아래 표 참고. |
-| `stats` | 아니오 | `"스탯ID/값"` 문자열 배열. 예: `MOVE_SPEED/10`, `MAX_MP/8`, `PHYSICAL_DAMAGE_AMP/-20`, `STARTING_MONEY/800`. 없는 스탯 ID는 오류. |
-| `startingItems` | 아니오 | 시작 아이템 번호 배열. 없는 번호는 오류. |
-| `defaultWeapon` | 아니오 | 기본 무기 번호. |
+| `animations` | 예 | 동작별 그림 정보. [animations](#animations) 참고. |
+| `stats` | 아니오 | 지정할 스탯 목록. [능력치 목록](stats.md) 참고. |
+| `startingItems` | 아니오 | 시작 아이템 번호 배열. 없는 번호는 오류. [아이템 목록](item-table.md) 참고. |
+| `defaultWeapon` | 아니오 | 기본 무기를 지정할 수 있음. |
 | `onlyDefaultWeapon` | 아니오 | `true`면 기본 무기만 쓸 수 있음. `defaultWeapon`이 있어야 함. |
-| `body` | 아니오 | 피격 판정과 충돌 크기. 기본값이 분홍 토끼와 같으니 몸집이 많이 다를 때만 손대세요. |
+| `body` | 아니오 | 피격 판정 범위. 아래 참고. |
 | `skins` | 아니오 | 같은 코스튬의 추가 외형. 아래 참고. |
-
-`order`는 없습니다. 모드 코스튬은 내장 코스튬 뒤에 등록 순서대로 놓입니다.
 
 ### animations
 
-키는 소문자 동작 이름이고, 값은 `{ "file", "fps", "loop", "footstepFrames" }` 객체 또는 파일 이름 문자열입니다. `fps` 기본 12, `loop`는 공격 계열만 기본 `false`입니다. `footstepFrames`는 걷기 계열에서 발소리를 낼 프레임 번호(0부터)입니다.
+- 위에서 준비한 애니메이션을 `{ "file", "fps", "loop", "footstepFrames" }` 네 가지 속성과 함께 정의할 수 있습니다.
+- 동작마다 `frameSize`와 `pivot`을 따로 설정할 수도 있습니다.
 
-| 키 | 동작 | 없으면 |
+```json
+  "animations": {
+    "idle":      { "file": "idle.png", "fps": 12  },
+    "move":      { "file": "move.png", "fps": 12, "footstepFrames": [1, 4] },
+    "idle_back": { "file": "idle_back.png", "fps": 12, "pivot": [0, 0] },
+    "move_back": { "file": "move_back.png", "fps": 12, "footstepFrames": [1, 4] },
+    "attack":    { "file": "attack.png", "fps": 16, "frameSize": [20, 20] }
+  }
+```
+
+| 필드 | 필수 | 내용 |
 |---|---|---|
-| `idle`, `move` | 정면 대기, 정면 걷기 | **오류** |
-| `idle_back`, `move_back` | 뒷모습 대기, 뒷모습 걷기 | 뒤돌아보기 없음. 둘 다 있어야 켜집니다. |
-| `attack` | 공격 | 공격 동작 없음 |
-| `attack_back` | 뒷모습 공격 | `attack`으로 대체 |
-| `greatsword_lower`, `greatsword_upper`, `greatsword_sweep` | 대검 휘두르기 3종 | `attack`으로 대체 |
-| `whirlwind_ready`, `whirlwind` | 회전베기 준비·회전 | `idle`·`attack`으로 대체 |
-| `airborne`, `fall`, `hitfeedback` | 공중, 낙하, 피격 | `idle`로 대체 |
+| `file` | 예 | 재생할 파일 이름을 입력합니다. |
+| `fps` | 아니오 | 애니메이션이 재생될 속도입니다. (기본값: 12) |
+| `loop` | 아니오 | 애니메이션의 반복 여부를 정합니다. (기본값: true, 공격 애니메이션의 경우 false) |
+| `footstepFrames` | 아니오 | 0부터 시작되는 프레임 번호를 입력합니다. 해당 프레임이 실행될 때 발소리를 재생합니다. |
 
-동작마다 `frameSize`와 `pivot`을 따로 줄 수도 있습니다. 공격 그림만 더 큰 경우에 씁니다.
 
 ### body
+
+- 캐릭터의 이동과 피격 충돌 범위를 정의합니다.
+- 내장 코스튬은 이 수치가 기본값으로 설정되어 있습니다.
+- 특별한 의도가 있는 것이 아니라면 생략하는 것을 권장합니다.
 
 ```json
 "body": { "hitboxRadius": 4, "hitboxOffset": [0, 4], "movementRadius": 0.25, "bodyScale": 1 }
 ```
 
-`hitboxRadius`와 `hitboxOffset`은 픽셀(피격 원의 반지름과 중심), `movementRadius`는 이동 충돌 반지름(유닛), `bodyScale`은 무기를 쥐는 어깨 위치 배율입니다. 전부 생략 가능합니다.
+| 필드 | 필수 | 내용 |
+|---|---|---|
+| `hitboxRadius` | 아니오 | 피격 판정 원의 반지름. 픽셀 단위, 0.5~64. 기본 `4`. |
+| `hitboxOffset` | 아니오 | 피격 판정 원의 중심 위치 `[x, y]`. 픽셀 단위, pivot 기준으로 x는 오른쪽·y는 위가 양수, ±64. 기본 `[0, 4]`. |
+| `movementRadius` | 아니오 | 벽·장애물과 부딪히는 이동 충돌 원의 반지름. 유닛 단위(16픽셀 = 1), 0.05~2. 기본 `0.25`. |
+| `bodyScale` | 아니오 | 무기를 쥐는 어깨 위치의 배율. 0.1~4. 기본 `1`. 몸집이 큰 코스튬에서 무기가 몸에 파묻힐 때 올립니다. |
+
+
 
 ### skins
-
-같은 코스튬에 외형을 더 붙입니다. 각 스킨은 자기 폴더에 같은 그림 규칙으로 들어갑니다.
 
 ```json
 "skins": [
@@ -141,14 +180,51 @@ my-costume-mod/
     "animations": { "idle": "idle.png", "move": "move.png" } }
 ]
 ```
+- 같은 코스튬에 추가 외형을 지정할 수 있습니다.
+- 애니메이션은 위의 형식을 그대로 따릅니다.
+- `frameSize`·`pivot`을 생략하면 코스튬 본체의 값을 따릅니다.
 
-`frameSize`·`pivot`을 생략하면 코스튬 본체 값을 따릅니다. 스킨은 외형만 바꾸고 스탯은 바꿀 수 없습니다.
 
 
-## 기존 코스튬에 스킨 추가 (skin.json)
 
-`costume.json` 대신 `skin.json`을 둔 폴더는 "기존 코스튬의 스킨"이 됩니다.
+## 번역 파일 준비
 
+`Localization/ko-KR.json`:
+
+```json
+{
+  "Costume_ForestCat_Name": "숲고양이",
+  "Costume_ForestCat_FlavorText": "숲에서 온 손님."
+}
+```
+
+`Localization/en-US.json`:
+
+```json
+{
+  "Costume_ForestCat_Name": "Forest Cat",
+  "Costume_ForestCat_FlavorText": "A visitor from the woods."
+}
+```
+
+- `name`과 `flavorText`에는 글 대신 **번역 키**를 적고, 글은 같은 모드의 `Localization/` 폴더에 언어별로 둡니다.
+- 키는 공백 없이 영문, 숫자, 밑줄, 하이픈을 사용하세요. 다른 모드와 겹치지 않게 모드 이름을 섞어 짓는 것이 좋습니다.
+- 키가 **어느 언어 파일에도 없으면** 그 코스튬은 로드되지 않습니다. 최소 한 언어는 넣어야 하고, 영어(`en-US`)를 같이 넣는 것을 권장합니다.
+- `metadata.json`의 `modules`에 `localization` 모듈을 함께 선언하는 것을 잊지 마세요.
+
+
+
+## 확인하기
+
+1. 모드 폴더를 `WorkshopLocal/`에 두고 게임을 실행합니다.
+2. 게임을 시작해 마을의 코스튬 패널을 열면 새 코스튬이 추가되었는지 확인하세요.
+3. 코스튬 내용에 변경이 있다면 게임을 재시작해야 합니다.
+
+
+
+## 추가: 기존 코스튬에 스킨만 추가하는 방법
+
+`costume.json` 대신 `skin.json`을 만들어 기존 코스튬의 외형을 만들 수도 있습니다.
 ```
 Costumes/
 └── PinkRabbit_Pajama/
@@ -170,56 +246,5 @@ Costumes/
 ```
 
 - `costume`은 대상 코스튬의 id입니다. 내장 코스튬 id(`PinkRabbit` 등) 또는 다른 모드 코스튬의 런타임 id(`someone.forestcat:forestcat`)를 적습니다.
-- `stats`, `startingItems`, `defaultWeapon`, `onlyDefaultWeapon`, `body`, `skins`, `flavorText`는 쓸 수 없습니다. 전부 대상 코스튬 것을 따릅니다.
-- 내장 코스튬의 기본 외형을 **덮어쓰는 기능은 없습니다.** 스킨으로 추가하면 사용자가 패널에서 고릅니다.
-
-
-## 이름과 설명
-
-`name`과 `flavorText`에는 글 대신 **번역 키**를 적고, 글은 같은 패키지의 `Localization/` 폴더에 언어별로 둡니다. 내장 코스튬과 같은 방식이라 번역자는 언어 파일 하나만 보면 됩니다.
-
-`Localization/ko-KR.json`:
-
-```json
-{
-  "Costume_ForestCat_Name": "숲고양이",
-  "Costume_ForestCat_FlavorText": "숲에서 온 손님."
-}
-```
-
-`Localization/en-US.json`:
-
-```json
-{
-  "Costume_ForestCat_Name": "Forest Cat",
-  "Costume_ForestCat_FlavorText": "A visitor from the woods."
-}
-```
-
-- 키는 영문·숫자·밑줄·점·콜론·하이픈, 공백 없이. 다른 모드와 겹치지 않게 모드 이름을 섞어 지으세요.
-- 키가 **어느 언어 파일에도 없으면** 그 코스튬은 오류로 빠집니다. 최소 한 언어는 넣어야 하고, 영어(`en-US`)를 같이 넣는 것을 권장합니다. 없는 언어는 영어로 폴백됩니다.
-- `metadata.json`의 `modules`에 `localization` 모듈을 **함께 선언**해야 언어 파일이 읽힙니다. 위 예시처럼 두 모듈을 같이 둡니다.
-
-
-## 확인하기
-
-1. 모드 폴더를 `WorkshopLocal/`에 두고 게임을 실행합니다.
-2. 게임을 시작해 마을의 코스튬 패널을 열면 내장 코스튬 뒤에 새 코스튬이 보입니다. 스킨 추가 모드라면 대상 코스튬의 스킨 목록에 보입니다.
-3. 그림을 고친 뒤에는 게임을 재시작하세요. 실행 중에 다시 읽는 기능은 아직 없습니다.
-
-한 코스튬에 오류가 있으면 그 코스튬만 빠지고 같은 패키지의 다른 코스튬은 적용됩니다. 흔한 오류는 다음과 같습니다.
-
-- 스트립 폭이 프레임 폭의 배수가 아님. 프레임 사이에 여백을 넣지 마세요.
-- `idle` 또는 `move`가 없음.
-- `name` 키가 언어 파일에 없거나, `localization` 모듈을 선언하지 않음.
-- 스탯 ID 오타. 대문자와 밑줄만 쓰고, 값은 `/` 뒤에 정수.
-
-
-## 멀티플레이
-
-코스튬 id와 스탯이 모든 참가자에게 공유되므로, 코스튬 모드는 **방 참가자 전원이 켜야** 합니다. 호스트가 켜면 방 구성에 들어가고, 참가자는 같은 모드를 구독·활성화한 뒤 입장합니다. 자세한 규칙은 [게시와 멀티플레이](publishing.md)를 보세요.
-
-
-## 예제
-
-내장 코스튬을 그대로 내보낸 예제 패키지가 [`examples/`](../../examples)에 추가될 예정입니다. 되는 것을 복사해서 그림만 바꾸는 것이 가장 빠른 시작입니다.
+- `stats`, `startingItems`, `defaultWeapon`, `onlyDefaultWeapon`, `body`, `skins`, `flavorText`는 기존 코스튬의 내용을 그대로 사용하므로 별도로 지정할 수 없습니다.
+- 내장 코스튬의 기본 외형을 **덮어쓰는 기능은 없습니다.** 스킨으로 추가하면 사용자가 직접 골라야 합니다.
