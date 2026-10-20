@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    세피리아 DLL 모드 시작용 프로젝트.
+    1. GameDir를 게임 설치 폴더로 바꾸거나, 빌드할 때 -p:GameDir="..." 로 넘깁니다.
+    2. AssemblyName / RootNamespace / OutDir의 모드 이름을 바꿉니다.
+    3. package/metadata.json의 modId, entryClass, path를 같은 이름으로 맞춥니다.
+    빌드: dotnet build -c Release
+    출력: <GameDir>/WorkshopLocal/my-first-mod/bin/MyFirstMod.dll + package/ 내용 복사
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <AssemblyName>MyFirstMod</AssemblyName>
+    <RootNamespace>MyFirstMod</RootNamespace>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>portable</DebugType>
+
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Sephiria</GameDir>
+    <ModFolderName>my-first-mod</ModFolderName>
+    <ModOutDir>$(GameDir)\WorkshopLocal\$(ModFolderName)\</ModOutDir>
+    <OutDir>$(ModOutDir)bin\</OutDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Entry.cs" />
+  </ItemGroup>
+
+  <!-- 게임 DLL은 참조만 하고 복사하지 않습니다(Private=false). 복사되면 같은 어셈블리가 두 벌 로드됩니다. -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameDir)\Sephiria_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!--
+    필요할 때 같은 방식으로 추가:
+    <Reference Include="Mirror"><HintPath>$(GameDir)\Sephiria_Data\Managed\Mirror.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(GameDir)\Sephiria_Data\Managed\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    -->
+  </ItemGroup>
+
+  <!-- 빌드 후 package/ 안의 metadata.json, thumbnail.png 등을 모드 폴더로 복사 -->
+  <Target Name="CopyPackageFiles" AfterTargets="Build">
+    <ItemGroup>
+      <PackageFiles Include="package\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackageFiles)" DestinationFiles="@(PackageFiles->'$(ModOutDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+</Project>

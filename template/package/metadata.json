@@ -1,0 +1,17 @@
+{
+  "info": {
+    "title": { "ko-KR": "내 첫 DLL 모드", "en-US": "My First DLL Mod" },
+    "description": { "ko-KR": "타이틀 메뉴에 버튼을 추가하는 템플릿입니다.", "en-US": "Template mod that adds a button to the title menu." }
+  },
+  "tags": ["QoL"],
+  "mod": {
+    "schemaVersion": 1,
+    "modId": "yourname.my-first-mod",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "multiplayer": { "installation": "everyone", "support": "untested" },
+    "modules": [
+      { "type": "dll", "path": "bin/MyFirstMod.dll", "entryClass": "MyFirstMod.Entry" }
+    ]
+  }
+}
