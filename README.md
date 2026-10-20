@@ -44,7 +44,7 @@
 | [DLL 모드](docs/ko/dll-mods.md) | 프로젝트 설정, 진입점, `HorayModAPI` 이벤트, 디버깅 |
 | [게시와 멀티플레이](docs/ko/publishing.md) | 창작마당 업로드, 코드 모드 검수, 멀티플레이 규칙 |
 | [API 레퍼런스](https://teamhoray.com/mod-api) | `HorayModAPI`·`HorayModBase` 멤버 목록 (teamhoray.com) |
-| [부록 및 faq](docs/ko/faq.md)
+| [부록 및 faq](docs/ko/faq.md) |  |
 
 
 ## 라이선스
