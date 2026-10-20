@@ -1,6 +1,7 @@
 # 번역 모드
 
 [첫 모드 만들기](getting-started.md)에서 기초적인 모드 실습을 다루었으니, 여기에선 번역 모드와 관련한 공통 규칙을 안내합니다.
+[`examples/translation-sample`](../../examples/translation-sample)에 그대로 `WorkshopLocal/`에 복사해 볼 수 있는 완성 예제가 있습니다.
 
 
 
@@ -74,5 +75,3 @@ my-translation-mod/
 
 
 ## 예제
-
-[`examples/translation-sample`](../../examples/translation-sample)에 그대로 `WorkshopLocal/`에 복사해 볼 수 있는 완성 예제가 있습니다.
