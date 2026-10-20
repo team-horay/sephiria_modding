@@ -1,6 +1,6 @@
 # 첫 모드 만들기
 
-세피리아 모드의 기초 구조를 설명하고, 모드를 만드는 방법을 간략히 설명합니다.
+세피리아 모드의 기초 구조를 설명하고, 첫 모드를 만들어 게임에서 확인하는 것까지 따라가 봅니다.
 
 
 
@@ -12,8 +12,8 @@
 
 ## 게임 설치 폴더 찾기
 
-1. 세피리아 설치 폴더에 접근합니다. (`Steam 라이브러리 → 세피리아 우클릭 → 관리 → 로컬 파일 보기`)
-2. 맥OS에서는 같은 메뉴로 열리는 `Sephiria.app`이 있는 폴더가 게임 설치 폴더입니다. (.app 파일을 담고 있는 폴더)
+- 세피리아 설치 폴더에 접근합니다. (`Steam 라이브러리 → 세피리아 우클릭 → 관리 → 로컬 파일 보기`)
+- 맥OS에서는 같은 메뉴로 열리는 `Sephiria.app`이 있는 폴더가 게임 설치 폴더입니다.
 
 
 
@@ -23,15 +23,17 @@
 그리고 그 아래에 나만의 모드 폴더를 추가로 생성하세요. (세피리아에서는 폴더 하나를 모드 하나로 간주합니다)
 이 경로에 생성한 모드는 게임 내에서 테스트가 가능하며, 창작마당으로 업로드도 가능합니다.
 
-이 예제에서는 my-first-mod로 설명합니다.
+이 문서에서는 타이틀 화면의 "게임 시작(Start Game)" 버튼 문구를 "Hello World!"로 바꾸는 모드 `my-first-mod`를 만들어 봅니다. 완성 구조는 아래와 같습니다.
 
 ```
 <게임 설치 폴더>/
 ├── Sephiria.exe
 └── WorkshopLocal/
     ├── my-first-mod/          ← 모드 하나
-    │   ├── metadata.json      
-    │   └── ...
+    │   ├── metadata.json      ← 모드를 정의하는 핵심 파일
+    │   ├── thumbnail.png      ← 모드 미리보기 썸네일 (창작마당 업로드 때 필요)
+    │   └── Localization/      ← 번역 모듈이 읽는 폴더
+    │       └── en-US.json     ← 바꿀 텍스트
     └── another-mod/           ← 또 다른 모드
         └── ...
 ```
@@ -40,75 +42,25 @@
 
 ## metadata.json 파일
 
-
-```
-<게임 설치 폴더>/
-├── Sephiria.exe
-└── WorkshopLocal/
-    ├── my-first-mod/
-    │   ├── metadata.json      ← 모드를 정의하는 핵심 파일!
-    │   └── thumbnail.png      ← 모드 미리보기 썸네일
-```
-
-폴더를 생성한 이후에는, 모드를 정의하는 핵심 파일인 `metadata.json`을 위 경로에 맞게 생성하고 아래 내용을 붙여넣으세요.
-해당 파일에 대한 자세한 내용은 [metadata.json 페이지](docs/ko/metadata.md)를 확인하세요.
-
+- 모드 폴더 안에 `metadata.json`을 만들고 아래 내용을 붙여넣으세요. 
+- `metadata.json` 파일은 모드를 정의하는 중요한 파일입니다. 
+- `yourname` 자리에 본인 닉네임을 넣으세요.
+- 파일은 **UTF-8**로 저장하세요. 메모장이라면 "다른 이름으로 저장"에서 인코딩을 UTF-8로 고릅니다.
+- 자세한 의미는 [metadata.json 레퍼런스](metadata.md)를 확인하세요.
 
 ```json
 {
   "info": {
     "title": "My First Mod",
-    "description": "Hello World!",
-    "preview": "thumbnail.png"
+    "description": "Hello World!"
   },
   "mod": {
     "schemaVersion": 1,
-    "modId": "yourname.super-first-mod",
+    "modId": "yourname.my-first-mod",
     "version": "0.0.1",
     "author": "Your Name",
-    "multiplayer": { "installation": "local_only" },
+    "multiplayer": { "installation": "local_only", "support": "supported" },
     "modules": [
-    ]
-  }
-}
-```
-
-
-
-## 모듈(modules)
-
-우리는 위 파일에서 'modules' 항목에 주목해야 합니다. 
-modules에는 이 모드로 무엇을 바꾸는지 정의합니다.
-
-현재 아래와 같은 모듈이 사용 가능합니다.
-
-| 모듈 | 하는 일 | 관련 예제 |
-|---|---|---|
-| `localization` | 게임 텍스트를 해당 언어로 변경하는 모듈입니다. 언어별 파일을 폴더에 넣으면 게임 텍스트에 덮어씌워집니다. | [번역모드]() |
-| `dll` | C#으로 작성한 코드를 게임에 붙입니다. 공개된 이벤트(`HorayModAPI`)를 구독해 여러 상황에 개입할 수 있습니다. | [dll모드]() |
-| `costume` | 간단한 코스튬을 JSON과 스프라이트로 추가합니다. | [코스튬 모드]() |
-| `data` | 다른 모드가 읽어 쓸 수 있는 데이터 묶음입니다. | 없음 |
-
-한 모드에 여러 모듈을 함께 넣을 수도 있습니다. 
-예를 들어 dll 모드가 자신의 모드와 관련된 텍스트 데이터를 `localization` 모듈로 같이 들고 다닐 수 있습니다.
-
-모듈은 아래와 같이 정의됩니다.
-
-```json
-{
-  "info": {
-    "title": "Super Artifact Pack",
-    "description": "Good.",
-    "preview": "thumbnail.png"
-  },
-  "mod": {
-    "schemaVersion": 1,
-    "modId": "yourname.artifact-pack",
-    "version": "2.0.0",
-    "author": "Your Name",
-    "multiplayer": { "installation": "everyone" },
-    "modules": [
-      { "type": "dll", "path": "bin/ArtifactPack.dll", "entryClass": "ArtifactPack.Entry" },
       { "type": "localization", "path": "Localization" }
     ]
   }
@@ -116,17 +68,41 @@ modules에는 이 모드로 무엇을 바꾸는지 정의합니다.
 ```
 
 
+## 언어 파일 만들기
 
-## 창작마당 패널
+모드 폴더 안에 `Localization/` 폴더를 만들고, 그 안에 `en-US.json` 파일을 아래 내용으로 만드세요.
+(파일 이름을 본인의 언어 코드로 변경하여 테스트해도 됩니다.)
 
-metadata.json까지 만들었다면 실제 모드가 인식되는지 확인해볼 수 있습니다.
-세피리아를 실행하고 타이틀 화면의 **스팀 창작마당** 버튼을 클릭하세요.
+```json
+{
+  "Title_GameStart": "Hello World!"
+}
+```
+
+
+
+## 확인하기
+
+여기까지 만들었다면 모드가 동작하는지 확인해 볼 수 있습니다.
+
+1. 세피리아를 실행합니다.
+2. 게임 언어를 영어로 두고 타이틀 화면을 보면 "게임 시작(Start Game)" 버튼이 "Hello World!"로 바뀌어 있습니다. `WorkshopLocal/`에 둔 모드는 기본으로 켜져 있어서 따로 켤 필요가 없습니다.
+3. 타이틀 화면의 **스팀 창작마당** 버튼을 누르면 창작마당 패널이 열립니다. "내가 만든 모드" 구역에 "My First Mod"가 보여야 합니다.
+
+
+
+### 모드가 적용되지 않아요!
+
+- JSON 문법이 맞게 들어갔는지 확인하세요.
+- `metadata.json`의 `path`와 실제 폴더 이름은 대소문자까지 일치해야 합니다.
+- `metadata.json` 파일이 UTF-8로 인코딩되어 있는지 확인하세요.
+- 게임 언어가 파일 이름의 언어와 같은지 확인하세요.
 
 
 
 ## 다음 단계
 
-1. [metadata.json 레퍼런스](metadata.md) 파일을 통해 모드를 정의하세요.
-2. [번역 모드](localization-mods.md)와 [코스튬 모드](localization-mods.md)는 상대적으로 제작하기 쉬우니 먼저 확인해보세요.
-3. [dll모드]는 코드에 대한 기초적인 지식이 있는 분들께 권합니다.
+1. [metadata.json 레퍼런스](metadata.md)에서 모드가 어떻게 정의되는지 알아보세요.
+2. [번역 모드](localization-mods.md)와 [코스튬 모드](costume-mods.md)는 상대적으로 제작하기 쉬우니 먼저 확인해보세요.
+3. [DLL 모드](dll-mods.md)는 코드에 대한 기초적인 지식이 있는 분들께 권합니다.
 4. [게시와 멀티플레이](publishing.md)를 통해 창작마당에 배포하세요.
