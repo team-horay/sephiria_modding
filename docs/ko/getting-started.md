@@ -59,7 +59,7 @@
     "modId": "yourname.my-first-mod",
     "version": "0.0.1",
     "author": "Your Name",
-    "multiplayer": { "installation": "local_only", "support": "supported" },
+    "multiplayer": { "installation": "local_only" },
     "modules": [
       { "type": "localization", "path": "Localization" }
     ]
