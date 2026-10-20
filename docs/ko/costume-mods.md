@@ -125,8 +125,6 @@ my-costume-mod/
 | `animations` | 예 | 동작별 그림 정보. [animations](#animations) 참고. |
 | `stats` | 아니오 | 지정할 스탯 목록. [능력치 목록](stats.md) 참고. |
 | `startingItems` | 아니오 | 시작 아이템 번호 배열. 없는 번호는 오류. [아이템 목록](item-table.md) 참고. |
-| `defaultWeapon` | 아니오 | 기본 무기를 지정할 수 있음. |
-| `onlyDefaultWeapon` | 아니오 | `true`면 기본 무기만 쓸 수 있음. `defaultWeapon`이 있어야 함. |
 | `body` | 아니오 | 피격 판정 범위. 아래 참고. |
 | `skins` | 아니오 | 같은 코스튬의 추가 외형. 아래 참고. |
 
@@ -246,5 +244,5 @@ Costumes/
 ```
 
 - `costume`은 대상 코스튬의 id입니다. 내장 코스튬 id(`PinkRabbit` 등) 또는 다른 모드 코스튬의 런타임 id(`someone.forestcat:forestcat`)를 적습니다.
-- `stats`, `startingItems`, `defaultWeapon`, `onlyDefaultWeapon`, `body`, `skins`, `flavorText`는 기존 코스튬의 내용을 그대로 사용하므로 별도로 지정할 수 없습니다.
+- `stats`, `startingItems`, `body`, `skins`, `flavorText`는 기존 코스튬의 내용을 그대로 사용하므로 별도로 지정할 수 없습니다.
 - 내장 코스튬의 기본 외형을 **덮어쓰는 기능은 없습니다.** 스킨으로 추가하면 사용자가 직접 골라야 합니다.
