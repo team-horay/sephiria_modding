@@ -44,18 +44,17 @@
 인자로 넘긴 폴더는 `WorkshopLocal/` 하위 폴더와 똑같이 취급됩니다.
 
 
+## uploadticket.json, mod-guard-manifest.json, mod-guard.sig.json을 잃어버렸어요.
 
+증명 파일(`mod-guard-manifest.json`, `mod-guard.sig.json`)만 없고 `uploadticket.json`은 남아 있다면 패널에서 그 모드를 선택하고 **승인 증명 받기** 버튼을 누르면 검수 서버에서 다시 받아올 수 있습니다. 단, 포맷 등으로 `uploadticket.json`까지 잃었다면 게임은 그 폴더를 새 모드로 보기 때문에, 그대로 올리면 기존 글을 갱신하는 것이 아니라 새로운 창작마당 게시글로 생성합니다. 기존 글을 이어서 갱신하려면 다음 순서로 복구합니다.
 
-
-## 자주 하는 실수 (미정리)
-
-| 증상 | 원인 |
-|---|---|
-| 패널에 모드가 보이지만 아무것도 적용되지 않음 | `mod` 키가 없음(없음으로 분류). 또는 사용자가 꺼 둠 |
-| "schemaVersion은 정수여야 함" | `"schemaVersion": "1"`처럼 따옴표를 씀 |
-| "대소문자가 실제 파일명과 다름" | `path`의 대소문자가 실제 파일과 다름. 탐색기가 보여 주는 이름과 똑같이 적을 것 |
-| "폴더여야 하는데 파일임" | `localization` 모듈의 `path`에 `.json` 파일을 직접 적음. 폴더를 적어야 함 |
-| "version '>=1.0'은 지원하지 않는 형식" | `dependencies[].version`에 범위 표기를 씀. 정확한 버전 하나만 가능 |
-| "알 수 없는 모듈 type" | 오타, 또는 게임이 아직 지원하지 않는 모듈 타입을 적음 |
-| 모드 두 개가 둘 다 제외됨 | 같은 `modId`를 씀. 템플릿을 복사한 뒤 `modId`를 바꾸지 않은 경우가 대부분 |
-| `multiplayer` 경고가 로그에 남음 | `installation`·`support` 값 오타. 거부되진 않지만 `unknown`·`untested`로 처리됨 |
+1. 창작마당에서 자기 모드를 구독합니다.
+2. Steam이 내려받은 폴더(`<Steam 라이브러리>/steamapps/workshop/content/2436940/<창작마당 번호>/`)를 통째로 `WorkshopLocal/` 아래에 복사합니다. 폴더 이름은 아무거나 괜찮습니다.
+3. 복사한 폴더에 `uploadticket.json`을 아래 내용으로 만듭니다. 번호는 창작마당 페이지 URL의 `id=` 뒤 숫자를 입력하세요.
+```json
+{
+  "modId": "yourname.first-mod",
+  "publishedFileId": 123456789
+}
+```
+4. 게임을 실행하면 패널에 "검수 요청 전"으로 보입니다. 검수 요청 → 승인 → 승인 증명 받기 → 창작마당에 올리기를 다시 거치면 **기존 글이 갱신**됩니다. (주의 : 다른 모드를 만들기 위해 기존 모드 폴더를 복제했다면 `uploadticket.json`과 증명 파일을 **반드시 지우세요.** 남겨 두면 새 모드가 원래 모드의 창작마당 글을 덮어씁니다.)
