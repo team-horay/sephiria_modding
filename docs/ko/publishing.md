@@ -70,8 +70,9 @@
 
 호스트가 멀티플레이 로비를 만들면 **호스트가 활성화한 모드 목록**이 로비에 함께 등록됩니다.
 
-- `multiplayer.installation`이 `local_only`가 아닌 모드
-- 코스튬 모듈 모드와 데이터 모듈 모드
+- `installation`이 `host_only`인 모드:  참가자에게 설치를 요구하지 않고 목록에만 표시됩니다.
+- `multiplayer.installation`이 `everyone`(또는 미선언)인 모드: 참가자도 설치가 필요합니다.
+- 코스튬 모드와 데이터 모드: 참가자도 설치가 필요합니다.
 
 ### 참가
 
