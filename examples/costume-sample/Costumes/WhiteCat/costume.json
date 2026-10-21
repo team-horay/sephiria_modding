@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "id": "whitecat",
+  "name": "Costume_WhiteCat_Name",
+  "flavorText": "Costume_WhiteCat_FlavorText",
+  "icon": "icon.png",
+  "frameSize": [
+    20,
+    16
+  ],
+  "pivot": [
+    10,
+    2
+  ],
+  "animations": {
+    "idle": {
+      "file": "idle.png",
+      "fps": 12
+    },
+    "idle_back": {
+      "file": "idle_back.png",
+      "fps": 12
+    },
+    "move": {
+      "file": "move.png",
+      "fps": 4,
+      "footstepFrames": [
+        3,
+        7
+      ]
+    },
+    "move_back": {
+      "file": "move_back.png",
+      "fps": 4,
+      "footstepFrames": [
+        3,
+        7
+      ]
+    },
+    "attack": {
+      "file": "attack.png",
+      "fps": 20,
+      "loop": false
+    },
+    "attack_back": {
+      "file": "attack_back.png",
+      "fps": 20,
+      "loop": false
+    },
+    "greatsword_lower": {
+      "file": "greatsword_lower.png",
+      "fps": 20,
+      "loop": false
+    },
+    "greatsword_upper": {
+      "file": "greatsword_upper.png",
+      "fps": 20,
+      "loop": false
+    },
+    "greatsword_sweep": {
+      "file": "greatsword_sweep.png",
+      "fps": 30,
+      "loop": false
+    },
+    "airborne": {
+      "file": "airborne.png",
+      "fps": 12
+    },
+    "fall": {
+      "file": "fall.png",
+      "fps": 1
+    },
+    "hitfeedback": {
+      "file": "hitfeedback.png",
+      "fps": 20,
+      "loop": false
+    }
+  },
+  "stats": [
+    "DEFENSE/-10",
+    "EVASION/1200"
+  ],
+  "startingItems": [],
+  "onlyDefaultWeapon": false
+}

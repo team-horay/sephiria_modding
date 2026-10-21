@@ -1,0 +1,18 @@
+{
+  "info": {
+    "title": { "ko-KR": "하얀 고양이 코스튬", "en-US": "White Cat Costume" },
+    "description": { "ko-KR": "하얀 고양이 코스튬을 추가합니다.", "en-US": "Adds the White Cat costume." }
+  },
+  "tags": ["Costume"],
+  "mod": {
+    "schemaVersion": 1,
+    "modId": "yourname.costume-whitecat",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "multiplayer": { "installation": "everyone" },
+    "modules": [
+      { "type": "costume", "path": "Costumes" },
+      { "type": "localization", "path": "Localization" }
+    ]
+  }
+}
