@@ -426,3 +426,6 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# 예제·템플릿에 동봉하는 빌드 결과물은 추적한다
+!template/package/bin/*.dll

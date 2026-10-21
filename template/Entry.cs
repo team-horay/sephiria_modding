@@ -1,55 +1,51 @@
 using UnityEngine;
 
-namespace MyFirstMod
+namespace PhysicalDamagePlus
 {
     /// <summary>
-    /// 모드 진입점. metadata.json의 entryClass가 이 클래스의 전체 이름("MyFirstMod.Entry")을 가리킵니다.
-    /// 타이틀 메뉴에 버튼 하나를 추가하고 로그를 남기는 최소 예제입니다.
-    /// 로드 확인은 Player.log의 "[MyFirstMod]" 로그로 합니다.
+    /// 모드 진입점. metadata.json의 entryClass가 이 클래스의 전체 이름("PhysicalDamagePlus.Entry")을 가리킵니다.
+    ///
+    /// 플레이어 아바타가 서버에서 스폰될 때 물리 피해 커스텀 스탯을 5 더하는 최소 예제입니다.
+    /// customStats는 네트워크 동기화 딕셔너리라 서버에서 더하면 모든 클라이언트에 전달됩니다.
+    /// 그래서 게임 상태를 바꾸는 일은 Serverside 이벤트에서만 하고, Clientside 이벤트는 확인 로그만 남깁니다.
+    ///
+    /// 확인: 게임을 시작해 스탯 창을 열면 물리 피해가 +5 되어 있고, Player.log에 "[PhysicalDamagePlus]" 로그가 남습니다.
     /// </summary>
     public class Entry : WorkshopModBase
     {
-        private int clickCount;
+        public const int Bonus = 5;
 
         // 프로세스당 한 번 호출됩니다. 이벤트 구독은 여기서 한 번만 하세요.
         protected override void OnModLoaded()
         {
-            Debug.Log($"[MyFirstMod] OnModLoaded: {metadata.modName} v{metadata.modVersion} by {metadata.modAuthor} " +
+            Debug.Log($"[PhysicalDamagePlus] OnModLoaded: {metadata.modName} v{metadata.modVersion} by {metadata.modAuthor} " +
                       $"| package={Context?.PackageRoot}");
 
-            HorayModAPI.OnLocalizationReady += HandleLocalizationReady;
-            HorayModAPI.OnTitleMenuReady += HandleTitleMenuReady;
-            HorayModAPI.OnAllDatabasesReady += HandleAllDatabasesReady;
+            HorayModAPI.OnPlayerAvatarSpawnedServerside += HandlePlayerSpawnedServer;
+            HorayModAPI.OnPlayerAvatarSpawnedClientside += HandlePlayerSpawnedClient;
         }
 
         protected override void OnModUnloaded()
         {
-            HorayModAPI.OnLocalizationReady -= HandleLocalizationReady;
-            HorayModAPI.OnTitleMenuReady -= HandleTitleMenuReady;
-            HorayModAPI.OnAllDatabasesReady -= HandleAllDatabasesReady;
+            HorayModAPI.OnPlayerAvatarSpawnedServerside -= HandlePlayerSpawnedServer;
+            HorayModAPI.OnPlayerAvatarSpawnedClientside -= HandlePlayerSpawnedClient;
         }
 
-        // 버튼 라벨 같은 짧은 텍스트는 코드로 등록할 수 있습니다. 양이 많으면 localization 모듈을 쓰세요.
-        private void HandleLocalizationReady(HorayModLocalizationContext loc)
+        // 호스트(서버)에서만 호출됩니다. 런을 다시 시작할 때마다 새 아바타에 대해 다시 호출됩니다.
+        private static void HandlePlayerSpawnedServer(PlayerAvatar player)
         {
-            loc.AddText("ko-KR", "MyFirstMod_Hello", "안녕, 세피리아!");
-            loc.AddText("en-US", "MyFirstMod_Hello", "Hello, Sephiria!");
+            if (player == null)
+                return;
+            player.AddCustomStat(ECustomStat.PhysicalDamage, Bonus);
+            Debug.Log($"[PhysicalDamagePlus] 서버: {player.name} PhysicalDamage +{Bonus} → {player.GetCustomStat(ECustomStat.PhysicalDamage)}");
         }
 
-        // 타이틀 씬이 만들어질 때마다 호출됩니다. 돌려받은 버튼을 다른 씬까지 들고 가지 마세요.
-        private void HandleTitleMenuReady(UI_TitleLobby title)
+        // 모든 참가자(호스트 포함)에서 호출됩니다. 여기서는 동기화된 값을 확인만 합니다.
+        private static void HandlePlayerSpawnedClient(PlayerAvatar player)
         {
-            title.AddTitleSubMenu("MyFirstMod_Hello", () =>
-            {
-                clickCount++;
-                Debug.Log($"[MyFirstMod] 타이틀 버튼 클릭 {clickCount}회");
-            });
-        }
-
-        // 월드에 들어가 모든 데이터베이스가 초기화된 뒤 호출됩니다. 런을 다시 시작할 때마다 다시 호출됩니다.
-        private void HandleAllDatabasesReady()
-        {
-            Debug.Log("[MyFirstMod] OnAllDatabasesReady");
+            if (player == null)
+                return;
+            Debug.Log($"[PhysicalDamagePlus] 클라: {player.name} (local={player.isLocalPlayer}) PhysicalDamage={player.GetCustomStat(ECustomStat.PhysicalDamage)}");
         }
     }
 }

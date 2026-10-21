@@ -16,7 +16,7 @@ DLL 모드는 **Mono 빌드에서만** 동작합니다. 현재 Steam PC 빌드(W
 
 ## 프로젝트 만들기
 
-[`template/`](../../template)에 바로 복사해서 쓰는 프로젝트가 있습니다. 직접 만들 때 핵심은 다음 세 가지입니다.
+[`template/`](../../template)에 바로 복사해서 쓰는 프로젝트가 있습니다. 플레이어가 스폰될 때 물리 피해를 5 올리는 모드이고, 이 문서는 이 템플릿을 기준으로 설명합니다. 직접 만들 때 핵심은 다음 세 가지입니다.
 
 1. **타깃은 `netstandard2.1`**, 언어 버전은 C# 9. 게임이 Unity 6의 .NET Standard 2.1 프로필이라 그 위로는 올리지 마세요.
 2. **게임 DLL을 참조하되 복사하지 않습니다.** 참조는 `<게임 설치 폴더>/Sephiria_Data/Managed/`에 있는 파일을 가리키고, 전부 `Private=false`로 둡니다. 게임 DLL이 모드 폴더에 복사되면 같은 어셈블리가 두 벌 로드되어 알 수 없는 오류의 원인이 되고, 검수 대상 파일도 불필요하게 늘어납니다.
@@ -27,15 +27,15 @@ DLL 모드는 **Mono 빌드에서만** 동작합니다. 현재 Steam PC 빌드(W
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <AssemblyName>MyFirstMod</AssemblyName>
-    <RootNamespace>MyFirstMod</RootNamespace>
+    <AssemblyName>PhysicalDamagePlus</AssemblyName>
+    <RootNamespace>PhysicalDamagePlus</RootNamespace>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <!-- 게임 설치 폴더. 환경에 맞게 바꾸거나 dotnet build -p:GameDir=... 로 넘깁니다. -->
     <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Sephiria</GameDir>
-    <OutDir>$(GameDir)\WorkshopLocal\my-first-mod\bin\</OutDir>
+    <OutDir>$(GameDir)\WorkshopLocal\physical-damage-plus\bin\</OutDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,7 +47,11 @@ DLL 모드는 **Mono 빌드에서만** 동작합니다. 현재 Steam PC 빌드(W
       <HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <!-- UI를 만들면 UnityEngine.UI, 네트워크 오브젝트를 다루면 Mirror, 패치하면 0Harmony를 같은 방식으로 추가 -->
+    <!-- PlayerAvatar 같은 네트워크 오브젝트를 다루면 Mirror, UI를 만들면 UnityEngine.UI, 패치하면 0Harmony를 같은 방식으로 추가 -->
+    <Reference Include="Mirror">
+      <HintPath>$(GameDir)\Sephiria_Data\Managed\Mirror.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 </Project>
 ```
@@ -59,35 +63,46 @@ DLL 모드는 **Mono 빌드에서만** 동작합니다. 현재 Steam PC 빌드(W
 
 `metadata.json`의 `entryClass`가 가리키는 클래스가 진입점입니다. `WorkshopModBase`를 상속하고, public이며, 매개변수 없는 public 생성자가 있어야 합니다. 게임은 DLL 안을 뒤져서 찾지 않으므로 이름을 정확히 적어야 합니다.
 
+템플릿의 `Entry.cs`입니다. 플레이어가 서버에서 스폰될 때 물리 피해 커스텀 스탯을 5 더합니다.
+
 ```csharp
 using UnityEngine;
 
-namespace MyFirstMod
+namespace PhysicalDamagePlus
 {
     public class Entry : WorkshopModBase
     {
+        public const int Bonus = 5;
+
+        // 프로세스당 한 번 호출됩니다. 이벤트 구독은 여기서 한 번만 하세요.
         protected override void OnModLoaded()
         {
-            Debug.Log($"[MyFirstMod] 로드됨 v{metadata.modVersion} | 폴더={Context.PackageRoot}");
+            Debug.Log($"[PhysicalDamagePlus] 로드됨 v{metadata.modVersion} | 폴더={Context.PackageRoot}");
 
-            HorayModAPI.OnLoadItemDatabase += HandleItemDatabase;
-            HorayModAPI.OnAllDatabasesReady += HandleAllReady;
+            HorayModAPI.OnPlayerAvatarSpawnedServerside += HandlePlayerSpawnedServer;
+            HorayModAPI.OnPlayerAvatarSpawnedClientside += HandlePlayerSpawnedClient;
         }
 
         protected override void OnModUnloaded()
         {
-            HorayModAPI.OnLoadItemDatabase -= HandleItemDatabase;
-            HorayModAPI.OnAllDatabasesReady -= HandleAllReady;
+            HorayModAPI.OnPlayerAvatarSpawnedServerside -= HandlePlayerSpawnedServer;
+            HorayModAPI.OnPlayerAvatarSpawnedClientside -= HandlePlayerSpawnedClient;
         }
 
-        private void HandleItemDatabase()
+        // 호스트(서버)에서만 호출됩니다. 게임 상태를 바꾸는 일은 여기서 합니다.
+        private static void HandlePlayerSpawnedServer(PlayerAvatar player)
         {
-            // 여기서 아이템을 등록합니다.
+            if (player == null)
+                return;
+            player.AddCustomStat(ECustomStat.PhysicalDamage, Bonus);
         }
 
-        private void HandleAllReady()
+        // 모든 참가자에서 호출됩니다. 서버가 더한 값이 동기화되어 들어옵니다.
+        private static void HandlePlayerSpawnedClient(PlayerAvatar player)
         {
-            Debug.Log("[MyFirstMod] 모든 데이터베이스 준비 완료");
+            if (player == null)
+                return;
+            Debug.Log($"[PhysicalDamagePlus] PhysicalDamage={player.GetCustomStat(ECustomStat.PhysicalDamage)}");
         }
     }
 }
@@ -95,9 +110,11 @@ namespace MyFirstMod
 
 ```json
 "modules": [
-  { "type": "dll", "path": "bin/MyFirstMod.dll", "entryClass": "MyFirstMod.Entry" }
+  { "type": "dll", "path": "bin/PhysicalDamagePlus.dll", "entryClass": "PhysicalDamagePlus.Entry" }
 ]
 ```
+
+`customStats`는 네트워크로 동기화되는 딕셔너리라 서버에서 더하면 모든 참가자에게 전달됩니다. 그래서 스탯을 바꾸는 일은 `Serverside` 이벤트에서만 하고, `Clientside` 이벤트에서는 확인만 합니다. 이 구분은 아래 [멀티플레이에서 주의할 것](#멀티플레이에서-주의할-것)에서 다시 설명합니다.
 
 베이스 클래스가 주는 것은 셋입니다.
 
@@ -235,4 +252,4 @@ dotnet build -c Release
 
 ## 샘플
 
-[`template/`](../../template)은 타이틀 메뉴에 버튼 하나를 추가하고 로그를 남기는 최소 모드입니다. 복사해서 `AssemblyName`, `modId`, `entryClass`, 출력 경로만 바꾸면 자기 모드가 됩니다.
+[`template/`](../../template)은 플레이어가 스폰될 때 물리 피해를 5 올리는 최소 모드입니다. `package/` 폴더에 빌드된 DLL까지 들어 있어서, 그 폴더를 `WorkshopLocal/`에 복사하면 빌드 없이 바로 동작합니다. 자기 모드로 만들 때는 `AssemblyName`, `modId`, `entryClass`, 출력 경로만 바꾸면 됩니다. 게임을 시작해 스탯 창을 열면 물리 피해 +5로 동작을 확인할 수 있습니다.

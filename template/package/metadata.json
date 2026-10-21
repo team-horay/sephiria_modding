@@ -1,17 +1,17 @@
 {
   "info": {
-    "title": { "ko-KR": "내 첫 DLL 모드", "en-US": "My First DLL Mod" },
-    "description": { "ko-KR": "타이틀 메뉴에 버튼을 추가하는 템플릿입니다.", "en-US": "Template mod that adds a button to the title menu." }
+    "title": { "ko-KR": "물리 피해 +5", "en-US": "Physical Damage +5" },
+    "description": { "ko-KR": "플레이어가 스폰될 때 물리 피해를 5 올리는 DLL 모드 예제입니다.", "en-US": "Example DLL mod that adds +5 physical damage when the player spawns." }
   },
-  "tags": ["QoL"],
+  "tags": ["Gameplay"],
   "mod": {
     "schemaVersion": 1,
-    "modId": "yourname.my-first-mod",
+    "modId": "yourname.physical-damage-plus",
     "version": "1.0.0",
     "author": "Your Name",
-    "multiplayer": { "installation": "everyone", "support": "untested" },
+    "multiplayer": { "installation": "everyone" },
     "modules": [
-      { "type": "dll", "path": "bin/MyFirstMod.dll", "entryClass": "MyFirstMod.Entry" }
+      { "type": "dll", "path": "bin/PhysicalDamagePlus.dll", "entryClass": "PhysicalDamagePlus.Entry" }
     ]
   }
 }

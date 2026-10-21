@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!--
-    세피리아 DLL 모드 시작용 프로젝트.
+    세피리아 DLL 모드 시작용 프로젝트. 플레이어 스폰 시 물리 피해 +5.
     1. GameDir를 게임 설치 폴더로 바꾸거나, 빌드할 때 -p:GameDir="..." 로 넘깁니다.
-    2. AssemblyName / RootNamespace / OutDir의 모드 이름을 바꿉니다.
-    3. package/metadata.json의 modId, entryClass, path를 같은 이름으로 맞춥니다.
+    2. AssemblyName / RootNamespace / ModFolderName을 자기 모드 이름으로 바꿉니다.
+    3. package/metadata.json의 modId, path(bin/<AssemblyName>.dll), entryClass(<RootNamespace>.Entry)를 같은 이름으로 맞춥니다.
     빌드: dotnet build -c Release
-    출력: <GameDir>/WorkshopLocal/my-first-mod/bin/MyFirstMod.dll + package/ 내용 복사
+    출력: <GameDir>/WorkshopLocal/<ModFolderName>/bin/<AssemblyName>.dll + package/ 내용 복사
   -->
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>9.0</LangVersion>
-    <AssemblyName>MyFirstMod</AssemblyName>
-    <RootNamespace>MyFirstMod</RootNamespace>
+    <AssemblyName>PhysicalDamagePlus</AssemblyName>
+    <RootNamespace>PhysicalDamagePlus</RootNamespace>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateDependencyFile>false</GenerateDependencyFile>
@@ -20,7 +20,7 @@
     <DebugType>portable</DebugType>
 
     <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Sephiria</GameDir>
-    <ModFolderName>my-first-mod</ModFolderName>
+    <ModFolderName>physical-damage-plus</ModFolderName>
     <ModOutDir>$(GameDir)\WorkshopLocal\$(ModFolderName)\</ModOutDir>
     <OutDir>$(ModOutDir)bin\</OutDir>
   </PropertyGroup>
@@ -39,19 +39,25 @@
       <HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <!-- PlayerAvatar가 네트워크 오브젝트라 Mirror 참조가 필요합니다(isLocalPlayer 등). -->
+    <Reference Include="Mirror">
+      <HintPath>$(GameDir)\Sephiria_Data\Managed\Mirror.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <!--
     필요할 때 같은 방식으로 추가:
-    <Reference Include="Mirror"><HintPath>$(GameDir)\Sephiria_Data\Managed\Mirror.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(GameDir)\Sephiria_Data\Managed\UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(GameDir)\Sephiria_Data\Managed\0Harmony.dll</HintPath><Private>false</Private></Reference>
     -->
   </ItemGroup>
 
-  <!-- 빌드 후 package/ 안의 metadata.json, thumbnail.png 등을 모드 폴더로 복사 -->
+  <!--
+    빌드 후:
+    1. 빌드된 DLL을 package/bin/ 에도 복사해 package/ 폴더만으로 완성된 모드가 되게 한다(빌드 없이 WorkshopLocal에 복사해 쓸 수 있음).
+    2. package/ 안의 모든 파일(metadata.json, thumbnail.png, bin/*.dll)을 모드 폴더로 복사한다.
+  -->
   <Target Name="CopyPackageFiles" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="package\bin\" />
     <ItemGroup>
       <PackageFiles Include="package\**\*" />
     </ItemGroup>
