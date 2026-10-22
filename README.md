@@ -42,7 +42,7 @@
 | [코스튬 모드](docs/ko/costume-mods.md) | 자신만의 코스튬 만들기 |
 | [DLL 모드](docs/ko/dll-mods.md) | 프로젝트 설정, 진입점, `HorayModAPI` 이벤트, 디버깅 |
 | [창작마당에 올리기](docs/ko/publishing.md) | 창작마당 업로드, 코드 모드 검수, 멀티플레이 규칙 |
-| [API 레퍼런스](https://teamhoray.com/mod-api) | `HorayModAPI`·`HorayModBase` 멤버 목록 (teamhoray.com) |
+| [API 레퍼런스](docs/ko/api/README.md) | `HorayModAPI`·`WorkshopModBase`·모드 옵션·UI 등 공개 타입과 멤버 목록. 게임 소스에서 자동 생성 |
 | [부록 및 faq](docs/ko/faq.md) |  |
 
 
