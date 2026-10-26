@@ -3,20 +3,20 @@
 
 기기별로 저장되는 모드 설정값과, 게임 옵션 화면에 토글·선택 상자·슬라이더를 추가하는 API입니다. `Context.Options` 또는 `HorayModAPI.GetModOptions(modId)`로 얻습니다.
 
-게임 버전 **1.0.34** 기준, 2026-10-22 생성. [레퍼런스 목차](README.md)
+게임 버전 **1.1.0** 기준, 2026-10-26 생성. [레퍼런스 목차](README.md)
 
 | 타입 | 설명 |
 |---|---|
-| [`ModOptions`](#modoptions) | A mod's local options in DeviceOptions.xml. |
-| [`ModOptionsPage`](#modoptionspage) | UI definitions only; stored values survive removing this page or unregistering a mod. |
-| [`ModOptionDefinition`](#modoptiondefinition) |  |
-| [`ModOption<T>`](#modoptiont) | Retain this handle to read the registered default, or change a value and notify listeners. |
-| [`ModToggleOption`](#modtoggleoption) |  |
-| [`ModSelectionOption`](#modselectionoption) |  |
-| [`ModSliderOption`](#modslideroption) |  |
-| [`ModOptionText`](#modoptiontext) | Plain text by default; pass a LocalizedString to resolve a localization key on display. |
-| [`ModOptionKind`](#modoptionkind) |  |
-| [`ModOptionsRegistry`](#modoptionsregistry) |  |
+| [`ModOptions`](#modoptions) | 모드별 지정할 수 있는 옵션 값입니다. |
+| [`ModOptionsPage`](#modoptionspage) | 옵션 화면에 표시되는 모드 한 개의 페이지입니다. |
+| [`ModOptionDefinition`](#modoptiondefinition) | 옵션 화면 항목의 공통 정의입니다. |
+| [`ModOption<T>`](#modoptiont) | 값이 있는 옵션 항목입니다. |
+| [`ModToggleOption`](#modtoggleoption) | 켜기/끄기 옵션입니다. |
+| [`ModSelectionOption`](#modselectionoption) | 선택 상자 옵션입니다. |
+| [`ModSliderOption`](#modslideroption) | 슬라이더 옵션입니다. |
+| [`ModOptionText`](#modoptiontext) |  |
+| [`ModOptionKind`](#modoptionkind) | 옵션 화면 행의 종류입니다. |
+| [`ModOptionsRegistry`](#modoptionsregistry) | 옵션 화면이 읽는 모드 페이지 목록입니다. |
 
 
 ## ModOptions
@@ -25,7 +25,7 @@
 public sealed class ModOptions
 ```
 
-A mod's local options in DeviceOptions.xml. Use on the Unity main thread. Set/Remove/Reset change memory only; call Save to persist a batch of changes.
+모드별 지정할 수 있는 옵션 값입니다.
 
 ### 프로퍼티
 
@@ -35,7 +35,7 @@ A mod's local options in DeviceOptions.xml. Use on the Unity main thread. Set/Re
 public string ModId { get; }
 ```
 
-*설명이 아직 없습니다.*
+이 옵션 집합의 modId
 
 
 #### IsAvailable
@@ -44,7 +44,7 @@ public string ModId { get; }
 public bool IsAvailable { get; }
 ```
 
-*설명이 아직 없습니다.*
+저장소가 초기화돼 있는지
 
 
 #### DisplayName
@@ -53,7 +53,7 @@ public bool IsAvailable { get; }
 public ModOptionText DisplayName { get; set; }
 ```
 
-Plain mod name, or a LocalizedString. Workshop defaults to its manifest display name.
+옵션 화면에 보이는 모드 이름입니다. 창작마당 모드는 매니페스트 표시 이름이 기본값입니다.
 
 ### 메서드
 
@@ -63,7 +63,7 @@ Plain mod name, or a LocalizedString. Workshop defaults to its manifest display 
 public bool GetBool(string key, bool fallback = false)
 ```
 
-Missing values or values saved with a different type return the fallback without changing storage.
+저장된 bool 값입니다. 없거나 타입이 다르면 fallback을 돌려줍니다.
 
 
 #### GetInt
@@ -72,7 +72,7 @@ Missing values or values saved with a different type return the fallback without
 public int GetInt(string key, int fallback = 0)
 ```
 
-*설명이 아직 없습니다.*
+저장된 int 값입니다. 없거나 타입이 다르면 fallback을 돌려줍니다.
 
 
 #### GetLong
@@ -81,7 +81,7 @@ public int GetInt(string key, int fallback = 0)
 public long GetLong(string key, long fallback = 0)
 ```
 
-*설명이 아직 없습니다.*
+저장된 long 값입니다. 없거나 타입이 다르면 fallback을 돌려줍니다.
 
 
 #### GetFloat
@@ -90,7 +90,7 @@ public long GetLong(string key, long fallback = 0)
 public float GetFloat(string key, float fallback = 0)
 ```
 
-*설명이 아직 없습니다.*
+저장된 float 값입니다. 없거나 타입이 다르면 fallback을 돌려줍니다.
 
 
 #### GetString
@@ -99,7 +99,7 @@ public float GetFloat(string key, float fallback = 0)
 public string GetString(string key, string fallback = "")
 ```
 
-*설명이 아직 없습니다.*
+저장된 string 값입니다. 없거나 타입이 다르면 fallback을 돌려줍니다.
 
 
 #### SetBool
@@ -108,7 +108,7 @@ public string GetString(string key, string fallback = "")
 public void SetBool(string key, bool value)
 ```
 
-*설명이 아직 없습니다.*
+bool 값을 메모리에 씁니다.
 
 
 #### SetInt
@@ -117,7 +117,7 @@ public void SetBool(string key, bool value)
 public void SetInt(string key, int value)
 ```
 
-*설명이 아직 없습니다.*
+int 값을 메모리에 씁니다.
 
 
 #### SetLong
@@ -126,7 +126,7 @@ public void SetInt(string key, int value)
 public void SetLong(string key, long value)
 ```
 
-*설명이 아직 없습니다.*
+long 값을 메모리에 씁니다.
 
 
 #### SetFloat
@@ -135,7 +135,7 @@ public void SetLong(string key, long value)
 public void SetFloat(string key, float value)
 ```
 
-*설명이 아직 없습니다.*
+float 값을 메모리에 씁니다.
 
 
 #### SetString
@@ -144,7 +144,7 @@ public void SetFloat(string key, float value)
 public void SetString(string key, string value)
 ```
 
-*설명이 아직 없습니다.*
+string 값을 메모리에 씁니다. null은 받지 않습니다.
 
 
 #### HasKey
@@ -153,7 +153,7 @@ public void SetString(string key, string value)
 public bool HasKey(string key)
 ```
 
-*설명이 아직 없습니다.*
+key로 저장된 값이 있는지
 
 
 #### Remove
@@ -162,7 +162,7 @@ public bool HasKey(string key)
 public bool Remove(string key)
 ```
 
-Remove an override so subsequent reads use their fallback. Call Save to persist.
+저장된 값을 지워 이후 읽기가 fallback을 돌려주게 합니다.
 
 
 #### Reset
@@ -171,7 +171,7 @@ Remove an override so subsequent reads use their fallback. Call Save to persist.
 public int Reset()
 ```
 
-Remove only this mod's options. Returns the number removed. Call Save to persist.
+이 모드의 옵션을 모두 지웁니다. 지운 개수를 돌려줍니다.
 
 
 #### Save
@@ -180,7 +180,7 @@ Remove only this mod's options. Returns the number removed. Call Save to persist
 public bool Save()
 ```
 
-Flush the shared DeviceOptions file, including pending changes from other mods. Returns false if storage is unavailable, saving is disabled, or the file write fails. Does not save cloud Options or invoke OptionsBinding.OnOptionsChanged.
+옵션 파일(DeviceOptions)을 저장합니다. Set*/Remove/Reset은 메모리만 바꾸므로 파일에 반영하려면 이 메서드를 불러야 합니다. 저장소가 없거나 쓰기에 실패하면 false를 돌려줍니다.
 
 
 #### AddToggle
@@ -189,7 +189,7 @@ Flush the shared DeviceOptions file, including pending changes from other mods. 
 public ModToggleOption AddToggle(string key, bool defaultValue = false, ModOptionText label = default, Action<bool> onChanged = null)
 ```
 
-*설명이 아직 없습니다.*
+옵션 화면의 이 모드 페이지에 토글을 추가합니다. 같은 key가 있으면 교체합니다.
 
 
 #### AddSelectionBox
@@ -198,7 +198,7 @@ public ModToggleOption AddToggle(string key, bool defaultValue = false, ModOptio
 public ModSelectionOption AddSelectionBox(string key, string[] choices, int defaultValue = 0, ModOptionText label = default, Action<int> onChanged = null)
 ```
 
-*설명이 아직 없습니다.*
+선택 상자를 추가합니다. 값은 choices의 인덱스입니다.
 
 
 #### AddSelectionBox
@@ -207,7 +207,7 @@ public ModSelectionOption AddSelectionBox(string key, string[] choices, int defa
 public ModSelectionOption AddSelectionBox(string key, LocalizedString[] choices, int defaultValue = 0, ModOptionText label = default, Action<int> onChanged = null)
 ```
 
-*설명이 아직 없습니다.*
+선택지를 번역 키로 주는 선택 상자를 추가합니다.
 
 
 #### AddSlider
@@ -216,7 +216,7 @@ public ModSelectionOption AddSelectionBox(string key, LocalizedString[] choices,
 public ModSliderOption AddSlider(string key, float min = 0, float max = 1, float defaultValue = 0, float step = 0, ModOptionText label = default, Action<float> onChanged = null)
 ```
 
-*설명이 아직 없습니다.*
+슬라이더를 추가합니다. step이 0이면 연속 값입니다.
 
 
 #### UnregisterUI
@@ -225,7 +225,7 @@ public ModSliderOption AddSlider(string key, float min = 0, float max = 1, float
 public void UnregisterUI()
 ```
 
-Remove this mod's UI registrations on unload. Saved values are retained.
+이 모드의 옵션 화면 항목을 모두 지웁니다. 저장값은 남습니다.
 
 
 ## ModOptionsPage
@@ -234,7 +234,7 @@ Remove this mod's UI registrations on unload. Saved values are retained.
 public sealed class ModOptionsPage
 ```
 
-UI definitions only; stored values survive removing this page or unregistering a mod.
+옵션 화면에 표시되는 모드 한 개의 페이지입니다. UI 정의만 담으며 저장값은 따로 남습니다.
 
 ### 프로퍼티
 
@@ -244,7 +244,7 @@ UI definitions only; stored values survive removing this page or unregistering a
 public ModOptions Options { get; }
 ```
 
-*설명이 아직 없습니다.*
+이 페이지의 모드 옵션
 
 
 #### ModId
@@ -253,7 +253,7 @@ public ModOptions Options { get; }
 public string ModId { get; }
 ```
 
-*설명이 아직 없습니다.*
+`Options.ModId`
 
 
 #### DisplayName
@@ -262,7 +262,7 @@ public string ModId { get; }
 public ModOptionText DisplayName { get; }
 ```
 
-*설명이 아직 없습니다.*
+옵션 화면에 보이는 모드 이름
 
 
 #### Items
@@ -271,7 +271,7 @@ public ModOptionText DisplayName { get; }
 public IReadOnlyList<ModOptionDefinition> Items { get; }
 ```
 
-*설명이 아직 없습니다.*
+등록 순서의 항목
 
 
 ## ModOptionDefinition
@@ -280,7 +280,7 @@ public IReadOnlyList<ModOptionDefinition> Items { get; }
 public abstract class ModOptionDefinition
 ```
 
-*설명이 아직 없습니다.*
+옵션 화면 항목의 공통 정의입니다. `ModOptions.Add*`가 만듭니다.
 
 ### 프로퍼티
 
@@ -290,7 +290,7 @@ public abstract class ModOptionDefinition
 public ModOptions Options { get; }
 ```
 
-*설명이 아직 없습니다.*
+이 항목이 속한 모드 옵션
 
 
 #### Key
@@ -299,7 +299,7 @@ public ModOptions Options { get; }
 public string Key { get; }
 ```
 
-*설명이 아직 없습니다.*
+저장 키
 
 
 #### Label
@@ -308,7 +308,7 @@ public string Key { get; }
 public ModOptionText Label { get; }
 ```
 
-*설명이 아직 없습니다.*
+표시 이름입니다. 비우면 key가 표시됩니다.
 
 
 #### Kind
@@ -317,7 +317,7 @@ public ModOptionText Label { get; }
 public abstract ModOptionKind Kind { get; }
 ```
 
-*설명이 아직 없습니다.*
+행의 종류
 
 ### 생성자
 
@@ -327,7 +327,7 @@ public abstract ModOptionKind Kind { get; }
 protected ModOptionDefinition(ModOptions options, string key, ModOptionText label)
 ```
 
-*설명이 아직 없습니다.*
+key를 검증합니다.
 
 
 ## ModOption<T>
@@ -336,7 +336,7 @@ protected ModOptionDefinition(ModOptions options, string key, ModOptionText labe
 public abstract class ModOption<T> : ModOptionDefinition
 ```
 
-Retain this handle to read the registered default, or change a value and notify listeners.
+값이 있는 옵션 항목입니다. 핸들을 보관하면 코드에서 값을 읽고 바꿀 수 있습니다.
 
 ### 이벤트
 
@@ -346,7 +346,7 @@ Retain this handle to read the registered default, or change a value and notify 
 public event Action<T> ValueChanged
 ```
 
-*설명이 아직 없습니다.*
+값이 바뀐 뒤 새 값으로 호출됩니다.
 
 ### 프로퍼티
 
@@ -356,7 +356,7 @@ public event Action<T> ValueChanged
 public T DefaultValue { get; }
 ```
 
-*설명이 아직 없습니다.*
+등록 시 지정한 기본값
 
 
 #### Value
@@ -365,7 +365,7 @@ public T DefaultValue { get; }
 public T Value { get; set; }
 ```
 
-*설명이 아직 없습니다.*
+현재 값입니다. 쓰면 메모리에 저장하고, 바뀌었으면 `ValueChanged`를 발생시킵니다.
 
 ### 생성자
 
@@ -375,7 +375,7 @@ public T Value { get; set; }
 protected ModOption(ModOptions options, string key, T defaultValue, ModOptionText label, Action<T> onChanged)
 ```
 
-*설명이 아직 없습니다.*
+onChanged는 `ValueChanged`의 첫 구독자가 됩니다.
 
 ### 메서드
 
@@ -385,7 +385,7 @@ protected ModOption(ModOptions options, string key, T defaultValue, ModOptionTex
 protected abstract T Read()
 ```
 
-*설명이 아직 없습니다.*
+저장소에서 값을 읽습니다.
 
 
 #### Write
@@ -394,7 +394,7 @@ protected abstract T Read()
 protected abstract void Write(T value)
 ```
 
-*설명이 아직 없습니다.*
+값을 저장소 메모리에 씁니다.
 
 
 #### Normalize
@@ -403,7 +403,7 @@ protected abstract void Write(T value)
 protected virtual T Normalize(T value)
 ```
 
-*설명이 아직 없습니다.*
+쓰기 전에 값을 허용 범위로 맞춥니다.
 
 
 ## ModToggleOption
@@ -412,7 +412,7 @@ protected virtual T Normalize(T value)
 public sealed class ModToggleOption : ModOption<bool>
 ```
 
-*설명이 아직 없습니다.*
+켜기/끄기 옵션입니다.
 
 ### 프로퍼티
 
@@ -422,7 +422,7 @@ public sealed class ModToggleOption : ModOption<bool>
 public override ModOptionKind Kind { get; }
 ```
 
-*설명이 아직 없습니다.*
+항상 Toggle
 
 ### 메서드
 
@@ -432,7 +432,7 @@ public override ModOptionKind Kind { get; }
 protected override bool Read()
 ```
 
-*설명이 아직 없습니다.*
+bool 값을 읽습니다.
 
 
 #### Write
@@ -441,7 +441,7 @@ protected override bool Read()
 protected override void Write(bool value)
 ```
 
-*설명이 아직 없습니다.*
+bool 값을 씁니다.
 
 
 ## ModSelectionOption
@@ -450,7 +450,7 @@ protected override void Write(bool value)
 public sealed class ModSelectionOption : ModOption<int>
 ```
 
-*설명이 아직 없습니다.*
+선택 상자 옵션입니다. 값은 `Choices`의 인덱스입니다.
 
 ### 프로퍼티
 
@@ -460,7 +460,7 @@ public sealed class ModSelectionOption : ModOption<int>
 public override ModOptionKind Kind { get; }
 ```
 
-*설명이 아직 없습니다.*
+항상 SelectionBox
 
 
 #### Choices
@@ -469,7 +469,7 @@ public override ModOptionKind Kind { get; }
 public IReadOnlyList<ModOptionText> Choices { get; }
 ```
 
-*설명이 아직 없습니다.*
+선택지 목록
 
 ### 메서드
 
@@ -479,7 +479,7 @@ public IReadOnlyList<ModOptionText> Choices { get; }
 protected override int Read()
 ```
 
-*설명이 아직 없습니다.*
+저장된 인덱스입니다. 범위 밖이면 기본값.
 
 
 #### Normalize
@@ -488,7 +488,7 @@ protected override int Read()
 protected override int Normalize(int value)
 ```
 
-*설명이 아직 없습니다.*
+선택지 범위로 자릅니다.
 
 
 #### Write
@@ -497,7 +497,7 @@ protected override int Normalize(int value)
 protected override void Write(int value)
 ```
 
-*설명이 아직 없습니다.*
+인덱스를 씁니다.
 
 
 ## ModSliderOption
@@ -506,7 +506,7 @@ protected override void Write(int value)
 public sealed class ModSliderOption : ModOption<float>
 ```
 
-*설명이 아직 없습니다.*
+슬라이더 옵션입니다.
 
 ### 프로퍼티
 
@@ -516,7 +516,7 @@ public sealed class ModSliderOption : ModOption<float>
 public override ModOptionKind Kind { get; }
 ```
 
-*설명이 아직 없습니다.*
+항상 Slider
 
 
 #### Min
@@ -525,7 +525,7 @@ public override ModOptionKind Kind { get; }
 public float Min { get; }
 ```
 
-*설명이 아직 없습니다.*
+최솟값
 
 
 #### Max
@@ -534,7 +534,7 @@ public float Min { get; }
 public float Max { get; }
 ```
 
-*설명이 아직 없습니다.*
+최댓값
 
 
 #### Step
@@ -543,7 +543,7 @@ public float Max { get; }
 public float Step { get; }
 ```
 
-*설명이 아직 없습니다.*
+눈금 간격입니다. 0이면 연속 값.
 
 ### 메서드
 
@@ -553,7 +553,7 @@ public float Step { get; }
 protected override float Read()
 ```
 
-*설명이 아직 없습니다.*
+저장값을 정규화한 값
 
 
 #### Normalize
@@ -562,7 +562,7 @@ protected override float Read()
 protected override float Normalize(float value)
 ```
 
-*설명이 아직 없습니다.*
+범위로 자르고 눈금에 맞춥니다.
 
 
 #### Write
@@ -571,7 +571,7 @@ protected override float Normalize(float value)
 protected override void Write(float value)
 ```
 
-*설명이 아직 없습니다.*
+float 값을 씁니다.
 
 
 ## ModOptionText
@@ -580,7 +580,7 @@ protected override void Write(float value)
 public readonly struct ModOptionText
 ```
 
-Plain text by default; pass a LocalizedString to resolve a localization key on display.
+*설명이 아직 없습니다.*
 
 ### 메서드
 
@@ -590,7 +590,7 @@ Plain text by default; pass a LocalizedString to resolve a localization key on d
 public static implicit operator ModOptionText(string text)
 ```
 
-*설명이 아직 없습니다.*
+문자열을 그대로 표시합니다.
 
 
 #### implicit operator ModOptionText
@@ -599,7 +599,7 @@ public static implicit operator ModOptionText(string text)
 public static implicit operator ModOptionText(LocalizedString text)
 ```
 
-*설명이 아직 없습니다.*
+LocalizedString의 키를 표시 시점에 번역합니다.
 
 
 ## ModOptionKind
@@ -608,13 +608,13 @@ public static implicit operator ModOptionText(LocalizedString text)
 public enum ModOptionKind
 ```
 
-*설명이 아직 없습니다.*
+옵션 화면 행의 종류입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Toggle` |  |
-| `SelectionBox` |  |
-| `Slider` |  |
+| `Toggle` | 켜기/끄기 |
+| `SelectionBox` | 선택 상자 |
+| `Slider` | 슬라이더 |
 
 
 ## ModOptionsRegistry
@@ -623,7 +623,7 @@ public enum ModOptionKind
 public static class ModOptionsRegistry
 ```
 
-*설명이 아직 없습니다.*
+옵션 화면이 읽는 모드 페이지 목록입니다.
 
 ### 메서드
 
@@ -633,4 +633,4 @@ public static class ModOptionsRegistry
 public static IReadOnlyList<ModOptionsPage> GetPages()
 ```
 
-*설명이 아직 없습니다.*
+표시할 페이지를 modId 순으로 돌려줍니다.

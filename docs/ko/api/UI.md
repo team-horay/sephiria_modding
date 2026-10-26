@@ -3,21 +3,21 @@
 
 `HorayModAPI.TryShowDialogue`, `TryShowItemInteraction`, `TryGetUIWidgets`가 쓰는 대화·아이템 상호작용·위젯 타입입니다. 전부 로컬 UI이며 네트워크 동기화는 모드의 몫입니다.
 
-게임 버전 **1.0.34** 기준, 2026-10-22 생성. [레퍼런스 목차](README.md)
+게임 버전 **1.1.0** 기준, 2026-10-26 생성. [레퍼런스 목차](README.md)
 
 | 타입 | 설명 |
 |---|---|
-| [`UIWidgetFactory`](#uiwidgetfactory) | Scene-local game UI widgets. |
-| [`UIWidgetTextStyle`](#uiwidgettextstyle) |  |
-| [`DialoguePage`](#dialoguepage) |  |
-| [`DialogueChoice`](#dialoguechoice) |  |
-| [`DialogueSession`](#dialoguesession) | One local dialogue. |
-| [`DialogueCloseReason`](#dialogueclosereason) |  |
-| [`ItemInteractionOptions`](#iteminteractionoptions) | Client UI configuration. |
-| [`ItemInteractionSession`](#iteminteractionsession) | One opening of the shared panel. |
-| [`ItemInteractionItem`](#iteminteractionitem) | A snapshot of one owned item. |
-| [`ItemInteractionCloseReason`](#iteminteractionclosereason) |  |
-| [`ItemInteractionItemSource`](#iteminteractionitemsource) |  |
+| [`UIWidgetFactory`](#uiwidgetfactory) | 게임 스타일 UI 위젯 생성기입니다. |
+| [`UIWidgetTextStyle`](#uiwidgettextstyle) | 텍스트 크기 단계입니다. |
+| [`DialoguePage`](#dialoguepage) | 대화 한 페이지(본문과 선택지)입니다. |
+| [`DialogueChoice`](#dialoguechoice) | 선택지 하나입니다. |
+| [`DialogueSession`](#dialoguesession) | 열려 있는 대화 하나의 핸들입니다. |
+| [`DialogueCloseReason`](#dialogueclosereason) | 대화가 닫힌 이유를 식별하는 값입니다. |
+| [`ItemInteractionOptions`](#iteminteractionoptions) | 아이템 상호작용 패널을 열 때 넘기는 설정입니다. |
+| [`ItemInteractionSession`](#iteminteractionsession) | 열려 있는 아이템 상호작용 패널 하나의 핸들입니다. |
+| [`ItemInteractionItem`](#iteminteractionitem) | 소유 아이템 하나의 스냅샷입니다. |
+| [`ItemInteractionCloseReason`](#iteminteractionclosereason) | 아이템 상호작용이 닫힌 이유를 식별하는 값입니다. |
+| [`ItemInteractionItemSource`](#iteminteractionitemsource) | 아이템이 있는 곳을 식별하는 값입니다. |
 
 
 ## UIWidgetFactory
@@ -26,7 +26,7 @@
 public sealed class UIWidgetFactory
 ```
 
-Scene-local game UI widgets. Widgets belong to their parent; do not cache across scenes.
+게임 스타일 UI 위젯 생성기입니다.
 
 ### 생성자
 
@@ -36,7 +36,7 @@ Scene-local game UI widgets. Widgets belong to their parent; do not cache across
 public UIWidgetFactory(TextMeshProUGUI textTemplate, Button buttonTemplate, UI_ItemIcon itemTemplate, Image panelTemplate = null)
 ```
 
-*설명이 아직 없습니다.*
+템플릿에서 스타일을 가져옵니다.
 
 ### 메서드
 
@@ -46,7 +46,7 @@ public UIWidgetFactory(TextMeshProUGUI textTemplate, Button buttonTemplate, UI_I
 public RectTransform CreateContainer(Transform parent, string name = "Container")
 ```
 
-*설명이 아직 없습니다.*
+빈 RectTransform 자식을 만듭니다.
 
 
 #### Stretch
@@ -55,7 +55,7 @@ public RectTransform CreateContainer(Transform parent, string name = "Container"
 public static void Stretch(RectTransform rect)
 ```
 
-*설명이 아직 없습니다.*
+부모 전체를 채우도록 앵커를 펼칩니다.
 
 
 #### CreatePanel
@@ -64,7 +64,7 @@ public static void Stretch(RectTransform rect)
 public RectTransform CreatePanel(Transform parent, string name = "Panel")
 ```
 
-*설명이 아직 없습니다.*
+게임 패널 외형의 컨테이너를 만듭니다.
 
 
 #### CreateImage
@@ -73,7 +73,7 @@ public RectTransform CreatePanel(Transform parent, string name = "Panel")
 public Image CreateImage(Transform parent, Sprite sprite, string name = "Image")
 ```
 
-Displays sprite art at its source pixel size, without intercepting pointer input.
+스프라이트를 원본 픽셀 크기로 표시하는 이미지를 만듭니다. 포인터 입력은 통과합니다.
 
 
 #### CreateVerticalLayout
@@ -82,7 +82,7 @@ Displays sprite art at its source pixel size, without intercepting pointer input
 public RectTransform CreateVerticalLayout(Transform parent, float spacing = 6, int padding = 0)
 ```
 
-*설명이 아직 없습니다.*
+세로 레이아웃 컨테이너를 만듭니다.
 
 
 #### CreateGrid
@@ -91,7 +91,7 @@ public RectTransform CreateVerticalLayout(Transform parent, float spacing = 6, i
 public RectTransform CreateGrid(Transform parent, Vector2 cellSize, int columns = 4, float spacing = 4)
 ```
 
-*설명이 아직 없습니다.*
+격자 레이아웃 컨테이너를 만듭니다.
 
 
 #### CreateHorizontalLayout
@@ -100,7 +100,7 @@ public RectTransform CreateGrid(Transform parent, Vector2 cellSize, int columns 
 public RectTransform CreateHorizontalLayout(Transform parent, float spacing = 4)
 ```
 
-*설명이 아직 없습니다.*
+가로 레이아웃 컨테이너를 만듭니다.
 
 
 #### CreateScrollView
@@ -109,7 +109,7 @@ public RectTransform CreateHorizontalLayout(Transform parent, float spacing = 4)
 public ScrollRect CreateScrollView(Transform parent)
 ```
 
-*설명이 아직 없습니다.*
+세로 스크롤 뷰를 만듭니다.
 
 
 #### CreateText
@@ -118,7 +118,7 @@ public ScrollRect CreateScrollView(Transform parent)
 public TextMeshProUGUI CreateText(Transform parent, string value, UIWidgetTextStyle style = UIWidgetTextStyle.Body)
 ```
 
-*설명이 아직 없습니다.*
+게임 글꼴이 적용된 텍스트를 만듭니다.
 
 
 #### CreateLocalizedText
@@ -127,7 +127,7 @@ public TextMeshProUGUI CreateText(Transform parent, string value, UIWidgetTextSt
 public TextMeshProUGUI CreateLocalizedText(Transform parent, string key, UIWidgetTextStyle style = UIWidgetTextStyle.Body)
 ```
 
-*설명이 아직 없습니다.*
+번역 키를 표시하는 텍스트를 만듭니다.
 
 
 #### ApplyTextStyle
@@ -136,7 +136,7 @@ public TextMeshProUGUI CreateLocalizedText(Transform parent, string key, UIWidge
 public void ApplyTextStyle(TextMeshProUGUI text, UIWidgetTextStyle style = UIWidgetTextStyle.Body)
 ```
 
-*설명이 아직 없습니다.*
+기존 텍스트에 게임 글꼴 규칙을 적용합니다.
 
 
 #### BindLocalization
@@ -145,7 +145,7 @@ public void ApplyTextStyle(TextMeshProUGUI text, UIWidgetTextStyle style = UIWid
 public void BindLocalization(TextMeshProUGUI text, string key)
 ```
 
-*설명이 아직 없습니다.*
+기존 텍스트에 번역 키를 연결합니다.
 
 
 #### CreateButton
@@ -154,7 +154,7 @@ public void BindLocalization(TextMeshProUGUI text, string key)
 public UI_HorayButton CreateButton(Transform parent, string label, UnityAction onClick)
 ```
 
-*설명이 아직 없습니다.*
+게임 스타일 버튼을 만듭니다.
 
 
 #### CreateLocalizedButton
@@ -163,7 +163,7 @@ public UI_HorayButton CreateButton(Transform parent, string label, UnityAction o
 public UI_HorayButton CreateLocalizedButton(Transform parent, string key, UnityAction onClick)
 ```
 
-*설명이 아직 없습니다.*
+라벨이 번역 키인 버튼을 만듭니다.
 
 
 #### CreateItemIcon
@@ -172,7 +172,7 @@ public UI_HorayButton CreateLocalizedButton(Transform parent, string key, UnityA
 public UI_ItemIcon CreateItemIcon(Transform parent, ItemMetadata item, Action<PointerEventData.InputButton, UI_ItemIcon> onClick = null)
 ```
 
-*설명이 아직 없습니다.*
+게임 아이템 아이콘을 만듭니다.
 
 
 #### SetPreferredSize
@@ -181,7 +181,7 @@ public UI_ItemIcon CreateItemIcon(Transform parent, ItemMetadata item, Action<Po
 public static void SetPreferredSize(Component widget, float width, float height, float flexibleHeight = 0)
 ```
 
-*설명이 아직 없습니다.*
+LayoutElement의 선호 크기를 지정합니다.
 
 
 ## UIWidgetTextStyle
@@ -190,13 +190,13 @@ public static void SetPreferredSize(Component widget, float width, float height,
 public enum UIWidgetTextStyle
 ```
 
-*설명이 아직 없습니다.*
+텍스트 크기 단계입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Body` |  |
-| `Small` |  |
-| `Title` |  |
+| `Body` | 본문 |
+| `Small` | 작은 글씨 |
+| `Title` | 제목 |
 
 
 ## DialoguePage
@@ -205,7 +205,7 @@ public enum UIWidgetTextStyle
 public sealed class DialoguePage
 ```
 
-*설명이 아직 없습니다.*
+대화 한 페이지(본문과 선택지)입니다.
 
 ### 프로퍼티
 
@@ -215,7 +215,7 @@ public sealed class DialoguePage
 public string Text { get; }
 ```
 
-Localized text is resolved when read, not when the page is constructed.
+*설명이 아직 없습니다.*
 
 
 #### Choices
@@ -224,7 +224,7 @@ Localized text is resolved when read, not when the page is constructed.
 public IReadOnlyList<DialogueChoice> Choices { get; }
 ```
 
-*설명이 아직 없습니다.*
+선택지 목록
 
 
 #### DefaultChoiceIndex
@@ -233,7 +233,7 @@ public IReadOnlyList<DialogueChoice> Choices { get; }
 public int DefaultChoiceIndex { get; set; }
 ```
 
-*설명이 아직 없습니다.*
+열릴 때 포커스할 선택지
 
 
 #### CanCancel
@@ -242,7 +242,7 @@ public int DefaultChoiceIndex { get; set; }
 public bool CanCancel { get; set; }
 ```
 
-*설명이 아직 없습니다.*
+ESC/취소로 닫을 수 있는지
 
 ### 생성자
 
@@ -252,7 +252,7 @@ public bool CanCancel { get; set; }
 public DialoguePage(string text, params DialogueChoice[] choices)
 ```
 
-*설명이 아직 없습니다.*
+직접 쓴 문장으로 만듭니다.
 
 
 #### DialoguePage
@@ -261,7 +261,7 @@ public DialoguePage(string text, params DialogueChoice[] choices)
 public DialoguePage(LocalizedString text, params DialogueChoice[] choices)
 ```
 
-*설명이 아직 없습니다.*
+본문을 번역 키로 만듭니다.
 
 
 ## DialogueChoice
@@ -270,7 +270,7 @@ public DialoguePage(LocalizedString text, params DialogueChoice[] choices)
 public sealed class DialogueChoice
 ```
 
-*설명이 아직 없습니다.*
+선택지 하나입니다. 고르면 onSelected가 호출되며, 그 안에서 다음 페이지를 보이거나 닫습니다.
 
 ### 프로퍼티
 
@@ -280,7 +280,7 @@ public sealed class DialogueChoice
 public string Text { get; }
 ```
 
-Localized text is resolved when read, not when the choice is constructed.
+표시 문장입니다. 번역 키는 읽는 시점에 번역됩니다.
 
 
 #### Interactable
@@ -289,7 +289,7 @@ Localized text is resolved when read, not when the choice is constructed.
 public bool Interactable { get; }
 ```
 
-*설명이 아직 없습니다.*
+선택할 수 있는지
 
 ### 생성자
 
@@ -299,7 +299,7 @@ public bool Interactable { get; }
 public DialogueChoice(string text, Action<DialogueSession> onSelected, bool interactable = true)
 ```
 
-*설명이 아직 없습니다.*
+직접 쓴 문장으로 만듭니다.
 
 
 #### DialogueChoice
@@ -308,7 +308,7 @@ public DialogueChoice(string text, Action<DialogueSession> onSelected, bool inte
 public DialogueChoice(LocalizedString text, Action<DialogueSession> onSelected, bool interactable = true)
 ```
 
-*설명이 아직 없습니다.*
+번역 키로 만듭니다.
 
 
 ## DialogueSession
@@ -317,7 +317,7 @@ public DialogueChoice(LocalizedString text, Action<DialogueSession> onSelected, 
 public sealed class DialogueSession
 ```
 
-One local dialogue. Keep this handle for delayed replies; Show returns false after it closes. Gameplay rewards and network requests belong to the caller, not the dialogue.
+열려 있는 대화 하나의 핸들입니다. `Show`로 다음 페이지를 보이고 `Close`로 끝냅니다.
 
 ### 이벤트
 
@@ -327,7 +327,7 @@ One local dialogue. Keep this handle for delayed replies; Show returns false aft
 public event Action<DialogueCloseReason> Closed
 ```
 
-*설명이 아직 없습니다.*
+닫힌 뒤 한 번 호출됩니다.
 
 ### 프로퍼티
 
@@ -337,7 +337,7 @@ public event Action<DialogueCloseReason> Closed
 public DialoguePage CurrentPage { get; }
 ```
 
-*설명이 아직 없습니다.*
+표시 중인 페이지
 
 
 #### PageVersion
@@ -346,7 +346,7 @@ public DialoguePage CurrentPage { get; }
 public int PageVersion { get; }
 ```
 
-*설명이 아직 없습니다.*
+페이지가 바뀔 때마다 증가합니다.
 
 
 #### IsOpen
@@ -355,7 +355,7 @@ public int PageVersion { get; }
 public bool IsOpen { get; }
 ```
 
-*설명이 아직 없습니다.*
+열려 있는지
 
 
 #### IsWaitingForChoice
@@ -364,7 +364,7 @@ public bool IsOpen { get; }
 public bool IsWaitingForChoice { get; }
 ```
 
-*설명이 아직 없습니다.*
+선택을 기다리는 중인지
 
 
 #### CloseReason
@@ -373,7 +373,7 @@ public bool IsWaitingForChoice { get; }
 public DialogueCloseReason? CloseReason { get; }
 ```
 
-*설명이 아직 없습니다.*
+닫힌 이유입니다. 열려 있으면 null.
 
 ### 생성자
 
@@ -383,7 +383,7 @@ public DialogueCloseReason? CloseReason { get; }
 public DialogueSession(DialoguePage firstPage)
 ```
 
-*설명이 아직 없습니다.*
+첫 페이지를 표시한 세션입니다. 보통 `HorayModAPI.TryShowDialogue`가 만듭니다.
 
 ### 메서드
 
@@ -393,7 +393,7 @@ public DialogueSession(DialoguePage firstPage)
 public bool Show(DialoguePage page)
 ```
 
-*설명이 아직 없습니다.*
+다음 페이지를 표시합니다. 닫힌 세션이면 false.
 
 
 #### TrySelect
@@ -402,7 +402,7 @@ public bool Show(DialoguePage page)
 public bool TrySelect(int choiceIndex, int pageVersion)
 ```
 
-*설명이 아직 없습니다.*
+뷰가 선택 입력을 전달할 때 부릅니다.
 
 
 #### Close
@@ -411,7 +411,7 @@ public bool TrySelect(int choiceIndex, int pageVersion)
 public void Close(DialogueCloseReason reason = DialogueCloseReason.Completed)
 ```
 
-*설명이 아직 없습니다.*
+대화를 닫습니다.
 
 
 ## DialogueCloseReason
@@ -420,16 +420,16 @@ public void Close(DialogueCloseReason reason = DialogueCloseReason.Completed)
 public enum DialogueCloseReason
 ```
 
-*설명이 아직 없습니다.*
+대화가 닫힌 이유를 식별하는 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Completed` |  |
-| `Cancelled` |  |
-| `Interrupted` |  |
-| `TargetUnavailable` |  |
-| `PlayerUnavailable` |  |
-| `Error` |  |
+| `Completed` | 정상 완료 |
+| `Cancelled` | ESC/취소 |
+| `Interrupted` | 층 이동·패널 비활성화 등 외부 중단 |
+| `TargetUnavailable` | anchor가 사라짐 |
+| `PlayerUnavailable` | 플레이어 없음·사망·전투 진입 |
+| `Error` | 콜백 예외 |
 
 
 ## ItemInteractionOptions
@@ -438,7 +438,7 @@ public enum DialogueCloseReason
 public sealed class ItemInteractionOptions
 ```
 
-Client UI configuration. Gameplay validation, item consumption and networking belong to the caller.
+아이템 상호작용 패널을 열 때 넘기는 설정입니다. 아이템 검증·소모·네트워크 처리는 호출자가 맡습니다.
 
 ### 상수와 필드
 
@@ -448,7 +448,7 @@ Client UI configuration. Gameplay validation, item consumption and networking be
 public Transform Target
 ```
 
-*설명이 아직 없습니다.*
+상호작용 대상(필수)
 
 
 #### ContentPrefab
@@ -457,7 +457,7 @@ public Transform Target
 public RectTransform ContentPrefab
 ```
 
-*설명이 아직 없습니다.*
+왼쪽 콘텐츠 프리팹입니다. `BuildContent`와 둘 중 하나만 지정합니다.
 
 
 #### BuildContent
@@ -466,7 +466,7 @@ public RectTransform ContentPrefab
 public Action<RectTransform, ItemInteractionSession> BuildContent
 ```
 
-*설명이 아직 없습니다.*
+왼쪽 콘텐츠를 코드로 만듭니다. `ContentPrefab`과 둘 중 하나만 지정합니다.
 
 
 #### CanSelectItem
@@ -475,7 +475,7 @@ public Action<RectTransform, ItemInteractionSession> BuildContent
 public Func<ItemInteractionItem, bool> CanSelectItem
 ```
 
-*설명이 아직 없습니다.*
+선택 가능 필터
 
 
 #### OnItemClicked
@@ -484,7 +484,7 @@ public Func<ItemInteractionItem, bool> CanSelectItem
 public Action<ItemInteractionSession, ItemInteractionItem, PointerEventData.InputButton> OnItemClicked
 ```
 
-*설명이 아직 없습니다.*
+아이템 클릭 콜백입니다. 생략하면 좌클릭 토글·우클릭 해제.
 
 
 #### OnConfirm
@@ -493,7 +493,7 @@ public Action<ItemInteractionSession, ItemInteractionItem, PointerEventData.Inpu
 public Action<ItemInteractionSession> OnConfirm
 ```
 
-*설명이 아직 없습니다.*
+`Confirm` 때 호출됩니다.
 
 
 #### OnClosed
@@ -502,7 +502,7 @@ public Action<ItemInteractionSession> OnConfirm
 public Action<ItemInteractionCloseReason> OnClosed
 ```
 
-*설명이 아직 없습니다.*
+닫힌 뒤 호출됩니다.
 
 
 #### MaxSelectedItems
@@ -511,7 +511,7 @@ public Action<ItemInteractionCloseReason> OnClosed
 public int MaxSelectedItems
 ```
 
-*설명이 아직 없습니다.*
+최대 선택 수
 
 
 #### UseDefaultFrame
@@ -520,7 +520,7 @@ public int MaxSelectedItems
 public bool UseDefaultFrame
 ```
 
-Disable the standard frame and padding when the content draws its own artwork.
+기본 테두리와 여백을 쓸지입니다. 콘텐츠가 자체 이미지를 그리면 끕니다.
 
 
 ## ItemInteractionSession
@@ -529,7 +529,7 @@ Disable the standard frame and padding when the content draws its own artwork.
 public sealed class ItemInteractionSession
 ```
 
-One opening of the shared panel. Handles are invalid after closing or changing scenes.
+열려 있는 아이템 상호작용 패널 하나의 핸들입니다. 닫히거나 씬이 바뀌면 무효가 됩니다.
 
 ### 이벤트
 
@@ -539,7 +539,7 @@ One opening of the shared panel. Handles are invalid after closing or changing s
 public event Action SelectionChanged
 ```
 
-*설명이 아직 없습니다.*
+선택이 바뀐 뒤 호출됩니다.
 
 
 #### Confirmed
@@ -548,7 +548,7 @@ public event Action SelectionChanged
 public event Action<ItemInteractionSession> Confirmed
 ```
 
-*설명이 아직 없습니다.*
+확정 때 호출됩니다.
 
 
 #### Closed
@@ -557,7 +557,7 @@ public event Action<ItemInteractionSession> Confirmed
 public event Action<ItemInteractionCloseReason> Closed
 ```
 
-*설명이 아직 없습니다.*
+닫힌 뒤 호출됩니다.
 
 
 #### DefaultSelectionChanged
@@ -566,7 +566,7 @@ public event Action<ItemInteractionCloseReason> Closed
 public event Action<GameObject> DefaultSelectionChanged
 ```
 
-*설명이 아직 없습니다.*
+기본 포커스가 바뀔 때 패널이 받습니다.
 
 ### 프로퍼티
 
@@ -576,7 +576,7 @@ public event Action<GameObject> DefaultSelectionChanged
 public PlayerAvatar Player { get; }
 ```
 
-*설명이 아직 없습니다.*
+로컬 플레이어
 
 
 #### Target
@@ -585,7 +585,7 @@ public PlayerAvatar Player { get; }
 public Transform Target { get; }
 ```
 
-*설명이 아직 없습니다.*
+상호작용 대상
 
 
 #### UI
@@ -594,7 +594,7 @@ public Transform Target { get; }
 public UIWidgetFactory UI { get; }
 ```
 
-*설명이 아직 없습니다.*
+위젯 팩토리
 
 
 #### IsOpen
@@ -603,7 +603,7 @@ public UIWidgetFactory UI { get; }
 public bool IsOpen { get; }
 ```
 
-*설명이 아직 없습니다.*
+열려 있는지
 
 
 #### SelectedItems
@@ -612,7 +612,7 @@ public bool IsOpen { get; }
 public IReadOnlyList<ItemInteractionItem> SelectedItems { get; }
 ```
 
-*설명이 아직 없습니다.*
+선택한 아이템 목록
 
 ### 메서드
 
@@ -622,7 +622,7 @@ public IReadOnlyList<ItemInteractionItem> SelectedItems { get; }
 public bool IsSelected(int instanceID)
 ```
 
-*설명이 아직 없습니다.*
+선택돼 있는지
 
 
 #### CanSelect
@@ -631,7 +631,7 @@ public bool IsSelected(int instanceID)
 public bool CanSelect(ItemInteractionItem item)
 ```
 
-*설명이 아직 없습니다.*
+선택할 수 있는지
 
 
 #### SetSelected
@@ -640,7 +640,7 @@ public bool CanSelect(ItemInteractionItem item)
 public bool SetSelected(int instanceID, bool value)
 ```
 
-*설명이 아직 없습니다.*
+선택하거나 해제합니다.
 
 
 #### ToggleSelection
@@ -649,7 +649,7 @@ public bool SetSelected(int instanceID, bool value)
 public bool ToggleSelection(int instanceID)
 ```
 
-*설명이 아직 없습니다.*
+선택을 토글합니다.
 
 
 #### ClearSelection
@@ -658,7 +658,7 @@ public bool ToggleSelection(int instanceID)
 public void ClearSelection()
 ```
 
-*설명이 아직 없습니다.*
+선택을 모두 해제합니다.
 
 
 #### RefreshSelection
@@ -667,7 +667,7 @@ public void ClearSelection()
 public void RefreshSelection()
 ```
 
-Re-resolves identity and location after inventory synchronization, including subbag moves.
+인벤토리 동기화 뒤 선택한 아이템의 위치와 상태를 다시 확인합니다.
 
 
 #### HandleItemInput
@@ -676,7 +676,7 @@ Re-resolves identity and location after inventory synchronization, including sub
 public bool HandleItemInput(int instanceID, PointerEventData.InputButton button)
 ```
 
-Consumes input while open. It never falls through to item use, movement or sale.
+아이템 입력을 처리합니다. 열려 있는 동안 입력은 인벤토리의 사용·이동·판매로 넘어가지 않습니다.
 
 
 #### Confirm
@@ -685,7 +685,7 @@ Consumes input while open. It never falls through to item use, movement or sale.
 public void Confirm()
 ```
 
-*설명이 아직 없습니다.*
+선택을 확정합니다. `OnConfirm`과 `Confirmed`를 부릅니다.
 
 
 #### SetDefaultSelection
@@ -694,7 +694,7 @@ public void Confirm()
 public void SetDefaultSelection(GameObject selectable)
 ```
 
-*설명이 아직 없습니다.*
+키보드/패드의 기본 포커스 대상을 지정합니다.
 
 
 #### Close
@@ -703,7 +703,7 @@ public void SetDefaultSelection(GameObject selectable)
 public void Close(ItemInteractionCloseReason reason = ItemInteractionCloseReason.Cancelled)
 ```
 
-*설명이 아직 없습니다.*
+패널을 닫습니다.
 
 
 ## ItemInteractionItem
@@ -712,7 +712,7 @@ public void Close(ItemInteractionCloseReason reason = ItemInteractionCloseReason
 public readonly struct ItemInteractionItem
 ```
 
-A snapshot of one owned item. Resolve again before consuming items on the server.
+소유 아이템 하나의 스냅샷입니다. 서버에서 소모할 때는 인스턴스 ID로 다시 조회합니다.
 
 ### 프로퍼티
 
@@ -722,7 +722,7 @@ A snapshot of one owned item. Resolve again before consuming items on the server
 public ItemMetadata Metadata { get; }
 ```
 
-*설명이 아직 없습니다.*
+아이템 메타데이터 스냅샷
 
 
 #### Position
@@ -731,7 +731,7 @@ public ItemMetadata Metadata { get; }
 public ItemPosition Position { get; }
 ```
 
-*설명이 아직 없습니다.*
+격자 위치
 
 
 #### Source
@@ -740,7 +740,7 @@ public ItemPosition Position { get; }
 public ItemInteractionItemSource Source { get; }
 ```
 
-*설명이 아직 없습니다.*
+아이템이 있는 곳
 
 
 #### Rotation
@@ -749,7 +749,7 @@ public ItemInteractionItemSource Source { get; }
 public int Rotation { get; }
 ```
 
-*설명이 아직 없습니다.*
+아이콘 회전
 
 
 #### InstanceID
@@ -758,7 +758,7 @@ public int Rotation { get; }
 public int InstanceID { get; }
 ```
 
-*설명이 아직 없습니다.*
+인스턴스 ID
 
 
 #### Entity
@@ -767,7 +767,7 @@ public int InstanceID { get; }
 public ItemEntity Entity { get; }
 ```
 
-*설명이 아직 없습니다.*
+아이템 정의입니다. 없으면 null.
 
 ### 생성자
 
@@ -777,7 +777,7 @@ public ItemEntity Entity { get; }
 public ItemInteractionItem(ItemMetadata metadata, ItemPosition position, ItemInteractionItemSource source = ItemInteractionItemSource.Inventory, int rotation = 0)
 ```
 
-*설명이 아직 없습니다.*
+패널이 만듭니다.
 
 
 ## ItemInteractionCloseReason
@@ -786,15 +786,15 @@ public ItemInteractionItem(ItemMetadata metadata, ItemPosition position, ItemInt
 public enum ItemInteractionCloseReason
 ```
 
-*설명이 아직 없습니다.*
+아이템 상호작용이 닫힌 이유를 식별하는 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Cancelled` |  |
-| `TargetLost` |  |
-| `PlayerLost` |  |
-| `InventoryClosed` |  |
-| `Error` |  |
+| `Cancelled` | ESC/취소 |
+| `TargetLost` | 대상이 사라짐 |
+| `PlayerLost` | 플레이어 없음·사망·연결 해제 |
+| `InventoryClosed` | 인벤토리가 닫힘 |
+| `Error` | 콜백 예외 |
 
 
 ## ItemInteractionItemSource
@@ -803,9 +803,9 @@ public enum ItemInteractionCloseReason
 public enum ItemInteractionItemSource
 ```
 
-*설명이 아직 없습니다.*
+아이템이 있는 곳을 식별하는 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Inventory` |  |
-| `SubBag` |  |
+| `Inventory` | 격자 인벤토리 |
+| `SubBag` | 보조가방 |

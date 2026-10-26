@@ -3,19 +3,19 @@
 
 모드 진입 클래스가 상속하는 베이스 클래스와, 로더가 붙여 주는 컨텍스트·매니페스트 타입입니다. 새 모드는 `WorkshopModBase`를 상속하세요.
 
-게임 버전 **1.0.34** 기준, 2026-10-22 생성. [레퍼런스 목차](README.md)
+게임 버전 **1.1.0** 기준, 2026-10-26 생성. [레퍼런스 목차](README.md)
 
 | 타입 | 설명 |
 |---|---|
-| [`WorkshopModBase`](#workshopmodbase) | 창작마당 모드의 권장 진입 베이스. |
+| [`WorkshopModBase`](#workshopmodbase) | 창작마당 모드의 진입 베이스. |
 | [`WorkshopModContext`](#workshopmodcontext) | 창작마당 DLL 모듈에 주어지는 읽기 전용 컨텍스트. |
-| [`HorayModBase`](#horaymodbase) | Base class for all mods. |
-| [`WorkshopDataPackage`](#workshopdatapackage) | consumer 모드가 읽을 data 모듈 패키지 하나. |
+| [`HorayModBase`](#horaymodbase) | DLL 모드 진입 클래스의 베이스입니다. |
+| [`WorkshopDataPackage`](#workshopdatapackage) | consumer 모드가 읽을 data 모듈 패키지 하나입니다. |
 | [`WorkshopModDefinition`](#workshopmoddefinition) | 검증을 통과한 실행 명세. |
-| [`WorkshopModuleDefinition`](#workshopmoduledefinition) |  |
-| [`WorkshopDependency`](#workshopdependency) |  |
-| [`WorkshopModuleType`](#workshopmoduletype) |  |
-| [`WorkshopInstallation`](#workshopinstallation) | 다른 참여자에게 설치를 요구하는지에 대한 제작자 선언 |
+| [`WorkshopModuleDefinition`](#workshopmoduledefinition) | 매니페스트 `modules[]` 항목 하나입니다. |
+| [`WorkshopDependency`](#workshopdependency) | 매니페스트 `dependencies[]` 항목 하나입니다. |
+| [`WorkshopModuleType`](#workshopmoduletype) | 매니페스트 `modules[].type` 값입니다. |
+| [`WorkshopInstallation`](#workshopinstallation) | 다른 참여자에게 설치를 요구하는지에 대한 제작자 선언입니다(매니페스트 `multiplayer.installation`). |
 
 
 ## WorkshopModBase
@@ -24,7 +24,7 @@
 public abstract class WorkshopModBase : HorayModBase
 ```
 
-창작마당 모드의 권장 진입 베이스. 기존 `HorayModBase` 계약(LoadMod/OnModLoaded/UnloadMod)은 그대로이고, 로더가 `Context`를 붙인 뒤 LoadMod를 호출한다. 단순 HorayModBase 파생도 받아주지만 경로 정보는 받지 못한다.
+창작마당 모드의 진입 베이스.
 
 ### 프로퍼티
 
@@ -44,7 +44,7 @@ OnModLoaded 호출 시점부터 유효
 protected IReadOnlyList<WorkshopDataPackage> GetDataPackages()
 ```
 
-이 모드를 consumer로 지정한 data 모듈 패키지(로드 순서). 활성화가 끝난 뒤(데이터베이스 이벤트 이후)에 호출한다. 컨텍스트가 없으면(AddOns 경로 등) 빈 목록.
+이 모드를 consumer로 지정한 data 모듈 패키지(로드 순서). 활성화가 끝난 뒤(데이터베이스 이벤트 이후)에 호출합니다. 컨텍스트가 없으면(AddOns 경로 등) 빈 목록.
 
 
 ## WorkshopModContext
@@ -53,7 +53,7 @@ protected IReadOnlyList<WorkshopDataPackage> GetDataPackages()
 public sealed class WorkshopModContext
 ```
 
-창작마당 DLL 모듈에 주어지는 읽기 전용 컨텍스트. 설치 경로가 유동적이라 모드는 이 값으로 자기 파일을 찾는다.
+창작마당 DLL 모듈에 주어지는 읽기 전용 컨텍스트. 설치 경로가 유동적이므로, 모드는 이 값으로 자기 파일을 찾습니다.
 
 ### 프로퍼티
 
@@ -72,7 +72,7 @@ public string PackageRoot { get; }
 public ulong FileId { get; }
 ```
 
-Steam Workshop 파일 ID. 로컬 테스트 주입 등 Steam 출처가 아니면 0.
+Steam Workshop 파일 ID입니다. 로컬 패키지는 경로에서 만든 고유 ID를 받습니다.
 
 
 #### Definition
@@ -99,7 +99,7 @@ public WorkshopModuleDefinition Module { get; }
 public ModOptions Options { get; }
 ```
 
-이 modId의 기기별 옵션. 같은 패키지의 DLL 모듈과 로컬/구독 사본이 공유한다. 변경 후 Save 호출.
+이 modId의 기기별 옵션. 같은 패키지의 DLL 모듈과 로컬/구독 사본이 공유합니다.
 
 ### 생성자
 
@@ -128,9 +128,7 @@ public string ResolvePath(string relativePath)
 public class HorayModBase
 ```
 
-**WIP**
-
-Base class for all mods.
+DLL 모드 진입 클래스의 베이스입니다.
 
 ### 상수와 필드
 
@@ -140,7 +138,7 @@ Base class for all mods.
 public Metadata metadata
 ```
 
-*설명이 아직 없습니다.*
+`LoadMod`에서 받은 메타데이터입니다.
 
 ### 메서드
 
@@ -150,7 +148,7 @@ public Metadata metadata
 public void LoadMod(Metadata metadata)
 ```
 
-*설명이 아직 없습니다.*
+로더가 호출합니다. 메타데이터를 저장한 뒤 `OnModLoaded`를 부릅니다.
 
 
 #### OnModLoaded
@@ -159,7 +157,7 @@ public void LoadMod(Metadata metadata)
 protected virtual void OnModLoaded()
 ```
 
-*설명이 아직 없습니다.*
+모드 초기화 지점입니다. 데이터베이스 초기화 전에 호출되므로 `HorayModAPI` 이벤트 구독은 여기서 합니다.
 
 
 #### UnloadMod
@@ -168,7 +166,7 @@ protected virtual void OnModLoaded()
 public void UnloadMod()
 ```
 
-*설명이 아직 없습니다.*
+`OnModUnloaded`를 부릅니다.
 
 
 #### OnModUnloaded
@@ -177,7 +175,7 @@ public void UnloadMod()
 protected virtual void OnModUnloaded()
 ```
 
-*설명이 아직 없습니다.*
+모드 해제 지점입니다. 이벤트 구독 해제 같은 정리를 둡니다.
 
 ### 중첩 타입
 
@@ -187,7 +185,7 @@ protected virtual void OnModUnloaded()
 public struct Metadata
 ```
 
-*설명이 아직 없습니다.*
+로더가 `LoadMod`에 넘기는 모드 식별 정보입니다.
 
 ##### 상수와 필드
 
@@ -197,7 +195,7 @@ public struct Metadata
 public string modName
 ```
 
-*설명이 아직 없습니다.*
+표시 이름
 
 
 ###### modVersion
@@ -206,7 +204,7 @@ public string modName
 public string modVersion
 ```
 
-*설명이 아직 없습니다.*
+버전
 
 
 ###### modAuthor
@@ -215,7 +213,7 @@ public string modVersion
 public string modAuthor
 ```
 
-*설명이 아직 없습니다.*
+제작자
 
 
 ## WorkshopDataPackage
@@ -224,7 +222,7 @@ public string modAuthor
 public sealed class WorkshopDataPackage
 ```
 
-consumer 모드가 읽을 data 모듈 패키지 하나. 게임은 폴더 위치만 넘기고 내용은 해석하지 않는다. Docs/WorkshopDataModule.md
+consumer 모드가 읽을 data 모듈 패키지 하나입니다. `WorkshopModBase.GetDataPackages()`로 얻습니다.
 
 ### 프로퍼티
 
@@ -234,7 +232,7 @@ consumer 모드가 읽을 data 모듈 패키지 하나. 게임은 폴더 위치�
 public string ModId { get; }
 ```
 
-*설명이 아직 없습니다.*
+패키지의 modId
 
 
 #### Version
@@ -243,7 +241,7 @@ public string ModId { get; }
 public string Version { get; }
 ```
 
-*설명이 아직 없습니다.*
+패키지의 version
 
 
 #### FileId
@@ -252,7 +250,7 @@ public string Version { get; }
 public ulong FileId { get; }
 ```
 
-*설명이 아직 없습니다.*
+Steam Workshop 파일 ID
 
 
 #### DisplayName
@@ -261,7 +259,7 @@ public ulong FileId { get; }
 public string DisplayName { get; }
 ```
 
-*설명이 아직 없습니다.*
+표시 이름(info.title, 없으면 modId)
 
 
 #### PackageRoot
@@ -270,7 +268,7 @@ public string DisplayName { get; }
 public string PackageRoot { get; }
 ```
 
-*설명이 아직 없습니다.*
+패키지 루트 절대 경로
 
 
 #### Modules
@@ -288,7 +286,7 @@ public IReadOnlyList<WorkshopModuleDefinition> Modules { get; }
 public IReadOnlyList<string> Folders { get; }
 ```
 
-모듈 폴더 절대 경로(선언 순서). Modules[i].FullPath와 같다.
+모듈 폴더 절대 경로(선언 순서). Modules[i].FullPath와 같습니다.
 
 ### 메서드
 
@@ -298,7 +296,7 @@ public IReadOnlyList<string> Folders { get; }
 public static IReadOnlyList<WorkshopDataPackage> Collect(string consumerModId, IEnumerable<WorkshopModActivation> activations)
 ```
 
-활성화 기록(로드 순서)에서 `consumerModId`용 data 모듈을 가진 패키지를 고른다. 의존 충족 상태(Active·AlreadyActive·NoDllModules)만 포함한다. 실패·부분 적용 패키지의 데이터는 넘기지 않는다.
+활성화 기록(로드 순서)에서 `consumerModId`용 data 모듈을 가진 패키지를 고릅니다. 의존 충족 상태(Active·AlreadyActive·NoDllModules)만 포함합니다. 실패·부분 적용 패키지의 데이터는 넘기지 않습니다.
 
 
 ## WorkshopModDefinition
@@ -317,7 +315,7 @@ public sealed class WorkshopModDefinition
 public string PackageRoot { get; }
 ```
 
-*설명이 아직 없습니다.*
+패키지 루트 절대 경로
 
 
 #### ModId
@@ -326,7 +324,7 @@ public string PackageRoot { get; }
 public string ModId { get; }
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 modId
 
 
 #### Version
@@ -335,7 +333,7 @@ public string ModId { get; }
 public string Version { get; }
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 version
 
 
 #### Author
@@ -344,7 +342,7 @@ public string Version { get; }
 public string Author { get; }
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 author. 없으면 null.
 
 
 #### DisplayName
@@ -362,7 +360,7 @@ info.title, 없으면 modId
 public WorkshopInstallation Installation { get; }
 ```
 
-*설명이 아직 없습니다.*
+멀티플레이 설치 요구
 
 
 #### MultiplayerDeclared
@@ -380,7 +378,7 @@ multiplayer 객체가 명시돼 있었는지. false면 Installation은 정규화
 public IReadOnlyList<WorkshopModuleDefinition> Modules { get; }
 ```
 
-*설명이 아직 없습니다.*
+모듈 목록(선언 순서)
 
 
 #### LibraryPaths
@@ -398,7 +396,7 @@ public IReadOnlyList<string> LibraryPaths { get; }
 public IReadOnlyList<WorkshopDependency> Dependencies { get; }
 ```
 
-*설명이 아직 없습니다.*
+의존 모드 목록
 
 
 #### HasDll
@@ -407,7 +405,7 @@ public IReadOnlyList<WorkshopDependency> Dependencies { get; }
 public bool HasDll { get; }
 ```
 
-modules에 dll 타입이 있는지로 파생. 별도 플래그를 두지 않는다.
+modules에 dll 타입이 있는지로 파생. 별도 플래그를 두지 않습니다.
 
 
 #### HasLocalization
@@ -416,7 +414,7 @@ modules에 dll 타입이 있는지로 파생. 별도 플래그를 두지 않는�
 public bool HasLocalization { get; }
 ```
 
-*설명이 아직 없습니다.*
+modules에 localization 타입이 있는지
 
 
 #### HasCostume
@@ -425,7 +423,7 @@ public bool HasLocalization { get; }
 public bool HasCostume { get; }
 ```
 
-*설명이 아직 없습니다.*
+modules에 costume 타입이 있는지
 
 
 #### HasData
@@ -434,7 +432,7 @@ public bool HasCostume { get; }
 public bool HasData { get; }
 ```
 
-*설명이 아직 없습니다.*
+modules에 data 타입이 있는지
 
 ### 생성자
 
@@ -454,7 +452,7 @@ public WorkshopModDefinition(string packageRoot, string modId, string version, s
 public IReadOnlyList<WorkshopModuleDefinition> DataModulesFor(string consumerModId)
 ```
 
-`consumerModId`가 받을 data 모듈(선언 순서). 없으면 빈 목록. consumer를 명시한 모듈은 그 모드에게만, 생략한 모듈은 이 패키지 자신과 직접 의존 모드 전부에게 간다.
+`consumerModId`가 받을 data 모듈(선언 순서). 없으면 빈 목록. consumer를 명시한 모듈은 그 모드에게만, 생략한 모듈은 이 패키지 자신과 직접 의존 모드 전부에게 갑니다.
 
 
 ## WorkshopModuleDefinition
@@ -463,7 +461,7 @@ public IReadOnlyList<WorkshopModuleDefinition> DataModulesFor(string consumerMod
 public sealed class WorkshopModuleDefinition
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 `modules[]` 항목 하나입니다.
 
 ### 프로퍼티
 
@@ -473,7 +471,7 @@ public sealed class WorkshopModuleDefinition
 public WorkshopModuleType Type { get; }
 ```
 
-*설명이 아직 없습니다.*
+모듈 종류
 
 
 #### RelativePath
@@ -519,7 +517,7 @@ data 모듈을 읽는 모드의 modId. 생략(null)이면 패키지 자신 + 직
 public WorkshopModuleDefinition(WorkshopModuleType type, string relativePath, string fullPath, string entryClass)
 ```
 
-*설명이 아직 없습니다.*
+검증기가 만듭니다.
 
 
 #### WorkshopModuleDefinition
@@ -528,7 +526,7 @@ public WorkshopModuleDefinition(WorkshopModuleType type, string relativePath, st
 public WorkshopModuleDefinition(WorkshopModuleType type, string relativePath, string fullPath, string entryClass, string consumer)
 ```
 
-*설명이 아직 없습니다.*
+검증기가 만듭니다.
 
 
 ## WorkshopDependency
@@ -537,7 +535,7 @@ public WorkshopModuleDefinition(WorkshopModuleType type, string relativePath, st
 public sealed class WorkshopDependency
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 `dependencies[]` 항목 하나입니다.
 
 ### 프로퍼티
 
@@ -547,7 +545,7 @@ public sealed class WorkshopDependency
 public string ModId { get; }
 ```
 
-*설명이 아직 없습니다.*
+의존하는 모드의 modId
 
 
 #### Version
@@ -575,7 +573,7 @@ public ulong? WorkshopId { get; }
 public WorkshopDependency(string modId, string version, ulong? workshopId)
 ```
 
-*설명이 아직 없습니다.*
+검증기가 만듭니다.
 
 
 ## WorkshopModuleType
@@ -584,14 +582,14 @@ public WorkshopDependency(string modId, string version, ulong? workshopId)
 public enum WorkshopModuleType
 ```
 
-*설명이 아직 없습니다.*
+매니페스트 `modules[].type` 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Dll` |  |
-| `Localization` |  |
-| `Costume` | 코드 없는 코스튬 패키지 폴더(costume.json/skin.json + PNG). |
-| `Data` | 다른 모드(consumer)가 읽는 범용 데이터 폴더. |
+| `Dll` | 관리형 DLL 모듈 |
+| `Localization` | 번역 폴더 모듈 |
+| `Costume` | 코드 없는 코스튬 패키지 폴더(costume.json/skin.json + PNG) |
+| `Data` | 다른 모드(consumer)가 읽는 범용 데이터 폴더(게임은 내용을 해석하지 않음) |
 
 
 ## WorkshopInstallation
@@ -600,11 +598,11 @@ public enum WorkshopModuleType
 public enum WorkshopInstallation
 ```
 
-다른 참여자에게 설치를 요구하는지에 대한 제작자 선언
+다른 참여자에게 설치를 요구하는지에 대한 제작자 선언입니다(매니페스트 `multiplayer.installation`).
 
 | 값 | 설명 |
 |---|---|
-| `Unknown` |  |
-| `LocalOnly` |  |
-| `Everyone` |  |
-| `HostOnly` |  |
+| `Unknown` | 선언 없음(로비 구성 비교에는 Everyone처럼 포함) |
+| `LocalOnly` | 자기 기기에서만 동작하며 로비 구성 비교에서 제외 |
+| `Everyone` | 방 참여자 전원이 같은 패키지를 설치해야 함 |
+| `HostOnly` | 호스트만 설치하면 됨 |

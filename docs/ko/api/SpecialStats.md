@@ -3,18 +3,18 @@
 
 `HorayModAPI.OnLoadSpecialStatDatabase`에서 `RegisterSpecialStatCategory`·`RegisterSpecialStat`으로 등록하는 스탯 표시 타입입니다.
 
-게임 버전 **1.0.34** 기준, 2026-10-22 생성. [레퍼런스 목차](README.md)
+게임 버전 **1.1.0** 기준, 2026-10-26 생성. [레퍼런스 목차](README.md)
 
 | 타입 | 설명 |
 |---|---|
-| [`SpecialStatContext`](#specialstatcontext) |  |
-| [`SpecialStatValue`](#specialstatvalue) |  |
-| [`SpecialStatCategoryEntity`](#specialstatcategoryentity) |  |
-| [`SpecialStatCategoryVisibility`](#specialstatcategoryvisibility) |  |
-| [`SpecialStatDisplaySettings`](#specialstatdisplaysettings) |  |
-| [`SpecialStatValueSource`](#specialstatvaluesource) |  |
-| [`SpecialStatLabelColor`](#specialstatlabelcolor) |  |
-| [`SpecialStatValueProvider`](#specialstatvalueprovider) | Reads a display value without applying or creating a StatusInstance. |
+| [`SpecialStatContext`](#specialstatcontext) | 값 읽기 함수에 넘기는 대상 아바타 정보입니다. |
+| [`SpecialStatValue`](#specialstatvalue) | 전문 능력치 한 행의 값입니다. |
+| [`SpecialStatCategoryEntity`](#specialstatcategoryentity) | 스탯 UI의 전문 능력 항목 카테고리를 데이터입니다. |
+| [`SpecialStatCategoryVisibility`](#specialstatcategoryvisibility) | 카테고리가 언제 표시되는지 식별하는 값입니다. |
+| [`SpecialStatDisplaySettings`](#specialstatdisplaysettings) | `StatusEntity.specialStat`의 세부 데이터. |
+| [`SpecialStatValueSource`](#specialstatvaluesource) | 전문 능력치의 표시 값을 어디서 읽을지 식별하는 값입니다. |
+| [`SpecialStatLabelColor`](#specialstatlabelcolor) | 전문 능력치 행 이름의 색입니다. |
+| [`SpecialStatValueProvider`](#specialstatvalueprovider) | StatusInstance 없이 표시 값만 읽는 에셋입니다. |
 
 
 ## SpecialStatContext
@@ -23,7 +23,7 @@
 public sealed class SpecialStatContext
 ```
 
-*설명이 아직 없습니다.*
+값 읽기 함수에 넘기는 대상 아바타 정보입니다.
 
 ### 프로퍼티
 
@@ -33,7 +33,7 @@ public sealed class SpecialStatContext
 public UnitAvatar Avatar { get; }
 ```
 
-*설명이 아직 없습니다.*
+대상 유닛
 
 
 #### Hooker
@@ -42,7 +42,7 @@ public UnitAvatar Avatar { get; }
 public AvatarStatsHooker Hooker { get; }
 ```
 
-*설명이 아직 없습니다.*
+대상의 AvatarStatsHooker입니다. 없으면 null.
 
 
 #### Weapons
@@ -51,7 +51,7 @@ public AvatarStatsHooker Hooker { get; }
 public WeaponControllerSimple Weapons { get; }
 ```
 
-*설명이 아직 없습니다.*
+대상의 무기 컨트롤러입니다. 없으면 null.
 
 ### 생성자
 
@@ -61,7 +61,7 @@ public WeaponControllerSimple Weapons { get; }
 public SpecialStatContext(UnitAvatar avatar, AvatarStatsHooker hooker = null, WeaponControllerSimple weapons = null)
 ```
 
-*설명이 아직 없습니다.*
+hooker·weapons를 생략하면 avatar에서 찾습니다.
 
 
 ## SpecialStatValue
@@ -70,7 +70,7 @@ public SpecialStatContext(UnitAvatar avatar, AvatarStatsHooker hooker = null, We
 public struct SpecialStatValue
 ```
 
-*설명이 아직 없습니다.*
+전문 능력치 한 행의 값입니다. 숫자 값은 `Number`로 만듭니다.
 
 ### 상수와 필드
 
@@ -80,7 +80,7 @@ public struct SpecialStatValue
 public string text
 ```
 
-*설명이 아직 없습니다.*
+표시 문자열
 
 
 #### hasStat
@@ -89,7 +89,7 @@ public string text
 public bool hasStat
 ```
 
-*설명이 아직 없습니다.*
+값이 있는지
 
 
 #### sign
@@ -98,7 +98,7 @@ public bool hasStat
 public AvatarStatsHooker.EStatValueSign sign
 ```
 
-*설명이 아직 없습니다.*
+증감 색
 
 
 #### hasNumericValue
@@ -107,7 +107,7 @@ public AvatarStatsHooker.EStatValueSign sign
 public bool hasNumericValue
 ```
 
-*설명이 아직 없습니다.*
+`numericValue`가 유효한지
 
 
 #### numericValue
@@ -116,7 +116,7 @@ public bool hasNumericValue
 public double numericValue
 ```
 
-*설명이 아직 없습니다.*
+표시용 숫자
 
 
 #### numberFormat
@@ -125,7 +125,7 @@ public double numericValue
 public string numberFormat
 ```
 
-*설명이 아직 없습니다.*
+숫자 표시 형식
 
 
 #### symbolKey
@@ -134,7 +134,7 @@ public string numberFormat
 public string symbolKey
 ```
 
-*설명이 아직 없습니다.*
+단위의 번역 키
 
 
 #### symbol
@@ -143,7 +143,7 @@ public string symbolKey
 public string symbol
 ```
 
-*설명이 아직 없습니다.*
+단위 문자열
 
 
 #### tooltipValues
@@ -152,7 +152,7 @@ public string symbol
 public Loc.KeywordValue[] tooltipValues
 ```
 
-*설명이 아직 없습니다.*
+툴팁의 키워드 치환값
 
 ### 메서드
 
@@ -162,7 +162,7 @@ public Loc.KeywordValue[] tooltipValues
 public static SpecialStatValue Number(double number, bool hasStat, AvatarStatsHooker.EStatValueSign sign, string symbol = "", string format = "0.#", string symbolKey = "")
 ```
 
-*설명이 아직 없습니다.*
+숫자 값을 만듭니다.
 
 
 ## SpecialStatCategoryEntity
@@ -171,7 +171,7 @@ public static SpecialStatValue Number(double number, bool hasStat, AvatarStatsHo
 public class SpecialStatCategoryEntity : ScriptableObject
 ```
 
-*설명이 아직 없습니다.*
+스탯 UI의 전문 능력 항목 카테고리를 데이터입니다.
 
 ### 상수와 필드
 
@@ -181,7 +181,7 @@ public class SpecialStatCategoryEntity : ScriptableObject
 public string id
 ```
 
-*설명이 아직 없습니다.*
+식별자
 
 
 #### enabled
@@ -190,7 +190,7 @@ public string id
 public bool enabled
 ```
 
-*설명이 아직 없습니다.*
+카테고리를 표시할지
 
 
 #### displayName
@@ -199,7 +199,7 @@ public bool enabled
 public LocalizedString displayName
 ```
 
-*설명이 아직 없습니다.*
+제목의 번역 키
 
 
 #### fallbackName
@@ -208,7 +208,7 @@ public LocalizedString displayName
 public string fallbackName
 ```
 
-*설명이 아직 없습니다.*
+번역이 없을 때 제목
 
 
 #### headerColor
@@ -217,7 +217,7 @@ public string fallbackName
 public Color headerColor
 ```
 
-*설명이 아직 없습니다.*
+제목 색
 
 
 #### order
@@ -226,7 +226,7 @@ public Color headerColor
 public int order
 ```
 
-*설명이 아직 없습니다.*
+정렬 순서
 
 
 #### visibility
@@ -235,7 +235,7 @@ public int order
 public SpecialStatCategoryVisibility visibility
 ```
 
-*설명이 아직 없습니다.*
+표시 조건
 
 
 #### requireWeapon
@@ -244,7 +244,7 @@ public SpecialStatCategoryVisibility visibility
 public bool requireWeapon
 ```
 
-*설명이 아직 없습니다.*
+특정 무기를 들었을 때만 표시할지
 
 
 #### weaponType
@@ -253,7 +253,7 @@ public bool requireWeapon
 public EWeaponType weaponType
 ```
 
-*설명이 아직 없습니다.*
+`requireWeapon`일 때 요구하는 무기 종류
 
 ### 프로퍼티
 
@@ -263,7 +263,7 @@ public EWeaponType weaponType
 public string DisplayName { get; }
 ```
 
-*설명이 아직 없습니다.*
+번역된 제목
 
 
 ## SpecialStatCategoryVisibility
@@ -272,12 +272,12 @@ public string DisplayName { get; }
 public enum SpecialStatCategoryVisibility
 ```
 
-*설명이 아직 없습니다.*
+카테고리가 언제 표시되는지 식별하는 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Always` |  |
-| `WhenAnyStatHasValue` |  |
+| `Always` | 항상 |
+| `WhenAnyStatHasValue` | 값이 있는 행이 하나라도 있을 때만 |
 
 
 ## SpecialStatDisplaySettings
@@ -286,7 +286,7 @@ public enum SpecialStatCategoryVisibility
 public class SpecialStatDisplaySettings
 ```
 
-*설명이 아직 없습니다.*
+`StatusEntity.specialStat`의 세부 데이터. 스탯 UI와 런 히스토리 UI에 이 스탯을 어떻게 표시할지 정합니다.
 
 ### 상수와 필드
 
@@ -296,7 +296,7 @@ public class SpecialStatDisplaySettings
 public bool enabled
 ```
 
-*설명이 아직 없습니다.*
+패널에 표시할지
 
 
 #### category
@@ -305,7 +305,7 @@ public bool enabled
 public SpecialStatCategoryEntity category
 ```
 
-*설명이 아직 없습니다.*
+소속 카테고리(필수)
 
 
 #### order
@@ -314,7 +314,7 @@ public SpecialStatCategoryEntity category
 public int order
 ```
 
-*설명이 아직 없습니다.*
+카테고리 안 정렬 순서
 
 
 #### showWhenZero
@@ -323,7 +323,7 @@ public int order
 public bool showWhenZero
 ```
 
-*설명이 아직 없습니다.*
+값이 없을 때도 행을 표시할지
 
 
 #### labelOverride
@@ -332,7 +332,7 @@ public bool showWhenZero
 public LocalizedString labelOverride
 ```
 
-*설명이 아직 없습니다.*
+전문 패널 전용 이름의 번역 키
 
 
 #### fallbackLabel
@@ -341,7 +341,7 @@ public LocalizedString labelOverride
 public string fallbackLabel
 ```
 
-*설명이 아직 없습니다.*
+번역이 없을 때 이름
 
 
 #### labelColorMode
@@ -350,7 +350,7 @@ public string fallbackLabel
 public SpecialStatLabelColor labelColorMode
 ```
 
-*설명이 아직 없습니다.*
+이름 색 선택
 
 
 #### labelColor
@@ -359,7 +359,7 @@ public SpecialStatLabelColor labelColorMode
 public Color labelColor
 ```
 
-*설명이 아직 없습니다.*
+`SpecialStatLabelColor.Override`일 때 이름 색
 
 
 #### valueSource
@@ -368,7 +368,7 @@ public Color labelColor
 public SpecialStatValueSource valueSource
 ```
 
-*설명이 아직 없습니다.*
+값을 읽는 방법
 
 
 #### valueId
@@ -377,7 +377,7 @@ public SpecialStatValueSource valueSource
 public string valueId
 ```
 
-*설명이 아직 없습니다.*
+StatHook 조회 ID 또는 커스텀 스탯 키입니다. 비우면 StatusEntity.id.
 
 
 #### valueProvider
@@ -386,7 +386,7 @@ public string valueId
 public SpecialStatValueProvider valueProvider
 ```
 
-*설명이 아직 없습니다.*
+`SpecialStatValueSource.Provider`일 때 값을 읽는 에셋
 
 
 #### divideForDisplay
@@ -395,7 +395,7 @@ public SpecialStatValueProvider valueProvider
 public float divideForDisplay
 ```
 
-*설명이 아직 없습니다.*
+표시용 나눗셈
 
 
 #### displayOffset
@@ -404,7 +404,7 @@ public float divideForDisplay
 public float displayOffset
 ```
 
-*설명이 아직 없습니다.*
+표시용 더하기
 
 
 #### numberFormat
@@ -413,7 +413,7 @@ public float displayOffset
 public string numberFormat
 ```
 
-*설명이 아직 없습니다.*
+숫자 표시 형식
 
 
 #### includeSign
@@ -422,7 +422,7 @@ public string numberFormat
 public bool includeSign
 ```
 
-*설명이 아직 없습니다.*
+부호를 붙여 표시할지
 
 
 ## SpecialStatValueSource
@@ -431,13 +431,13 @@ public bool includeSign
 public enum SpecialStatValueSource
 ```
 
-*설명이 아직 없습니다.*
+전문 능력치의 표시 값을 어디서 읽을지 식별하는 값입니다.
 
 | 값 | 설명 |
 |---|---|
-| `StatHook` |  |
-| `CustomStat` |  |
-| `Provider` |  |
+| `StatHook` | `AvatarStatsHooker.HookStat(valueId)`의 결과 |
+| `CustomStat` | `UnitAvatar.GetCustomStat(valueId)`의 값 |
+| `Provider` | `valueProvider` 에셋의 `Read` 결과 |
 
 
 ## SpecialStatLabelColor
@@ -446,13 +446,13 @@ public enum SpecialStatValueSource
 public enum SpecialStatLabelColor
 ```
 
-*설명이 아직 없습니다.*
+전문 능력치 행 이름의 색입니다.
 
 | 값 | 설명 |
 |---|---|
-| `Default` |  |
-| `Keyword` |  |
-| `Override` |  |
+| `Default` | 흰색 |
+| `Keyword` | 관련 키워드의 색 |
+| `Override` | `labelColor` 값 |
 
 
 ## SpecialStatValueProvider
@@ -461,7 +461,7 @@ public enum SpecialStatLabelColor
 public abstract class SpecialStatValueProvider : ScriptableObject
 ```
 
-Reads a display value without applying or creating a StatusInstance.
+StatusInstance 없이 표시 값만 읽는 에셋입니다.
 
 ### 메서드
 
@@ -471,4 +471,4 @@ Reads a display value without applying or creating a StatusInstance.
 public abstract SpecialStatValue Read(SpecialStatContext context, StatusEntity status)
 ```
 
-*설명이 아직 없습니다.*
+status의 현재 표시 값을 읽습니다.

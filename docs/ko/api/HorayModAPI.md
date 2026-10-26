@@ -3,12 +3,12 @@
 
 게임이 모드에 공개하는 정적 진입점입니다. 데이터베이스 로드·세션·스폰 이벤트를 구독하고, 네트워크 프리팹과 전문 능력치를 등록합니다. 이벤트 구독은 `OnModLoaded`에서 한 번만 하세요. 생명주기와 멀티플레이 규칙은 [DLL 모드](../dll-mods.md)를 보세요.
 
-게임 버전 **1.0.34** 기준, 2026-10-22 생성. [레퍼런스 목차](README.md)
+게임 버전 **1.1.0** 기준, 2026-10-26 생성. [레퍼런스 목차](README.md)
 
 | 타입 | 설명 |
 |---|---|
-| [`HorayModAPI`](#horaymodapi) |  |
-| [`HorayModLocalizationContext`](#horaymodlocalizationcontext) | A helper class to register localization text for a mod. |
+| [`HorayModAPI`](#horaymodapi) | 모드용 진입점입니다. |
+| [`HorayModLocalizationContext`](#horaymodlocalizationcontext) | 모드 번역 텍스트를 등록하는 도우미입니다. |
 
 
 ## HorayModAPI
@@ -17,12 +17,12 @@
 public static class HorayModAPI
 ```
 
-**WIP**
+모드용 진입점입니다.
 
 예시:
 
 ```csharp
-ModAPI.OnMiracleDatabaseReady += () => {
+HorayModAPI.OnLoadMiracleDatabase += () => {
     MiracleDatabase.Register(myCustomMiraclePrefab);
     MiracleDatabase.Modify("Scholar", m => m.categories = new[] { "Lake" });
 };
@@ -64,7 +64,7 @@ public const string NAME = "HorayMod"
 public static event Action OnLoadMiracleDatabase
 ```
 
-MiracleDatabase
+기적 데이터베이스가 초기화된 직후 발생합니다. `MiracleDatabase.Register`·`Modify`로 기적을 등록·수정합니다.
 
 
 #### OnLoadWeaponDatabase
@@ -73,7 +73,7 @@ MiracleDatabase
 public static event Action OnLoadWeaponDatabase
 ```
 
-WeaponDatabase
+무기 데이터베이스가 초기화된 직후 발생합니다. `WeaponDatabase.Register`·`Modify`로 무기를 등록·수정합니다.
 
 
 #### OnLoadStatusDatabase
@@ -82,7 +82,7 @@ WeaponDatabase
 public static event Action OnLoadStatusDatabase
 ```
 
-StatusDatabase
+\ 상태(스탯 효과) 데이터베이스가 초기화된 직후 발생합니다. `StatusDatabase.Register`·`Modify`로 상태를 등록·수정합니다.
 
 
 #### OnLoadSpecialStatDatabase
@@ -91,7 +91,7 @@ StatusDatabase
 public static event Action OnLoadSpecialStatDatabase
 ```
 
-Categories and statuses are loaded. Register display-only stats, categories or custom value readers here.
+전문 능력치 카테고리와 상태가 적재된 직후 발생합니다. `RegisterSpecialStatCategory`·`RegisterSpecialStat`로 표시 항목을 등록합니다.
 
 
 #### OnLoadItemDatabase
@@ -100,7 +100,7 @@ Categories and statuses are loaded. Register display-only stats, categories or c
 public static event Action OnLoadItemDatabase
 ```
 
-ItemDatabase
+아이템 데이터베이스가 초기화된 직후 발생합니다. `ItemDatabase.Register`·`Modify`로 아이템을 등록·수정합니다.
 
 
 #### OnLoadKeywordDatabase
@@ -109,7 +109,7 @@ ItemDatabase
 public static event Action OnLoadKeywordDatabase
 ```
 
-KeywordDatabase
+키워드 데이터베이스가 초기화된 직후 발생합니다. `KeywordDatabase.Register`·`Modify`로 키워드를 등록·수정합니다.
 
 
 #### OnLoadPassiveDatabase
@@ -118,7 +118,7 @@ KeywordDatabase
 public static event Action OnLoadPassiveDatabase
 ```
 
-PassiveDatabase
+패시브 데이터베이스가 초기화된 직후 발생합니다. `PassiveDatabase.Register`·`Modify`로 패시브를 등록·수정합니다.
 
 
 #### OnLoadCostumeDatabase
@@ -127,7 +127,7 @@ PassiveDatabase
 public static event Action OnLoadCostumeDatabase
 ```
 
-CostumeDatabase
+코스튬 데이터베이스가 초기화된 직후 발생합니다. `CostumeDatabase.Register`·`RegisterSkin`·`Modify`로 코스튬을 등록·수정합니다.
 
 
 #### OnLoadPropDatabase
@@ -136,7 +136,7 @@ CostumeDatabase
 public static event Action OnLoadPropDatabase
 ```
 
-PropDatabase
+프롭 데이터베이스가 초기화된 직후 발생합니다. `PropDatabase.Register`로 프롭을 등록합니다.
 
 
 #### OnLoadUnitDatabase
@@ -145,7 +145,7 @@ PropDatabase
 public static event Action OnLoadUnitDatabase
 ```
 
-UnitDatabase (enemy / NPC spawn entities). Register custom units here with UnitDatabase.Register(entity), and register their prefabs with RegisterNetworkPrefab(prefab, stableKey) in the same handler. Entity names must be "<modId>:<id>". See Docs/UnitMod_Design.md.
+유닛 데이터베이스(적·NPC 스폰 엔티티)가 초기화된 직후 발생합니다.
 
 
 #### OnLoadSocialIDDatabase
@@ -154,7 +154,16 @@ UnitDatabase (enemy / NPC spawn entities). Register custom units here with UnitD
 public static event Action OnLoadSocialIDDatabase
 ```
 
-SocialIDDatabase (NPC social IDs, role graphs, travelers). Register here with SocialIDDatabase.RegisterRole(roleGraph) → SocialIDDatabase.Register(socialID) → SocialIDDatabase.RegisterTravelerGroup(key, socialIDs), and register the avatar prefab with RegisterNetworkPrefab(prefab, stableKey) in the same handler. Names and keys must be "<modId>:<id>". Fires after UnitDatabase/FactionDatabase, so vanilla factions can be referenced. See Docs/TravelerMod_Guide.md.
+NPC 역할 데이터베이스가 초기화된 직후 발생합니다.
+
+
+#### OnLoadCustomGameDatabase
+
+```csharp
+public static event Action OnLoadCustomGameDatabase
+```
+
+사용자 지정 게임 데이터베이스가 초기화된 직후 발생합니다.
 
 
 #### OnAllDatabasesReady
@@ -163,7 +172,7 @@ SocialIDDatabase (NPC social IDs, role graphs, travelers). Register here with So
 public static event Action OnAllDatabasesReady
 ```
 
-All databases initialized, ready to use (for mods that need cross-database references)
+모든 데이터베이스 초기화가 끝난 직후 발생합니다.
 
 
 #### OnTitleMenuReady
@@ -172,7 +181,7 @@ All databases initialized, ready to use (for mods that need cross-database refer
 public static event Action<UI_TitleLobby> OnTitleMenuReady
 ```
 
-The title menu is ready, once per title scene instance, after built-in buttons are added. Subscribe in OnModLoaded and unsubscribe in OnModUnloaded. Use title.AddTitleSubMenu(localizationKey, onClick) or title.AddTitleMainMenu(...). Register label translations through OnLocalizationReady before entering the title. Buttons returned by these methods belong to the current scene and must not be cached across scenes.
+타이틀 메뉴가 로드된 이후 호출됩니다.
 
 
 #### OnStartGameServerside
@@ -181,7 +190,7 @@ The title menu is ready, once per title scene instance, after built-in buttons a
 public static event Action OnStartGameServerside
 ```
 
-The networked game has started. Server(host) side. Raised before the first run is set up: there is no dungeon and no run state yet. Use OnStartSessionServerside when the run itself matters.
+게임이 시작될 때 호출됩니다. (server-side) 시작이란, 타이틀 화면에서 세이브 슬롯을 클릭하여 게임에 진입하는 행위를 의미합니다. 아직 플레이어나 현재 장소 등 세션 데이터의 로드가 되기 이전입니다.
 
 
 #### OnStartGameClientside
@@ -190,7 +199,7 @@ The networked game has started. Server(host) side. Raised before the first run i
 public static event Action OnStartGameClientside
 ```
 
-The networked game has started. Client side (the host's local client included). Raised as soon as the client is up, before the world is populated. Use OnStartSessionClientside when the run itself matters.
+게임이 시작될 때 호툴됩니다. (client-side) 시작이란, 타이틀 화면에서 세이브 슬롯을 클릭하여 게임에 진입하는 행위를 의미합니다. 아직 플레이어나 현재 장소 등 세션 데이터의 로드가 되기 이전입니다.
 
 
 #### OnStartSessionServerside
@@ -199,7 +208,7 @@ The networked game has started. Client side (the host's local client included). 
 public static event Action<bool> OnStartSessionServerside
 ```
 
-A game session (run) has started. Server(host) side. Raised on every new run: host start, continue, and restart after game over. The parameter is true when the run was restored from a save file (continue), false for a brand-new run.
+게임 세션이 시작될 때 호출됩니다. (server-side) 세션은 게임의 단위입니다. 플레이어가 사망하면 해당 세션이 종료되고, 새로운 세션이 시작됩니다.
 
 
 #### OnStartSessionClientside
@@ -208,7 +217,7 @@ A game session (run) has started. Server(host) side. Raised on every new run: ho
 public static event Action<bool> OnStartSessionClientside
 ```
 
-A game session (run) has started. Client side (the host's local client included). Clients that join a session already in progress receive it once, right after they connect. The parameter is the same value the server reported for this session.
+게임 세션이 시작될 때 호출됩니다. (client-side) 세션은 게임의 단위입니다. 플레이어가 사망하면 해당 세션이 종료되고, 새로운 세션이 시작됩니다.
 
 
 #### OnLocalizationReady
@@ -217,7 +226,7 @@ A game session (run) has started. Client side (the host's local client included)
 public static event Action<HorayModLocalizationContext> OnLocalizationReady
 ```
 
-Localization ready (for mods that need to register localization text)
+번역 파일이 로드된 후 호출됩니다.
 
 
 #### OnFloorAllocatedServerside
@@ -226,7 +235,7 @@ Localization ready (for mods that need to register localization text)
 public static event Action<string, string, FloorGenerator> OnFloorAllocatedServerside
 ```
 
-Floor allocated on the server (server-only). Fired right after the floor is connected to its FloorData and network-spawned, before generation starts. Only invoked on the host/server.
+층 할당시 호출됩니다. (server-side) 세피리아의 모든 장소는 층(floor)으로 정의됩니다. 플레이어가 장소를 이동할 시에는 다음과 같은 절차를 순차적으로 거칩니다. 1. 층 할당 (Allocation) : 새로운 층을 생성 & 로드합니다. 2. 이동 : 로드가 다 된 층의 요청 지점으로 플레이어의 위치를 이동시킵니다. 3. 층 제거 : 플레이어가 이전에 있던 장소는 그 장소가 비어 있는 경우 (=플레이어들이 더는 그 장소에 없는 경우) 제거합니다.
 param1: Floor GUID  
 param2: Floor Name  
 param3: Instance of FloorGenerator
@@ -238,7 +247,7 @@ param3: Instance of FloorGenerator
 public static event Action<string, string, FloorGenerator> OnFloorAllocatedClientside
 ```
 
-Floor allocated on the client (runs on every client, including the host's client). Fired after the floor finished generating locally. Use this for client-side add-ons such as UI overlays tied to a floor.
+층 할당시 호출됩니다. (client-side) 세피리아의 모든 장소는 층(floor)으로 정의됩니다. 플레이어가 장소를 이동할 시에는 다음과 같은 절차를 순차적으로 거칩니다. 1. 층 할당 (Allocation) : 새로운 층을 생성 & 로드합니다. 2. 이동 : 로드가 다 된 층의 요청 지점으로 플레이어의 위치를 이동시킵니다. 3. 층 제거 : 플레이어가 이전에 있던 장소는 그 장소가 비어 있는 경우 (=플레이어들이 더는 그 장소에 없는 경우) 제거합니다.
 param1: Floor GUID  
 param2: Floor Name  
 param3: Instance of FloorGenerator
@@ -250,7 +259,7 @@ param3: Instance of FloorGenerator
 public static event Action<RoomSpawnAssignContext> OnAssignRoomSpawnPhases
 ```
 
-Serverside. Fired right after the floor generator picks the monster phases for a battle room (or a battle zone), before the spawner receives them. Replace or edit ctx.Phases to change what spawns there. The game does not enforce balance here — see RoomSpawnAssignContext for the rules (deterministic RNG via ctx.Seed, never touch ctx.Sources, entities must be registered in UnitDatabase).
+스테이지의 랜덤 적이 어떤 구성으로 결정된 이후 호출됩니다. (server-side) Fired right after the floor generator picks the monster phases for a battle room (or a battle zone), before the spawner receives them. Replace or edit ctx.Phases to change what spawns there. The game does not enforce balance here — see RoomSpawnAssignContext for the rules (deterministic RNG via ctx.Seed, never touch ctx.Sources, entities must be registered in UnitDatabase).
 
 
 #### OnPlayerAvatarSpawnedServerside
@@ -259,7 +268,7 @@ Serverside. Fired right after the floor generator picks the monster phases for a
 public static event Action<PlayerAvatar> OnPlayerAvatarSpawnedServerside
 ```
 
-A player avatar has been spawned on the server (host only). Raised at the end of PlayerAvatar.OnStartServer, after base stats are applied. Costume, floor and inventory contents may still be populated later in the same frame or on following frames. Use this to subscribe to the avatar's own instance events (OnDamagedServerside, OnAttackUnit, OnKillUnit, OnDie, OnAddedBuff, OnEnteredFloorServerside, ...). Subscriptions on the avatar die with the avatar, so no unsubscribe is needed for them.
+플레이어가 스폰될 때 호출됩니다. (server-side) 이 훅 안에서 플레이어와 관련한 콜백을 등록할 수 있습니다. Raised at the end of PlayerAvatar.OnStartServer, after base stats are applied. Costume, floor and inventory contents may still be populated later in the same frame or on following frames. Use this to subscribe to the avatar's own instance events (OnDamagedServerside, OnAttackUnit, OnKillUnit, OnDie, OnAddedBuff, OnEnteredFloorServerside, ...). Subscriptions on the avatar die with the avatar, so no unsubscribe is needed for them.
 
 
 #### OnPlayerAvatarSpawnedClientside
@@ -268,7 +277,7 @@ A player avatar has been spawned on the server (host only). Raised at the end of
 public static event Action<PlayerAvatar> OnPlayerAvatarSpawnedClientside
 ```
 
-A player avatar has been spawned on this client (the host's local client included). Raised once per avatar at the end of its OnStartClient; also fires for remote players. Check avatar.isLocalPlayer / avatar.isOwned to tell the local player apart. SyncVars are already applied, but floor and inventory contents may arrive later.
+플레이어 아바타가 스폰될 때 호출됩니다. (client-side) Raised once per avatar at the end of its OnStartClient; also fires for remote players. Check avatar.isLocalPlayer / avatar.isOwned to tell the local player apart. SyncVars are already applied, but floor and inventory contents may arrive later.
 
 
 #### OnUnitSpawnedServerside
@@ -277,7 +286,7 @@ A player avatar has been spawned on this client (the host's local client include
 public static event Action<UnitAvatar> OnUnitSpawnedServerside
 ```
 
-Any UnitAvatar (players, enemies, summons, followers) has been spawned on the server (host only). Raised at the end of UnitAvatar.OnStartServer, before subclass setup. For players this fires before OnPlayerAvatarSpawnedServerside. Use it for OnKill / OnDie style effects on enemies.
+유닛(플레이어·적·소환수·동료)이 서버에 스폰됐을 때 발생합니다. 서버(호스트) 전용입니다.
 
 
 #### OnUnitDespawnedServerside
@@ -286,7 +295,7 @@ Any UnitAvatar (players, enemies, summons, followers) has been spawned on the se
 public static event Action<UnitAvatar> OnUnitDespawnedServerside
 ```
 
-Any UnitAvatar is about to be removed from the server (host only). Raised at the start of UnitAvatar.OnStopServer, before the unit leaves its faction and leader. Do not keep references to the unit after this call.
+유닛이 서버에서 제거되기 직전에 발생합니다. 서버(호스트) 전용입니다.
 
 
 #### OnPlayerEvade
@@ -295,7 +304,7 @@ Any UnitAvatar is about to be removed from the server (host only). Raised at the
 public static event Action<PlayerAvatar, DamageInstance> OnPlayerEvade
 ```
 
-*설명이 아직 없습니다.*
+플레이어가 공격을 회피했을 때 발생합니다. (server-side)
 
 
 #### OnGetDebuff
@@ -304,7 +313,7 @@ public static event Action<PlayerAvatar, DamageInstance> OnPlayerEvade
 public static event Func<CharacterDebuff, UnitAvatar, CharacterDebuff> OnGetDebuff
 ```
 
-*설명이 아직 없습니다.*
+유닛에 디버프가 적용되기 직전, 적용할 디버프 프리팹을 바꿀 수 있습니다. 핸들러는 (현재 프리팹, 시전자)를 받아 대체 프리팹을 돌려주고, null을 돌려주면 그대로 둡니다.
 
 
 #### GridInventoryStartPermission
@@ -313,7 +322,7 @@ public static event Func<CharacterDebuff, UnitAvatar, CharacterDebuff> OnGetDebu
 public static event Action<GridInventory, PlayerAvatar> GridInventoryStartPermission
 ```
 
-인벤토리 변경 시작. 모든 효과를 제거함
+서버가 인벤토리 쓰기 권한을 얻어 아이템 효과를 전부 제거하기 시작할 때 발생합니다.
 
 
 #### GridInventoryEndPermission
@@ -322,81 +331,9 @@ public static event Action<GridInventory, PlayerAvatar> GridInventoryStartPermis
 public static event Action<GridInventory, PlayerAvatar> GridInventoryEndPermission
 ```
 
-권한을 해제하고 모든 효과를 반영함
+서버가 쓰기 권한을 반납하며 아이템 효과를 다시 반영한 직후 발생합니다.
 
 ### 메서드
-
-#### GetModOptions
-
-```csharp
-public static ModOptions GetModOptions(string modId)
-```
-
-Local options scoped by a stable manifest modId. Workshop mods can use Context.Options. Legacy AddOns may supply their own ID using the same format. Call Save after making changes.
-
-
-#### TryShowItemInteraction
-
-```csharp
-public static bool TryShowItemInteraction(ItemInteractionOptions options, out ItemInteractionSession session)
-```
-
-Opens the shared inventory interaction on the Unity main thread. Returns false if UI is busy.
-
-
-#### TryGetUIWidgets
-
-```csharp
-public static bool TryGetUIWidgets(out UIWidgetFactory widgets)
-```
-
-Game-styled widgets for any local UI. Parent them under an existing UI Canvas.
-
-
-#### TryShowDialogue
-
-```csharp
-public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session)
-```
-
-Opens a local world dialogue on the Unity main thread. Returns false if UI is busy. Use session.Show to advance; reward validation and networking remain the caller's job.
-
-
-#### TryShowDialogue
-
-```csharp
-public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session, Vector3? offset)
-```
-
-Follows anchor with a world-space offset. Null uses the view prefab's default offset.
-
-
-#### TryShowDialogue
-
-```csharp
-public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session, Vector3? offset = null, Vector2? cameraOffset = null, bool focusCamera = true)
-```
-
-Follows anchor with separate dialogue and camera offsets. Camera focus is optional and local only.
-
-
-#### RegisterSpecialStatCategory
-
-```csharp
-public static bool RegisterSpecialStatCategory(SpecialStatCategoryEntity category)
-```
-
-*설명이 아직 없습니다.*
-
-
-#### RegisterSpecialStat
-
-```csharp
-public static bool RegisterSpecialStat(StatusEntity status, Func<SpecialStatContext, SpecialStatValue> reader = null)
-```
-
-*설명이 아직 없습니다.*
-
 
 #### RegisterNetworkPrefab
 
@@ -404,13 +341,15 @@ public static bool RegisterSpecialStat(StatusEntity status, Func<SpecialStatCont
 public static bool RegisterNetworkPrefab(GameObject prefab)
 ```
 
-Register a prefab as a network-spawnable object. The prefab must have a NetworkIdentity component. Call this during OnAllDatabasesReady or earlier events. Also registers with the current client if it is already connecting or connected.
+네트워크 스폰 가능한 오브젝트(프리팹)을 등록합니다. 개체에는 NetworkIdentity 컴포넌트가 있어야 합니다.
+
+서버(호스트)와 클라이언트는 네트워크 통신 기능을 사용할 수 있는 개체들의 목록을 소유해야 하며 그 목록은 모두가 똑같이 공유되어야 합니다.
 
 예시:
 
 ```csharp
 HorayModAPI.OnAllDatabasesReady += () => {
-    HorayModAPI.RegisterNetworkPrefab(myCustomPrefab);
+    HorayModAPI.RegisterNetworkPrefab(myNewCustomPrefab);
 };
 ```
 
@@ -423,12 +362,9 @@ HorayModAPI.OnAllDatabasesReady += () => {
 public static bool RegisterNetworkPrefab(GameObject prefab, string stableKey)
 ```
 
-Register a runtime-created prefab (for example a clone of a built-in template) with a deterministic assetId derived from `stableKey`. Use the mod unit name ("<modId>:<id>") as the key.
+런타임에 만든 프리팹(내장 템플릿의 복제본 등)을 `stableKey`에서 계산한 고정 assetId로 네트워크 스폰 가능 오브젝트로 등록합니다. 키는 모드 유닛 이름(`<modId>:<id>`)을 씁니다.
 
-Why: Instantiate copies the template's assetId, and Mirror would silently replace the template mapping on clients.  
-Host and client compute the same id because they run the same mod set in the same order; if the id is taken, "stableKey#1", "#2", ... are tried in order and a warning is logged. Call this in OnLoadUnitDatabase or OnAllDatabasesReady, from code that runs on both host and client.
-
-반환: true if registration succeeded
+반환: 등록에 성공하면 true
 
 
 #### RegisterNetworkPrefabs
@@ -437,9 +373,9 @@ Host and client compute the same id because they run the same mod set in the sam
 public static int RegisterNetworkPrefabs(IEnumerable<GameObject> prefabs)
 ```
 
-Register multiple prefabs as network-spawnable objects at once.
+여러 프리팹을 한 번에 네트워크 스폰 가능 오브젝트로 등록합니다.
 
-반환: Number of successfully registered prefabs
+반환: 등록에 성공한 프리팹 수
 
 
 #### UnregisterNetworkPrefab
@@ -448,9 +384,85 @@ Register multiple prefabs as network-spawnable objects at once.
 public static bool UnregisterNetworkPrefab(GameObject prefab)
 ```
 
-Unregister a previously registered network prefab.
+등록한 네트워크 프리팹을 해제합니다.
 
-반환: true if successfully removed
+반환: 제거했으면 true
+
+
+#### RegisterSpecialStatCategory
+
+```csharp
+public static bool RegisterSpecialStatCategory(SpecialStatCategoryEntity category)
+```
+
+스탯 UI의 전문 능력 항목 카테고리를 등록합니다.
+
+반환: 등록했으면 true
+
+
+#### RegisterSpecialStat
+
+```csharp
+public static bool RegisterSpecialStat(StatusEntity status, Func<SpecialStatContext, SpecialStatValue> reader = null)
+```
+
+StatusEntity를 스탯 UI의 전문 능력 카테고리 내의 항목으로 등록합니다. `reader`를 전달하면 에셋 설정 대신 그 함수로 값을 읽습니다.
+
+반환: 등록했으면 true
+
+
+#### GetModOptions
+
+```csharp
+public static ModOptions GetModOptions(string modId)
+```
+
+modId에 묶인 기기별 옵션을 얻습니다. 창작마당 모드는 `Context.Options`를 써도 됩니다.
+
+
+#### TryShowItemInteraction
+
+```csharp
+public static bool TryShowItemInteraction(ItemInteractionOptions options, out ItemInteractionSession session)
+```
+
+인벤토리와 함께 쓰는 아이템 상호작용 패널을 엽니다. UI가 사용 중이면 false를 돌려줍니다.
+
+
+#### TryGetUIWidgets
+
+```csharp
+public static bool TryGetUIWidgets(out UIWidgetFactory widgets)
+```
+
+게임 스타일 UI 위젯 생성기를 얻습니다. 기존 UI Canvas 아래에 붙여 씁니다.
+
+
+#### TryShowDialogue
+
+```csharp
+public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session)
+```
+
+월드 대화창을 엽니다. UI가 사용 중이면 false를 돌려주고, 다음 페이지는 `session.Show`로 넘깁니다.
+
+
+#### TryShowDialogue
+
+```csharp
+public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session, Vector3? offset)
+```
+
+월드 좌표 오프셋을 지정해 대화창을 엽니다. null이면 프리팹 기본 오프셋을 씁니다.
+
+
+#### TryShowDialogue
+
+```csharp
+public static bool TryShowDialogue(Transform anchor, DialoguePage page, out DialogueSession session, Vector3? offset = null, Vector2? cameraOffset = null, bool focusCamera = true)
+```
+
+대화창 오프셋과 카메라 오프셋을 따로 지정해 대화창을 엽니다. 카메라 포커스는 로컬에서만 적용됩니다.
 
 
 ## HorayModLocalizationContext
@@ -459,7 +471,7 @@ Unregister a previously registered network prefab.
 public class HorayModLocalizationContext
 ```
 
-A helper class to register localization text for a mod.
+모드 번역 텍스트를 등록하는 도우미입니다.
 
 ### 메서드
 
@@ -469,7 +481,7 @@ A helper class to register localization text for a mod.
 public void AddText(string language, string key, string value)
 ```
 
-Register text for a specific language
+특정 언어의 텍스트를 등록합니다.
 
 
 #### AddText
