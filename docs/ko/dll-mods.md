@@ -112,8 +112,8 @@ namespace PhysicalDamagePlus
 | 멤버 | 내용 |
 |---|---|
 | `metadata` | `modName`, `modVersion`, `modAuthor`. `metadata.json`의 값이 들어옵니다. |
-| `Context` | `PackageRoot`(모드 폴더 절대 경로), `FileId`(창작마당 번호, 로컬이면 0), `Definition`(검증된 매니페스트), `ResolvePath(상대경로)`. 모드 폴더 안의 파일을 찾을 때 씁니다. 설치 경로는 사용자마다 다르니 절대 하드코딩하지 마세요. |
-| `GetDataPackages()` | 이 모드를 `consumer`로 지정한 `data` 모듈 패키지 목록. 활성화가 끝난 뒤(`OnAllDatabasesReady` 이후)에 부르세요. |
+| `Context` | `PackageRoot`(모드 폴더 절대 경로), `FileId`(창작마당 번호, 로컬 패키지는 Steam ID와 겹치지 않는 별도 값), `Definition`(검증된 매니페스트), `ResolvePath(상대경로)`. 모드 폴더 안의 파일을 찾을 때 씁니다. 설치 경로는 사용자마다 다르니 절대 하드코딩하지 마세요. |
+| `GetDataPackages()` | 이 모드를 `consumer`로 지정한 `data` 모듈 패키지 목록. 활성화가 끝난 뒤(`OnLoad*Database` 핸들러 안이나 `OnAllDatabasesReady` 이후)에 부르세요. |
 
 `Context`는 `OnModLoaded`가 불릴 때부터 유효합니다. 생성자에서는 아직 null입니다.
 
@@ -122,7 +122,7 @@ namespace PhysicalDamagePlus
 
 DLL 모드는 **게임을 시작해 월드에 입장할 때** 활성화됩니다. 타이틀 화면에서는 아직 코드가 실행되지 않습니다. 다음은 구동 순서입니다.
 
-1. 월드 씬이 로드되고 `GameDataLoader`이 게임의 주요 데이터들을 로드합니다.
+1. 월드 씬이 로드되고 `GameDataLoader`가 시작됩니다.
 2. 로딩 계획의 DLL 모듈이 순서대로 로드되고, 진입 클래스가 인스턴스화되어 `OnModLoaded`가 불립니다.
 3. 데이터베이스들이 초기화되면서 `OnLoadItemDatabase`, `OnLoadUnitDatabase` 같은 이벤트가 차례로 발생합니다.
 4. 전부 끝나면 `OnAllDatabasesReady`를 호출합니다.
@@ -132,9 +132,9 @@ DLL 모드는 **게임을 시작해 월드에 입장할 때** 활성화됩니다
 `HorayModAPI` 클래스에는 여러 상황에 개입할 수 있는 사전 정의된 이벤트들이 존재합니다.
 
 - 이벤트 구독은 `OnModLoaded`에서 **한 번만** 하세요. 데이터베이스 이벤트는 로드마다 다시 발생하므로, 핸들러 안에서 "매번 해야 하는 일"(아이템 등록 등)을 합니다.
-- 구독과 구독 해제를 잘 관리하세요. `OnModUnloaded`에서 구독한 이벤트를 해제(-=) 해주세요. 현재는 켜진 모드를 끄려면 재시작이 필요하므로 실제로는 제한적으로 호출됩니다만, 그래도 구독 해제를 짝 맞춰 두세요.
+- 구독과 구독 해제를 잘 관리하세요. `OnModUnloaded`에서 구독한 이벤트를 해제(-=) 해주세요.
 
-전체 이벤트 목록은  [API 레퍼런스](api/README.md)에 있습니다. 어느 이벤트를 통해 하고 싶은 일을 작업해야 할 지 권장 이벤트 목록은 다음과 같습니다.
+전체 이벤트 목록은 [API 레퍼런스](api/README.md)에 있습니다. 어느 이벤트를 통해 하고 싶은 일을 작업해야 할 지 권장 이벤트 목록은 다음과 같습니다.
 
 | 하고 싶은 일 | 이벤트 |
 |---|---|
@@ -145,7 +145,7 @@ DLL 모드는 **게임을 시작해 월드에 입장할 때** 활성화됩니다
 | 스탯 표시 추가 | `OnLoadSpecialStatDatabase` + `RegisterSpecialStat` |
 | 번역 텍스트를 코드로 등록 | `OnLocalizationReady` (`AddText`) |
 | 타이틀 메뉴에 버튼 | `OnTitleMenuReady` |
-| 세션 시작·종료 | `OnStartGameServerside/Clientside`, `OnStartSessionServerside/Clientside` |
+| 게임·세션 시작 | `OnStartGameServerside/Clientside`, `OnStartSessionServerside/Clientside` |
 | 층이 만들어질 때 | `OnFloorAllocatedServerside/Clientside`, `OnAssignRoomSpawnPhases` |
 | 플레이어·유닛 스폰 | `OnPlayerAvatarSpawned*`, `OnUnitSpawnedServerside`, `OnUnitDespawnedServerside` |
 | 전투 판정 개입 | `OnPlayerEvade`, `OnGetDebuff` |
@@ -225,7 +225,7 @@ dotnet build -c Release
 ## 멀티플레이에서 주의할 것
 
 - 코드 모드는 대부분 `multiplayer.installation`이 `everyone`일 것입니다.
-- 게임 상태를 `Serverside` 이벤트에서만 바꾸고, 바꾼 값이 이미 동기화되는 게임 상태(예: `customStats`)라서 참가자 쪽에 코드나 등록이 0 필요 없는 모드라면 `host_only`로 선언할 수 있습니다. 그러면 참가자는 모드를 다운로드 받지 않습니다. 새 아이템을 등록하거나 `RegisterNetworkPrefab`을 쓰거나 `Clientside` 이벤트에서 무언가를 바꾸는 모드는 `host_only`가 될 수 없습니다.
+- 게임 상태를 `Serverside` 이벤트에서만 바꾸고, 바꾼 값이 이미 동기화되는 게임 상태(예: `customStats`)라서 참가자 쪽에 코드나 등록이 필요 없는 모드라면 `host_only`로 선언할 수 있습니다. 그러면 참가자는 모드를 다운로드 받지 않습니다. 새 아이템을 등록하거나 `RegisterNetworkPrefab`을 쓰거나 `Clientside` 이벤트에서 무언가를 바꾸는 모드는 `host_only`가 될 수 없습니다.
 - 네트워크로 스폰되는 오브젝트(유닛, 발사체 등)는 `RegisterNetworkPrefab`으로 등록해야 참가자 쪽에서도 생성됩니다. `stableKey`를 주면 모드 버전이 바뀌어도 같은 ID를 유지합니다.
 - 호스트와 참가자의 모드 **로드 순서**까지 같아야 합니다. 순서에 따라 결과가 달라지는 코드는 쓰지 않는 것이 좋습니다.
 
@@ -240,7 +240,7 @@ dotnet build -c Release
 | 상태 요약에 라이브러리 적재 실패가 나옴 | `libraries`에 적은 DLL이 없거나 관리 어셈블리가 아님. |
 | 로그에 `FileNotFoundException` | 참조한 DLL이 모드 폴더에 없거나 `libraries`에 선언되지 않음. 또는 게임 DLL을 `Private=true`로 복사해 둘이 충돌. |
 | 월드에 들어가면 바로 예외 | 데이터베이스 이벤트 핸들러의 예외. 로그의 스택 트레이스에서 모드 네임스페이스를 찾으세요. |
-| 두 번째 런부터 효과가 중복됨 | 핸들러 안에서 다시 구독하고 있음. 구독은 `OnModLoaded`에서 한 번만. |
+| 타이틀로 나갔다 다시 들어온 뒤부터 효과가 중복됨 | 핸들러 안에서 다시 구독하고 있음. 구독은 `OnModLoaded`에서 한 번만. |
 
 
 ## 샘플
