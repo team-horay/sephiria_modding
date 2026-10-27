@@ -12,7 +12,7 @@ DLL 모듈을 통해 C#으로 작성한 코드를 게임에서 구동할 수 있
 
 ## 프로젝트 만들기
 
-[`template/`](../../template)의 예제를 참조하세요. 문서는 이 템플릿을 기준으로 설명합니다.
+[`examples/dll-sample`](../../examples/dll-sample) 예제를 참조하세요. 문서는 이 예제를 기준으로 설명합니다.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -245,4 +245,4 @@ dotnet build -c Release
 
 ## 샘플
 
-[`template/`](../../template)은 플레이어가 스폰될 때 물리 피해를 5 올리는 최소 모드입니다. `package/` 폴더에 빌드된 DLL까지 들어 있어서, 그 폴더를 `WorkshopLocal/`에 복사하면 빌드 없이 바로 동작합니다. 자기 모드로 만들 때는 `AssemblyName`, `modId`, `entryClass`, 출력 경로만 바꾸면 됩니다. 게임을 시작해 스탯 창을 열면 물리 피해 +5로 동작을 확인할 수 있습니다.
+[`examples/dll-sample`](../../examples/dll-sample)은 플레이어가 스폰될 때 물리 피해를 5 올리는 최소 모드입니다. `package/` 폴더에 빌드된 DLL까지 들어 있어서, 그 폴더를 `WorkshopLocal/`에 복사하면 빌드 없이 바로 동작합니다. 자기 모드로 만들 때는 `AssemblyName`, `modId`, `entryClass`, 출력 경로만 바꾸면 됩니다. 게임을 시작해 스탯 창을 열면 물리 피해 +5로 동작을 확인할 수 있습니다.

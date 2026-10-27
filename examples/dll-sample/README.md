@@ -1,6 +1,6 @@
 # DLL 모드 템플릿: 물리 피해 +5
 
-플레이어가 스폰될 때 서버에서 물리 피해 커스텀 스탯을 5 올리는 최소 모드입니다. 복사해서 이름만 바꾸면 자기 모드가 됩니다. [DLL 모드 가이드](../docs/ko/dll-mods.md)가 이 폴더를 기준으로 설명합니다.
+플레이어가 스폰될 때 서버에서 물리 피해 커스텀 스탯을 5 올리는 최소 모드입니다. 복사해서 이름만 바꾸면 자기 모드가 됩니다. [DLL 모드 가이드](../../docs/ko/dll-mods.md)가 이 폴더를 기준으로 설명합니다.
 
 ## 바로 써 보기 (빌드 없이)
 
@@ -24,7 +24,7 @@ dotnet build -c Release
 ## 구성
 
 ```
-template/
+dll-sample/
 ├── PhysicalDamagePlus.csproj   ← 프로젝트. GameDir·이름만 바꿔 씀
 ├── Entry.cs                    ← 진입점. 스폰 이벤트 구독과 스탯 추가
 └── package/                    ← 이 폴더가 모드 그 자체. WorkshopLocal에 복사하는 단위
