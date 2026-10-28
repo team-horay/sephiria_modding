@@ -6,7 +6,6 @@
 
 | ID | 이름 | Name | 단위 |
 |---|---|---|---|
-| `ATTACK_DASH` |  |  | 100 = 1 |
 | `ATTACK_SPEED` | 공격 속도 | Attack Speed | 1 = 1% |
 | `BASIC_ATTACK_DAMAGE` | 일반 공격 피해 | Normal Attack Damage | 1 = 1% |
 | `BOSS_REWARD_DICE` | 보스 처치 시 주사위 {VALUE}개 획득 | Acquire {VALUE} dice upon defeating a boss | 정수 |
@@ -18,7 +17,7 @@
 | `CHARGING_CHARM_BONUS` | &lt;tag=FrostRelic&gt; 충전 속도 | &lt;tag=FrostRelic&gt; Charge Speed | 1 = 1% |
 | `CHARM_DAMAGE_BONUS` | &lt;tag=Artifact&gt; 피해량 | &lt;tag=Artifact&gt; Damage | 1 = 1% |
 | `COMBO_BONUS_DAMAGE` | 활성화된 콤보 종류당 &lt;tag=FinalDamage&gt; 보너스 | &lt;tag=FinalDamage&gt; Bonus for each Activated Combo Type | 1 = 1% |
-| `COOLDOWN_RECOVERY_SPEED` |  |  | 정수 |
+| `COOLDOWN_RECOVERY_SPEED` | &lt;tag=Magic_NoIcon&gt; 가속 | &lt;tag=Magic_NoIcon&gt; Haste | 정수 |
 | `CRITICAL` | 치명타 확률 | Critical Chance | 100 = 1% |
 | `CRITICAL_DAMAGE_RATE` | 치명타 피해 | Critical Damage | 1 = 1% |
 | `CROSSBOWAMMO` | 탄창 용량 | Magazine Capacity | 정수 |
@@ -33,7 +32,7 @@
 | `DASH_COUNT` | 대시 횟수 | Dash Count | 정수 |
 | `DASH_DISABLE` | 대시 불가 | Dash Disabled | 정수 |
 | `DASH_INVINCIBLE_TIME_BONUS` | 대시 중 무적 시간 보너스 | Invincibility window bonus while dashing | 1000 = 1s |
-| `DASH_RECOVERY_SPEED` |  |  | 1 = 1% |
+| `DASH_RECOVERY_SPEED` | 대시 회복 속도 | Dash Recovery Speed | 1 = 1% |
 | `DASH_SPEED` | 대시 속도 | Dash speed | 1 = 1% |
 | `DEBUFF_DAMAGE` | &lt;tag=Debuff&gt;로 주는 피해량 | Damage dealt with &lt;tag=Debuff&gt; | 1 = 1% |
 | `DEBUFF_DURATION` | 적에게 부여하는 모든 디버프의 지속시간 | Duration of all debuffs inflicted on enemies | 1 = 1% |
@@ -55,7 +54,7 @@
 | `EXTRA_LIFE` | 사망 시 60%의 체력으로 부활 ({VALUE}회) | Revive with 60% HP upon death ({VALUE} times) | 정수 |
 | `EXTRA_MIRACLE_CHOICES` | 추가 기적 선택지 | Additional Miracle Choices | 정수 |
 | `EXTRA_WEAPON_CHOICES` | 추가 무기 선택지 | Additional Weapon Choices | 정수 |
-| `FINAL_DAMAGE` |  |  | 1 = 1% |
+| `FINAL_DAMAGE` | 모든 피해 증폭 | Universal Damage Boost | 1 = 1% |
 | `FINAL_HP` | 최종 HP | Final HP | 1 = 1% |
 | `FINAL_MP` | 최종 MP | Final MP | 1 = 1% |
 | `FINAL_WEAPONDAMAGE` | &lt;tag=Weapon&gt; 피해량 | &lt;tag=Weapon&gt; Damage | 1 = 1% |
