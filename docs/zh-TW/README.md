@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | **繁體中文** | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | [简体中文](../zh-CN/README.md) | **繁體中文** | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | [Türkçe](../tr/README.md)
 
 # Sephiria 模組製作指南
 
@@ -37,18 +37,18 @@
 
 | 文件 | 內容 |
 |---|---|
-| [你的第一個模組](docs/zh-TW/getting-started.md) | 建立開發資料夾、在本機確認模組、讀取記錄檔 |
-| [metadata.json 參考](docs/zh-TW/metadata.md) | 每個欄位的意義、相依性與版本規則、模組（module）宣告 |
-| [在地化模組](docs/zh-TW/localization-mods.md) | 語言檔結構、尋找鍵值、保留標籤與佔位符的規則 |
-| [服裝模組](docs/zh-TW/costume-mods.md) | 製作你自己的服裝 |
-| [DLL 模組](docs/zh-TW/dll-mods.md) | 專案設定、進入點、`HorayModAPI` 事件、偵錯 |
-| [發布至工作坊](docs/zh-TW/publishing.md) | 上傳至工作坊、程式碼模組審核、多人遊戲規則 |
-| [API 參考](docs/zh-TW/api/README.md) | `HorayModAPI`、`WorkshopModBase`、模組選項、UI 等公開型別與成員。由遊戲原始碼自動產生 |
-| [附錄與常見問題](docs/zh-TW/faq.md) |  |
+| [你的第一個模組](getting-started.md) | 建立開發資料夾、在本機確認模組、讀取記錄檔 |
+| [metadata.json 參考](metadata.md) | 每個欄位的意義、相依性與版本規則、模組（module）宣告 |
+| [在地化模組](localization-mods.md) | 語言檔結構、尋找鍵值、保留標籤與佔位符的規則 |
+| [服裝模組](costume-mods.md) | 製作你自己的服裝 |
+| [DLL 模組](dll-mods.md) | 專案設定、進入點、`HorayModAPI` 事件、偵錯 |
+| [發布至工作坊](publishing.md) | 上傳至工作坊、程式碼模組審核、多人遊戲規則 |
+| [API 參考](api/README.md) | `HorayModAPI`、`WorkshopModBase`、模組選項、UI 等公開型別與成員。由遊戲原始碼自動產生 |
+| [附錄與常見問題](faq.md) |  |
 
 
 ## 授權
 
-本儲存庫中的程式碼（範例與範本）以 [MIT 授權條款](LICENSE)授權。
+本儲存庫中的程式碼（範例與範本）以 [MIT 授權條款](../../LICENSE)授權。
 文件可以自由引用、翻譯與再散布；請註明出處。
 Sephiria 遊戲本身及其素材為 TEAM HORAY 的著作，不在本授權範圍內。

@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | **Deutsch** | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | **Deutsch** | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | [Türkçe](../tr/README.md)
 
 # Sephiria Modding-Leitfaden
 
@@ -37,18 +37,18 @@ Damit das Spiel für alle sicher bleibt, halte dich bitte an die folgenden Regel
 
 | Dokument | Inhalt |
 |---|---|
-| [Deine erste Mod](docs/de/getting-started.md) | Entwicklungsordner einrichten, Mod lokal prüfen, Logs lesen |
-| [metadata.json-Referenz](docs/de/metadata.md) | Bedeutung aller Felder, Regeln für Abhängigkeiten und Versionen, Modul-Deklarationen |
-| [Lokalisierungs-Mods](docs/de/localization-mods.md) | Aufbau der Sprachdateien, Schlüssel finden, Regeln zum Erhalt von Tags und Platzhaltern |
-| [Kostüm-Mods](docs/de/costume-mods.md) | Ein eigenes Kostüm erstellen |
-| [DLL-Mods](docs/de/dll-mods.md) | Projekt einrichten, Einstiegspunkt, `HorayModAPI`-Events, Debugging |
-| [Im Workshop veröffentlichen](docs/de/publishing.md) | In den Workshop hochladen, Prüfung von Code-Mods, Mehrspieler-Regeln |
-| [API-Referenz](docs/de/api/README.md) | Öffentliche Typen und Member wie `HorayModAPI`, `WorkshopModBase`, Mod-Optionen und UI. Automatisch aus dem Spielquellcode generiert |
-| [Anhang & FAQ](docs/de/faq.md) |  |
+| [Deine erste Mod](getting-started.md) | Entwicklungsordner einrichten, Mod lokal prüfen, Logs lesen |
+| [metadata.json-Referenz](metadata.md) | Bedeutung aller Felder, Regeln für Abhängigkeiten und Versionen, Modul-Deklarationen |
+| [Lokalisierungs-Mods](localization-mods.md) | Aufbau der Sprachdateien, Schlüssel finden, Regeln zum Erhalt von Tags und Platzhaltern |
+| [Kostüm-Mods](costume-mods.md) | Ein eigenes Kostüm erstellen |
+| [DLL-Mods](dll-mods.md) | Projekt einrichten, Einstiegspunkt, `HorayModAPI`-Events, Debugging |
+| [Im Workshop veröffentlichen](publishing.md) | In den Workshop hochladen, Prüfung von Code-Mods, Mehrspieler-Regeln |
+| [API-Referenz](api/README.md) | Öffentliche Typen und Member wie `HorayModAPI`, `WorkshopModBase`, Mod-Optionen und UI. Automatisch aus dem Spielquellcode generiert |
+| [Anhang & FAQ](faq.md) |  |
 
 
 ## Lizenz
 
-Der Code in diesem Repository (Beispiele und Vorlagen) steht unter der [MIT-Lizenz](LICENSE).
+Der Code in diesem Repository (Beispiele und Vorlagen) steht unter der [MIT-Lizenz](../../LICENSE).
 Die Dokumentation darf frei zitiert, übersetzt und weiterverbreitet werden; bitte gib die Quelle an.
 Das Spiel Sephiria selbst und seine Assets sind Werke von TEAM HORAY und fallen nicht unter diese Lizenz.

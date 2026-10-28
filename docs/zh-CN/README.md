@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | **简体中文** | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | **简体中文** | [繁體中文](../zh-TW/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | [Türkçe](../tr/README.md)
 
 # Sephiria 模组制作指南
 
@@ -37,18 +37,18 @@
 
 | 文档 | 内容 |
 |---|---|
-| [你的第一个模组](docs/zh-CN/getting-started.md) | 创建开发文件夹、在本地检查模组、查看日志 |
-| [metadata.json 参考](docs/zh-CN/metadata.md) | 每个字段的含义、依赖与版本规则、模块声明 |
-| [本地化模组](docs/zh-CN/localization-mods.md) | 语言文件结构、查找键、保留标签与占位符的规则 |
-| [服装模组](docs/zh-CN/costume-mods.md) | 制作自己的服装 |
-| [DLL 模组](docs/zh-CN/dll-mods.md) | 项目设置、入口点、`HorayModAPI` 事件、调试 |
-| [发布到创意工坊](docs/zh-CN/publishing.md) | 上传到创意工坊、代码模组审核、多人游戏规则 |
-| [API 参考](docs/zh-CN/api/README.md) | `HorayModAPI`、`WorkshopModBase`、模组选项、UI 等公开类型与成员。由游戏源码自动生成 |
-| [附录与常见问题](docs/zh-CN/faq.md) |  |
+| [你的第一个模组](getting-started.md) | 创建开发文件夹、在本地检查模组、查看日志 |
+| [metadata.json 参考](metadata.md) | 每个字段的含义、依赖与版本规则、模块声明 |
+| [本地化模组](localization-mods.md) | 语言文件结构、查找键、保留标签与占位符的规则 |
+| [服装模组](costume-mods.md) | 制作自己的服装 |
+| [DLL 模组](dll-mods.md) | 项目设置、入口点、`HorayModAPI` 事件、调试 |
+| [发布到创意工坊](publishing.md) | 上传到创意工坊、代码模组审核、多人游戏规则 |
+| [API 参考](api/README.md) | `HorayModAPI`、`WorkshopModBase`、模组选项、UI 等公开类型与成员。由游戏源码自动生成 |
+| [附录与常见问题](faq.md) |  |
 
 
 ## 许可
 
-本仓库中的代码（示例与模板）以 [MIT 许可证](LICENSE)授权。
+本仓库中的代码（示例与模板）以 [MIT 许可证](../../LICENSE)授权。
 文档可以自由引用、翻译和转载，请注明出处。
 Sephiria 游戏本身及其资产是 TEAM HORAY 的作品，不在本许可范围内。

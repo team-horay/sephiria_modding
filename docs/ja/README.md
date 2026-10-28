@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | **日本語** | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | **日本語** | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | [Türkçe](../tr/README.md)
 
 # Sephiria MOD制作ガイド
 
@@ -37,18 +37,18 @@ SephiriaのMODコミュニティへようこそ。
 
 | ドキュメント | 内容 |
 |---|---|
-| [はじめてのMOD](docs/ja/getting-started.md) | 開発フォルダの準備、ローカルでのMODの確認、ログの読み方 |
-| [metadata.json リファレンス](docs/ja/metadata.md) | 各フィールドの意味、依存関係とバージョンのルール、モジュールの宣言 |
-| [ローカライズMOD](docs/ja/localization-mods.md) | 言語ファイルの構造、キーの探し方、タグとプレースホルダーを保持するルール |
-| [コスチュームMOD](docs/ja/costume-mods.md) | 自分だけのコスチュームを作る |
-| [DLL MOD](docs/ja/dll-mods.md) | プロジェクトの設定、エントリーポイント、`HorayModAPI` のイベント、デバッグ |
-| [ワークショップへの公開](docs/ja/publishing.md) | ワークショップへのアップロード、コードMODの審査、マルチプレイのルール |
-| [APIリファレンス](docs/ja/api/README.md) | `HorayModAPI`、`WorkshopModBase`、MODオプション、UIなどの公開型とメンバー。ゲームのソースから自動生成 |
-| [付録とFAQ](docs/ja/faq.md) |  |
+| [はじめてのMOD](getting-started.md) | 開発フォルダの準備、ローカルでのMODの確認、ログの読み方 |
+| [metadata.json リファレンス](metadata.md) | 各フィールドの意味、依存関係とバージョンのルール、モジュールの宣言 |
+| [ローカライズMOD](localization-mods.md) | 言語ファイルの構造、キーの探し方、タグとプレースホルダーを保持するルール |
+| [コスチュームMOD](costume-mods.md) | 自分だけのコスチュームを作る |
+| [DLL MOD](dll-mods.md) | プロジェクトの設定、エントリーポイント、`HorayModAPI` のイベント、デバッグ |
+| [ワークショップへの公開](publishing.md) | ワークショップへのアップロード、コードMODの審査、マルチプレイのルール |
+| [APIリファレンス](api/README.md) | `HorayModAPI`、`WorkshopModBase`、MODオプション、UIなどの公開型とメンバー。ゲームのソースから自動生成 |
+| [付録とFAQ](faq.md) |  |
 
 
 ## ライセンス
 
-このリポジトリのコード(サンプルとテンプレート)は [MITライセンス](LICENSE) で提供されます。
+このリポジトリのコード(サンプルとテンプレート)は [MITライセンス](../../LICENSE) で提供されます。
 ドキュメントは自由に引用・翻訳・再配布できます。その際は出典を明記してください。
 Sephiriaのゲーム本体とそのアセットはTEAM HORAYの著作物であり、このライセンスの対象外です。

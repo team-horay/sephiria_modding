@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | **ไทย** | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | **ไทย** | [Türkçe](../tr/README.md)
 
 # คู่มือการทำม็อด Sephiria
 
@@ -37,18 +37,18 @@
 
 | เอกสาร | เนื้อหา |
 |---|---|
-| [ม็อดแรกของคุณ](docs/th/getting-started.md) | การตั้งค่าโฟลเดอร์พัฒนา การตรวจสอบม็อดในเครื่อง การอ่านล็อก |
-| [อ้างอิง metadata.json](docs/th/metadata.md) | ความหมายของแต่ละฟิลด์ กฎของ dependency และเวอร์ชัน การประกาศโมดูล |
-| [ม็อดแปลภาษา](docs/th/localization-mods.md) | โครงสร้างไฟล์ภาษา การค้นหาคีย์ กฎการรักษาแท็กและ placeholder |
-| [ม็อดชุดแต่งกาย](docs/th/costume-mods.md) | การสร้างชุดแต่งกายของคุณเอง |
-| [ม็อด DLL](docs/th/dll-mods.md) | การตั้งค่าโปรเจกต์ จุดเริ่มต้น อีเวนต์ของ `HorayModAPI` การดีบัก |
-| [การเผยแพร่บน Workshop](docs/th/publishing.md) | การอัปโหลดขึ้น Workshop การตรวจสอบม็อดที่มีโค้ด กฎของโหมดผู้เล่นหลายคน |
-| [อ้างอิง API](docs/th/api/README.md) | ชนิดและสมาชิกสาธารณะ เช่น `HorayModAPI`, `WorkshopModBase`, ตัวเลือกม็อด และ UI สร้างอัตโนมัติจากซอร์สของเกม |
-| [ภาคผนวกและคำถามที่พบบ่อย](docs/th/faq.md) |  |
+| [ม็อดแรกของคุณ](getting-started.md) | การตั้งค่าโฟลเดอร์พัฒนา การตรวจสอบม็อดในเครื่อง การอ่านล็อก |
+| [อ้างอิง metadata.json](metadata.md) | ความหมายของแต่ละฟิลด์ กฎของ dependency และเวอร์ชัน การประกาศโมดูล |
+| [ม็อดแปลภาษา](localization-mods.md) | โครงสร้างไฟล์ภาษา การค้นหาคีย์ กฎการรักษาแท็กและ placeholder |
+| [ม็อดชุดแต่งกาย](costume-mods.md) | การสร้างชุดแต่งกายของคุณเอง |
+| [ม็อด DLL](dll-mods.md) | การตั้งค่าโปรเจกต์ จุดเริ่มต้น อีเวนต์ของ `HorayModAPI` การดีบัก |
+| [การเผยแพร่บน Workshop](publishing.md) | การอัปโหลดขึ้น Workshop การตรวจสอบม็อดที่มีโค้ด กฎของโหมดผู้เล่นหลายคน |
+| [อ้างอิง API](api/README.md) | ชนิดและสมาชิกสาธารณะ เช่น `HorayModAPI`, `WorkshopModBase`, ตัวเลือกม็อด และ UI สร้างอัตโนมัติจากซอร์สของเกม |
+| [ภาคผนวกและคำถามที่พบบ่อย](faq.md) |  |
 
 
 ## สัญญาอนุญาต
 
-โค้ดในที่เก็บนี้ (ตัวอย่างและเทมเพลต) อยู่ภายใต้ [สัญญาอนุญาต MIT](LICENSE)
+โค้ดในที่เก็บนี้ (ตัวอย่างและเทมเพลต) อยู่ภายใต้ [สัญญาอนุญาต MIT](../../LICENSE)
 เอกสารสามารถนำไปอ้างอิง แปล และเผยแพร่ซ้ำได้อย่างอิสระ โปรดระบุแหล่งที่มา
 ตัวเกม Sephiria และแอสเซตของเกมเป็นผลงานของ TEAM HORAY และไม่อยู่ภายใต้สัญญาอนุญาตนี้

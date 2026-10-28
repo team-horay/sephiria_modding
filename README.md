@@ -1,4 +1,4 @@
-**한국어** | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+**한국어** | [English](README.en.md) | [日本語](docs/ja/README.md) | [简体中文](docs/zh-CN/README.md) | [繁體中文](docs/zh-TW/README.md) | [Deutsch](docs/de/README.md) | [Français](docs/fr/README.md) | [Español](docs/es/README.md) | [Italiano](docs/it/README.md) | [Polski](docs/pl/README.md) | [Português (Brasil)](docs/pt-BR/README.md) | [Русский](docs/ru/README.md) | [Svenska](docs/sv/README.md) | [ไทย](docs/th/README.md) | [Türkçe](docs/tr/README.md)
 
 # 세피리아 모드 제작 가이드
 

@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | [Português (Brasil)](README.pt-BR.md) | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | **Türkçe**
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | [Português (Brasil)](../pt-BR/README.md) | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | **Türkçe**
 
 # Sephiria Mod Rehberi
 
@@ -37,18 +37,18 @@ Oyunun herkes için güvenli kalması adına lütfen aşağıdaki kurallara uyun
 
 | Belge | İçerik |
 |---|---|
-| [İlk Modunuz](docs/tr/getting-started.md) | Geliştirme klasörü kurma, modu yerel olarak kontrol etme, günlükleri okuma |
-| [metadata.json Referansı](docs/tr/metadata.md) | Her alanın anlamı, bağımlılık ve sürüm kuralları, modül bildirimleri |
-| [Yerelleştirme Modları](docs/tr/localization-mods.md) | Dil dosyası yapısı, anahtarları bulma, etiketleri ve yer tutucuları koruma kuralları |
-| [Kostüm Modları](docs/tr/costume-mods.md) | Kendi kostümünüzü yapma |
-| [DLL Modları](docs/tr/dll-mods.md) | Proje kurulumu, giriş noktası, `HorayModAPI` olayları, hata ayıklama |
-| [Atölye'de Yayınlama](docs/tr/publishing.md) | Atölye'ye yükleme, kod modu incelemesi, çok oyunculu kuralları |
-| [API Referansı](docs/tr/api/README.md) | `HorayModAPI`, `WorkshopModBase`, mod seçenekleri ve arayüz gibi herkese açık türler ve üyeler. Oyun kaynağından otomatik üretilmiştir |
-| [Ek & SSS](docs/tr/faq.md) |  |
+| [İlk Modunuz](getting-started.md) | Geliştirme klasörü kurma, modu yerel olarak kontrol etme, günlükleri okuma |
+| [metadata.json Referansı](metadata.md) | Her alanın anlamı, bağımlılık ve sürüm kuralları, modül bildirimleri |
+| [Yerelleştirme Modları](localization-mods.md) | Dil dosyası yapısı, anahtarları bulma, etiketleri ve yer tutucuları koruma kuralları |
+| [Kostüm Modları](costume-mods.md) | Kendi kostümünüzü yapma |
+| [DLL Modları](dll-mods.md) | Proje kurulumu, giriş noktası, `HorayModAPI` olayları, hata ayıklama |
+| [Atölye'de Yayınlama](publishing.md) | Atölye'ye yükleme, kod modu incelemesi, çok oyunculu kuralları |
+| [API Referansı](api/README.md) | `HorayModAPI`, `WorkshopModBase`, mod seçenekleri ve arayüz gibi herkese açık türler ve üyeler. Oyun kaynağından otomatik üretilmiştir |
+| [Ek & SSS](faq.md) |  |
 
 
 ## Lisans
 
-Bu depodaki kod (örnekler ve şablonlar) [MIT Lisansı](LICENSE) ile lisanslanmıştır.
+Bu depodaki kod (örnekler ve şablonlar) [MIT Lisansı](../../LICENSE) ile lisanslanmıştır.
 Belgeler serbestçe alıntılanabilir, çevrilebilir ve yeniden dağıtılabilir; lütfen kaynak belirtin.
 Sephiria oyununun kendisi ve varlıkları TEAM HORAY'in eserleridir ve bu lisansın kapsamında değildir.

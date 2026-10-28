@@ -1,4 +1,4 @@
-[한국어](README.md) | [English](README.en.md) | [日本語](README.ja.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Deutsch](README.de.md) | [Français](README.fr.md) | [Español](README.es.md) | [Italiano](README.it.md) | [Polski](README.pl.md) | **Português (Brasil)** | [Русский](README.ru.md) | [Svenska](README.sv.md) | [ไทย](README.th.md) | [Türkçe](README.tr.md)
+[한국어](../../README.md) | [English](../../README.en.md) | [日本語](../ja/README.md) | [简体中文](../zh-CN/README.md) | [繁體中文](../zh-TW/README.md) | [Deutsch](../de/README.md) | [Français](../fr/README.md) | [Español](../es/README.md) | [Italiano](../it/README.md) | [Polski](../pl/README.md) | **Português (Brasil)** | [Русский](../ru/README.md) | [Svenska](../sv/README.md) | [ไทย](../th/README.md) | [Türkçe](../tr/README.md)
 
 # Guia de modding de Sephiria
 
@@ -37,18 +37,18 @@ Para manter o jogo seguro para todos, siga as regras abaixo. Violações podem r
 
 | Documento | Conteúdo |
 |---|---|
-| [Seu primeiro mod](docs/pt-BR/getting-started.md) | Configurar uma pasta de desenvolvimento, testar um mod localmente, ler os logs |
-| [Referência do metadata.json](docs/pt-BR/metadata.md) | O que cada campo significa, regras de dependências e versões, declaração de módulos |
-| [Mods de localização](docs/pt-BR/localization-mods.md) | Estrutura dos arquivos de idioma, como encontrar chaves, regras para preservar tags e marcadores |
-| [Mods de traje](docs/pt-BR/costume-mods.md) | Criando seu próprio traje |
-| [Mods em DLL](docs/pt-BR/dll-mods.md) | Configuração do projeto, ponto de entrada, eventos da `HorayModAPI`, depuração |
-| [Publicando na Oficina](docs/pt-BR/publishing.md) | Envio à Oficina, revisão de mods com código, regras de multijogador |
-| [Referência da API](docs/pt-BR/api/README.md) | Tipos e membros públicos como `HorayModAPI`, `WorkshopModBase`, opções de mod e UI. Gerada automaticamente a partir do código-fonte do jogo |
-| [Apêndice e FAQ](docs/pt-BR/faq.md) |  |
+| [Seu primeiro mod](getting-started.md) | Configurar uma pasta de desenvolvimento, testar um mod localmente, ler os logs |
+| [Referência do metadata.json](metadata.md) | O que cada campo significa, regras de dependências e versões, declaração de módulos |
+| [Mods de localização](localization-mods.md) | Estrutura dos arquivos de idioma, como encontrar chaves, regras para preservar tags e marcadores |
+| [Mods de traje](costume-mods.md) | Criando seu próprio traje |
+| [Mods em DLL](dll-mods.md) | Configuração do projeto, ponto de entrada, eventos da `HorayModAPI`, depuração |
+| [Publicando na Oficina](publishing.md) | Envio à Oficina, revisão de mods com código, regras de multijogador |
+| [Referência da API](api/README.md) | Tipos e membros públicos como `HorayModAPI`, `WorkshopModBase`, opções de mod e UI. Gerada automaticamente a partir do código-fonte do jogo |
+| [Apêndice e FAQ](faq.md) |  |
 
 
 ## Licença
 
-O código deste repositório (exemplos e modelos) está licenciado sob a [Licença MIT](LICENSE).
+O código deste repositório (exemplos e modelos) está licenciado sob a [Licença MIT](../../LICENSE).
 A documentação pode ser citada, traduzida e redistribuída livremente; por favor, credite a fonte.
 O jogo Sephiria em si e seus recursos são obras da TEAM HORAY e não estão cobertos por esta licença.
