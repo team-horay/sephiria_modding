@@ -808,4 +808,4 @@ public enum ItemInteractionItemSource
 | 값 | 설명 |
 |---|---|
 | `Inventory` | 격자 인벤토리 |
-| `SubBag` | 보조가방 |
+| `SubBag` | 보조 가방 |

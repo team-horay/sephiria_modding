@@ -5,7 +5,7 @@
 
 ## 올리기 전에 확인할 것
 
-- 창작마당에 모드를 올리기 위해서는 **`thumbnail.png`**(PNG 또는 JPG, 1MB 미만)가 필수로 존재해야 합니다.
+- 창작마당에 모드를 올리려면 미리보기 이미지(PNG 또는 JPG, 1MB 미만)가 필수입니다. `info.preview`로 지정하거나, 모드 폴더에 `thumbnail.png`를 두세요. 자세한 내용은 [metadata.json 레퍼런스](metadata.md#preview)를 확인하세요.
 - `info.title`은 128자, `info.description`은 7999자까지입니다. 여러 언어로 적었다면 `en-US`가 창작마당 페이지에 올라갑니다.
 - `tags`에 창작마당 카테고리를 적습니다. [metadata.json 레퍼런스](metadata.md)에서 사용할 수 있는 카테고리를 확인하세요.
 - 폴더 안의 파일이 전부 검수 대상이 되므로, 모드 폴더에 게임 DLL 사본, `.pdb`, 빌드 중간 산출물이 섞여 있지 않은지 확인하세요.

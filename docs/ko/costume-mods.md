@@ -209,7 +209,7 @@ costume-sample/
 
 ```json
 "skins": [
-  { "id": "winter", "name": "Skin_WhiteTiger_Winter_Name", "folder": "skins/Winter", "icon": "icon.png",
+  { "id": "winter", "name": "Skin_WhiteCat_Winter_Name", "folder": "skins/Winter", "icon": "icon.png",
     "animations": { "idle": "idle.png", "move": "move.png" } }
 ]
 ```

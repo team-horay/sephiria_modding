@@ -22,7 +22,7 @@ DLL 모드에서 쓸 수 있는 공개 타입과 멤버의 목록입니다. 프�
 |---|---|---|
 | [`OnLoadMiracleDatabase`](HorayModAPI.md#onloadmiracledatabase) | `Action OnLoadMiracleDatabase` | 기적 데이터베이스가 초기화된 직후 발생합니다. |
 | [`OnLoadWeaponDatabase`](HorayModAPI.md#onloadweapondatabase) | `Action OnLoadWeaponDatabase` | 무기 데이터베이스가 초기화된 직후 발생합니다. |
-| [`OnLoadStatusDatabase`](HorayModAPI.md#onloadstatusdatabase) | `Action OnLoadStatusDatabase` | \ 상태(스탯 효과) 데이터베이스가 초기화된 직후 발생합니다. |
+| [`OnLoadStatusDatabase`](HorayModAPI.md#onloadstatusdatabase) | `Action OnLoadStatusDatabase` | 상태(스탯 효과) 데이터베이스가 초기화된 직후 발생합니다. |
 | [`OnLoadSpecialStatDatabase`](HorayModAPI.md#onloadspecialstatdatabase) | `Action OnLoadSpecialStatDatabase` | 전문 능력치 카테고리와 상태가 적재된 직후 발생합니다. |
 | [`OnLoadItemDatabase`](HorayModAPI.md#onloaditemdatabase) | `Action OnLoadItemDatabase` | 아이템 데이터베이스가 초기화된 직후 발생합니다. |
 | [`OnLoadKeywordDatabase`](HorayModAPI.md#onloadkeyworddatabase) | `Action OnLoadKeywordDatabase` | 키워드 데이터베이스가 초기화된 직후 발생합니다. |
@@ -35,7 +35,7 @@ DLL 모드에서 쓸 수 있는 공개 타입과 멤버의 목록입니다. 프�
 | [`OnAllDatabasesReady`](HorayModAPI.md#onalldatabasesready) | `Action OnAllDatabasesReady` | 모든 데이터베이스 초기화가 끝난 직후 발생합니다. |
 | [`OnTitleMenuReady`](HorayModAPI.md#ontitlemenuready) | `Action<UI_TitleLobby> OnTitleMenuReady` | 타이틀 메뉴가 로드된 이후 호출됩니다. |
 | [`OnStartGameServerside`](HorayModAPI.md#onstartgameserverside) | `Action OnStartGameServerside` | 게임이 시작될 때 호출됩니다. |
-| [`OnStartGameClientside`](HorayModAPI.md#onstartgameclientside) | `Action OnStartGameClientside` | 게임이 시작될 때 호툴됩니다. |
+| [`OnStartGameClientside`](HorayModAPI.md#onstartgameclientside) | `Action OnStartGameClientside` | 게임이 시작될 때 호출됩니다. |
 | [`OnStartSessionServerside`](HorayModAPI.md#onstartsessionserverside) | `Action<bool> OnStartSessionServerside` | 게임 세션이 시작될 때 호출됩니다. |
 | [`OnStartSessionClientside`](HorayModAPI.md#onstartsessionclientside) | `Action<bool> OnStartSessionClientside` | 게임 세션이 시작될 때 호출됩니다. |
 | [`OnLocalizationReady`](HorayModAPI.md#onlocalizationready) | `Action<HorayModLocalizationContext> OnLocalizationReady` | 번역 파일이 로드된 후 호출됩니다. |

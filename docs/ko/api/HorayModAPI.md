@@ -82,7 +82,7 @@ public static event Action OnLoadWeaponDatabase
 public static event Action OnLoadStatusDatabase
 ```
 
-\ 상태(스탯 효과) 데이터베이스가 초기화된 직후 발생합니다. `StatusDatabase.Register`·`Modify`로 상태를 등록·수정합니다.
+상태(스탯 효과) 데이터베이스가 초기화된 직후 발생합니다. `StatusDatabase.Register`·`Modify`로 상태를 등록·수정합니다.
 
 
 #### OnLoadSpecialStatDatabase
@@ -199,7 +199,7 @@ public static event Action OnStartGameServerside
 public static event Action OnStartGameClientside
 ```
 
-게임이 시작될 때 호툴됩니다. (client-side) 시작이란, 타이틀 화면에서 세이브 슬롯을 클릭하여 게임에 진입하는 행위를 의미합니다. 아직 플레이어나 현재 장소 등 세션 데이터의 로드가 되기 이전입니다.
+게임이 시작될 때 호출됩니다. (client-side) 시작이란, 타이틀 화면에서 세이브 슬롯을 클릭하여 게임에 진입하는 행위를 의미합니다. 아직 플레이어나 현재 장소 등 세션 데이터의 로드가 되기 이전입니다.
 
 
 #### OnStartSessionServerside

@@ -11,7 +11,7 @@
 - 파일에는 바꾸고 싶은 키만 넣으면 됩니다.
 - 파일 이름이 곧 언어입니다. `ko-KR.json`은 한국어, `en-US.json`은 영어 테이블에 덮어씌워집니다.
 - 번역 모드가 여럿이면 같은 키는 나중에 로드되는 모드가 덮어씁니다.
-- 번역만 바꾸는 모드는 다른 참가자에게 영향이 없으므로 `mod.json`의 `multiplayer.installation`은 `local_only`를 권장합니다.
+- 번역만 바꾸는 모드는 다른 참가자에게 영향이 없으므로 `metadata.json`의 `multiplayer.installation`은 `local_only`를 권장합니다.
 - 키와 값 모두 문자열입니다. 중첩 객체나 배열은 쓸 수 없습니다.
 - 파일은 **UTF-8**로 저장하세요.
 
@@ -20,7 +20,7 @@ my-translation-mod/
 ├── metadata.json              ← modules에 { "type": "localization", "path": "Localization" }를 기입
 ├── thumbnail.png
 └── Localization/
-    ├── ko-KR.json
+    └── ko-KR.json
 ```
 
 

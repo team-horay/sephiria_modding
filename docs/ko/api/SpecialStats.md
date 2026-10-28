@@ -9,7 +9,7 @@
 |---|---|
 | [`SpecialStatContext`](#specialstatcontext) | 값 읽기 함수에 넘기는 대상 아바타 정보입니다. |
 | [`SpecialStatValue`](#specialstatvalue) | 전문 능력치 한 행의 값입니다. |
-| [`SpecialStatCategoryEntity`](#specialstatcategoryentity) | 스탯 UI의 전문 능력 항목 카테고리를 데이터입니다. |
+| [`SpecialStatCategoryEntity`](#specialstatcategoryentity) | 스탯 UI의 전문 능력치 카테고리 데이터입니다. |
 | [`SpecialStatCategoryVisibility`](#specialstatcategoryvisibility) | 카테고리가 언제 표시되는지 식별하는 값입니다. |
 | [`SpecialStatDisplaySettings`](#specialstatdisplaysettings) | `StatusEntity.specialStat`의 세부 데이터. |
 | [`SpecialStatValueSource`](#specialstatvaluesource) | 전문 능력치의 표시 값을 어디서 읽을지 식별하는 값입니다. |
@@ -171,7 +171,7 @@ public static SpecialStatValue Number(double number, bool hasStat, AvatarStatsHo
 public class SpecialStatCategoryEntity : ScriptableObject
 ```
 
-스탯 UI의 전문 능력 항목 카테고리를 데이터입니다.
+스탯 UI의 전문 능력치 카테고리 데이터입니다.
 
 ### 상수와 필드
 
