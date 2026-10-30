@@ -14,25 +14,34 @@ Bu sayfa modunuzu Steam Atölyesi'ne nasıl yükleyeceğinizi, inceleme sistemin
 
 1. Sephiria'yı başlatın.
 2. Başlık ekranında **Steam Atölyesi** panelini açın ve yaptığınız modu bulun.
-3. Modunuzu seçin.
-4. Kod (DLL) içeren modlar kod incelemesinden geçer.
-5. Kod içermeyen modlar Atölye'ye hemen yüklenebilir.
+3. Modunuzu seçin ve **Atölye'ye yükle** düğmesine basın.
+4. Kod içermeyen modlarda Atölye'ye yükleme son adımdır.
+5. Kod (DLL) içeren modlar, Atölye'ye yükleme tamamlandığında Atölye öğe kimliğiyle birlikte otomatik olarak **inceleme sistemine** gönderilir.
 6. Yüklenen Atölye sayfasına gidin, abone olmak gibi son bir test yapın, ardından görünürlüğü "Herkese Açık" olarak değiştirin.
+
+Atölye'ye yükleme tamamlandığı halde yalnızca inceleme gönderimi başarısız olduysa (örneğin bir ağ hatası nedeniyle), aynı modda **Atölye'ye yükle** düğmesine yeniden basın. İçerik değişmediyse mod Atölye'ye yeniden yüklenmez; yalnızca gönderim yeniden yapılır. Gönderim, Atölye öğesini oluşturan Steam hesabıyla yapılmalıdır.
 
 ## Kod İncelemesi
 
-- İnceleme sistemi mod klasörünüzdeki her dosyayı denetler. DLL'lerin derlemesi çözülür ve ağ iletişimi, dosya erişimi, karartma ve kötü amaçlı davranış açısından denetlenir; görsel, ses ve JSON gibi veri dosyaları ise geçerli biçimde olup olmadıkları açısından denetlenir.
-- Sorun bulunmazsa mod otomatik olarak onaylanır; şüpheli bir şey görülürse bir operatör elle denetler. Açıkça kötü amaçlı modlar otomatik olarak reddedilir.
-- İnceleme, otomatik analiz ile operatör denetimini birleştirir ve hiçbir inceleme sisteminin her riski yakalayamayacağının farkındayız. Yine de bu ön inceleme ve onay süreciyle kötü amaçlı modların yayılmasını azaltmayı hedefliyoruz. İş birliğiniz için teşekkür ederiz.
-- Bir modun kod içerip içermediği dosya adına göre değil, dosya **içeriğine** göre belirlenir. `dll` modülü olmasa bile, `libraries` içeren ya da uzantısı değiştirilmiş bir DLL veya EXE barındıran bir mod incelemeye tabidir.
+- İnceleme sistemi DLL'lerin derlemesini çözer ve bunları ağ iletişimi, dosya erişimi, karartma ve kötü amaçlı davranış açısından denetler. İnceleme, otomatik analiz ile operatör denetimini birleştirir ve hiçbir inceleme sisteminin her riski yakalayamayacağının farkındayız. Yine de bu inceleme süreciyle kötü amaçlı modların yayılmasını azaltmayı hedefliyoruz. İş birliğiniz için teşekkür ederiz.
+- Kod (DLL) içeren her mod **mod inceleme sistemine de gönderilmelidir.** Bunun için her zaman oyundaki **Atölye'ye yükle** düğmesiyle yükleyin.
+- Atölye'ye yüklenmiş ancak inceleme sistemine gönderilmemiş modlar genellikle oyuncular tarafından çalıştırılamaz.
+- Modu indiren oyuncular, modun Atölye öğe kimliğini ve kurulu DLL'leri kullanarak inceleme durumunu sorgular.
+  - **Gönderildi / Onaylandı**: Mod çalışır. İnceleme tamamlanmadan önce de çalışır.
+  - **Gönderilmedi / Reddedildi**: Mod çalışmaz ve nedeni mod panelinde gösterilir.
+- İnceleme sırasında bir sorun bulunursa mod yayınlandıktan sonra bile reddedilebilir. Reddedilen bir modun nedenini paneldeki **Reddedilme nedenini görüntüle** ile görebilirsiniz. Reddedilen DLL'ler olduğu gibi yeniden yayınlanamaz; sorunu düzeltip yeniden yükleyin.
+- `dll` modülü olmasa bile, `libraries` içeren ya da uzantısı değiştirilmiş bir DLL veya EXE barındıran bir mod incelemeye tabidir.
 - Kod incelemesinden geçen modların klasörü sıkıştırıldığında 20 MB veya daha küçük olmalıdır.
 
-## Onay Sertifikası (Yalnızca Kod İçeren Modlar)
+### İnceleme Başarısızlığının Nedenleri
 
-- Kod içeren modlar bir onay sertifikası alır.
-- Bu sertifika, modun dosyalarının onaylanan sürümle birebir aynı olduğunu belgeler.
-- Modu indiren oyuncuların modun kodunu çalıştırabilmesi için DLL modlarının bu sertifikasyondan geçmesi gerekir.
-- Sertifikasyondan sonra tek bir dosya bile değişirse sertifika geçersiz olur ve modun yeniden incelenmesi gerekir.
+|Mesaj|Neden|
+|---|---|
+|İnceleme sisteminde başvuru kaydı yok.|Mod Atölye'ye yüklenmiş ancak inceleme sistemine gönderilmemiş. **Atölye'ye yükle** düğmesiyle yeniden gönderin.|
+|İnceleme sistemi bu modun onayını reddetti.|Operasyon ekibi modu bir nedenle reddetti. Reddedilme nedenini kontrol edin.|
+|İnceleme sunucusundan bilgi alınamıyor.|Abonenin internet bağlantısı kesilmiş olabilir ya da inceleme sunucusunda bir sorun olabilir.|
+|Bu mod önceki inceleme sistemine ait.|İnceleme sunucusu yükseltildi ve modun mevcut doğrulama verileri sıfırlandı. Yeniden gönderin.|
+|Modda yetkisiz bir DLL algılandı.|Mod çalışırken moddaki DLL dosyalarının kümesi değişirse o modun yüklenmesi kısıtlanır. Yani şunlar inceleme sistemini ihlal edebilir: mod çalışırken dışarıdan bir DLL indirip derlemeyi yükler; mod çalışırken kendi DLL'ini oluşturup çalıştırır; mod, içinde kendi sıkıştırma yöntemiyle paketlenmiş bir DLL'i çıkarıp kullanır.|
 
 ## Görünürlük ve Herkese Açık Yapma
 
@@ -44,24 +53,17 @@ Bu sayfa modunuzu Steam Atölyesi'ne nasıl yükleyeceğinizi, inceleme sistemin
 
 Modunuzu yayınladığınız şekilde güncelleyebilirsiniz.
 
-- DLL modlarının yeni bir onay sertifikasına ihtiyacı vardır.
+- DLL'leri değiştiren bir güncelleme, yüklemeden sonra otomatik olarak yeniden gönderilir ve yeniden incelemeden geçer. Hiçbir DLL'i değiştirmediyseniz inceleme durumu aynı kalır.
 - `modId` değerini değiştirmeyin. Mod farklı bir mod olarak ele alınır; bu da bağımlılıkları ve daha fazlasını bozabilir.
 - **Her güncellemede `metadata.json` içindeki `version` değerini mutlaka yükseltin.** Mod sürümleri çok oyunculu bir lobiye katılırken karşılaştırılır; içerik değişip sürüm değişmediyse, farklı mod içeriğine sahip oyuncular aynı oyuna düşüp sorun yaşayabilir.
 
 ## Yükleme Bileti
 
-İnceleme isteyip yükleme yaptıktan sonra aşağıdaki dosyalar mod klasörünüze eklenir. İnceleme onay bilgilerinizi içerirler; bu yüzden **silmeyin.** Mod klasörünüzü git ile yönetiyorsanız bu üç dosyayı da commit'lemek en güvenlisidir. Bilgisayar değiştirir veya biçimlendirme yaparsanız, aynı Atölye öğesini güncellemeye devam etmek için bu dosyalara ihtiyacınız olacak.
+Yükleme yaptıktan sonra mod klasörünüze `uploadticket.json` eklenir. Atölye öğe kimliğinizi ve inceleme gönderim bilgilerinizi içerir; bu yüzden **silmeyin.** Mod klasörünüzü git ile yönetiyorsanız bu dosyayı da commit'lemek en güvenlisidir. Bilgisayar değiştirir veya biçimlendirme yaparsanız, aynı Atölye öğesini güncellemeye devam etmek için bu dosyaya ihtiyacınız olacak. Bu dosya olmadan oyun, klasörü hiç yayınlanmamış yeni bir mod olarak ele alır.
 
-| Dosya | İçerik |
-|---|---|
-| `uploadticket.json` | İnceleme bileti ve Atölye öğe kimliği. Bu dosya olmadan oyun, klasörü hiç yayınlanmamış yeni bir mod olarak ele alır. |
-| `mod-guard-manifest.json`, `mod-guard.sig.json` | İnceleme onay sertifikası: onaylanan dosyaların listesi ve bir imza. Düzenlenmeleri onayı geçersiz kılar. |
+İnceleme sisteminin 1.1.1 öncesinde kullandığı `mod-guard-manifest.json` ve `mod-guard.sig.json` artık kullanılmıyor. Kalmış olsalar bile Atölye'ye yüklenmezler; silebilirsiniz.
 
-Bu dosyaları kaybederseniz nasıl kurtaracağınız için [SSS](faq.md) sayfasına bakın.
-
-## Onayın Geri Alınması
-
-Yayınladıktan sonra bir kural ihlali tespit edilirse operatör onayı geri alabilir. Onayı geri alınan bir mod kurulu olsa bile yüklenmez ve panelde "İnceleme onayı geri alındı" olarak gösterilir.
+Dosyayı kaybederseniz nasıl kurtaracağınız için [SSS](faq.md) sayfasına bakın.
 
 
 ## Çok Oyunculu Kuralları

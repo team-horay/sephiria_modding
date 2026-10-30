@@ -15,7 +15,7 @@ Mod-bezogene Zeilen beginnen mit einem Tag in eckigen Klammern, suche also nach 
 |---|---|
 | `[WorkshopModManager]` | Abfrage der Abonnementliste, Downloads, Scannen des lokalen Ordners, Zusammenfassung des Ladeplans |
 | `[WorkshopModRuntime]` | Ergebnisse der DLL-Aktivierung und des Zusammenführens der Lokalisierung |
-| `[WorkshopUploader]` | Einreichung zur Prüfung und Workshop-Upload |
+| `[WorkshopUploader]` | Workshop-Upload und Einreichung zur Prüfung |
 | `[ModGuardClient]` | Kommunikation mit dem Prüfserver |
 | `[WorkshopLobbyMods]` | Vergleich der Mod-Sets in Mehrspieler-Räumen |
 | `모드 내 언어 파일 발견` (koreanisch für „Sprachdatei in Mod gefunden“) | Anzahl der aus jeder Lokalisierungsdatei gelesenen Schlüssel |
@@ -44,9 +44,11 @@ Trenne mehrere Pfade mit Semikolons und setze das Ganze in Anführungszeichen, w
 Als Parameter übergebene Ordner werden genauso behandelt wie Unterordner von `WorkshopLocal/`.
 
 
-## Ich habe uploadticket.json, mod-guard-manifest.json und mod-guard.sig.json verloren.
+## Ich habe uploadticket.json verloren.
 
-Wenn nur die Nachweisdateien (`mod-guard-manifest.json`, `mod-guard.sig.json`) fehlen und `uploadticket.json` noch vorhanden ist, wähle die Mod im Panel aus und drücke die Schaltfläche **Freigabenachweis abrufen**, um sie erneut vom Prüfserver herunterzuladen. Hast du aber auch `uploadticket.json` verloren (zum Beispiel nach einer Neuinstallation), behandelt das Spiel den Ordner als neue Mod. Ein Upload in diesem Zustand erstellt also einen neuen Workshop-Beitrag, statt den bestehenden zu aktualisieren. Um den bestehenden Beitrag weiter aktualisieren zu können, stelle ihn in dieser Reihenfolge wieder her:
+`mod-guard-manifest.json` und `mod-guard.sig.json` werden ab 1.1.1 nicht mehr verwendet, es ist also kein Problem, wenn du sie verlierst. Die einzige Datei, die du brauchst, ist `uploadticket.json`.
+
+Hast du `uploadticket.json` verloren (zum Beispiel nach einer Neuinstallation), behandelt das Spiel den Ordner als neue Mod. Ein Upload in diesem Zustand erstellt also einen neuen Workshop-Beitrag, statt den bestehenden zu aktualisieren. Um den bestehenden Beitrag weiter aktualisieren zu können, stelle ihn in dieser Reihenfolge wieder her:
 
 1. Abonniere deine eigene Mod im Workshop.
 2. Kopiere den gesamten von Steam heruntergeladenen Ordner (`<Steam-Bibliothek>/steamapps/workshop/content/2436940/<Workshop-Beitrags-ID>/`) nach `WorkshopLocal/`. Der Ordnername ist beliebig.
@@ -57,4 +59,4 @@ Wenn nur die Nachweisdateien (`mod-guard-manifest.json`, `mod-guard.sig.json`) f
   "publishedFileId": 123456789
 }
 ```
-4. Beim Spielstart wird die Mod im Panel als „Nicht eingereicht“ angezeigt. Durchlaufe erneut Prüfung anfordern → Freigabe → Freigabenachweis abrufen → In den Workshop hochladen, und **der bestehende Beitrag wird aktualisiert**. (Hinweis: Wenn du einen bestehenden Mod-Ordner dupliziert hast, um eine andere Mod zu erstellen, **musst** du `uploadticket.json` und die Nachweisdateien **löschen**. Lässt du sie stehen, überschreibt die neue Mod den Workshop-Beitrag der ursprünglichen Mod.)
+4. Starte das Spiel, wähle die Mod im Panel aus und drücke **In den Workshop hochladen**. **Der bestehende Beitrag wird aktualisiert**, und bei einer Code-Mod wird sie unter derselben Beitrags-ID erneut zur Prüfung eingereicht. (Hinweis: Wenn du einen bestehenden Mod-Ordner dupliziert hast, um eine andere Mod zu erstellen, **musst** du `uploadticket.json` **löschen**. Lässt du sie stehen, überschreibt die neue Mod den Workshop-Beitrag der ursprünglichen Mod.)

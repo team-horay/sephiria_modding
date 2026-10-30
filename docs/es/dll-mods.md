@@ -202,6 +202,14 @@ Si tu mod usa otras bibliotecas (p. ej. paquetes de terceros distintos de Newton
 - No se pueden usar DLL nativas (C/C++). Solo se cargan ensamblados administrados.
 - Si otro mod ya ha cargado un ensamblado con el mismo nombre, el juego no elige uno de los dos; **deja el mod sin ejecutar**. Es más seguro separar las bibliotecas compartidas en un mod aparte y enlazarlo mediante `dependencies`.
 
+### ¡No crees DLL en tiempo de ejecución!
+
+Si los archivos DLL de un mod cambian mientras el mod se está ejecutando, se restringe la carga de ese mod. Incluye todas las DLL tal cual en el elemento del Workshop, sin ningún tipo de compresión ni streaming. Es decir, lo siguiente puede infringir el sistema de revisión. Incluye en el mod todas las DLL que necesites al subirlo.
+
+- El mod descarga una DLL del exterior mientras se ejecuta y carga el ensamblado
+- El mod crea y ejecuta su propia DLL mientras se ejecuta
+- El mod extrae una DLL empaquetada en su interior con su propio formato de compresión y la usa
+
 
 ## Compilar y probar
 
@@ -219,7 +227,7 @@ Cuando el juego se actualiza, `Assembly-CSharp.dll` cambia. Los mods que solo us
 
 - Después de una actualización, recompila contra la nueva carpeta `Managed/` y prueba.
 - Si indicas la **versión del juego compatible** en la descripción de tu página del Workshop, los usuarios pueden encontrar la causa rápidamente. La versión del juego también puede registrarse automáticamente en los metadatos del elemento del Workshop cuando publicas.
-- Si cambias tu código, debe pasar la revisión de nuevo antes de poder publicarlo. Consulta [Publicar en el Workshop](publishing.md).
+- Cuando cambies tu código, debe enviarse de nuevo al sistema de revisión. Consulta [Publicar en el Workshop](publishing.md#revisión-de-código).
 
 
 ## Consideraciones sobre multijugador

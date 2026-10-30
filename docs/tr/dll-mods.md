@@ -202,6 +202,14 @@ Modunuz başka kütüphaneler kullanıyorsa (örn. Newtonsoft.Json dışındaki 
 - Yerel (C/C++) DLL'ler kullanılamaz. Yalnızca yönetilen derlemeler yüklenir.
 - Aynı ada sahip bir derleme başka bir mod tarafından zaten yüklenmişse, oyun ikisinden birini seçmez; çalıştırmayı **askıya alır**. Paylaşılan kütüphaneleri ayrı bir moda ayırıp `dependencies` ile bağlamak daha güvenlidir.
 
+### Çalışma Zamanında DLL Oluşturmayın!
+
+Mod çalışırken moddaki DLL dosyaları değişirse o modun yüklenmesi kısıtlanır. Tüm DLL'leri herhangi bir sıkıştırma veya akış (streaming) olmadan, olduğu gibi Atölye öğesine dahil edin. Yani aşağıdakiler inceleme sistemini ihlal edebilir. İhtiyacınız olan tüm DLL'leri yüklerken moda koyun.
+
+- Mod çalışırken dışarıdan bir DLL indirip derlemeyi yükler
+- Mod çalışırken kendi DLL'ini oluşturup çalıştırır
+- Mod, içinde kendi sıkıştırma yöntemiyle paketlenmiş bir DLL'i çıkarıp kullanır
+
 
 ## Derleme ve Test Etme
 
@@ -219,7 +227,7 @@ Oyun güncellendiğinde `Assembly-CSharp.dll` değişir. Yalnızca resmi olaylar
 
 - Güncellemeden sonra yeni `Managed/` klasörüne karşı yeniden derleyin ve test edin.
 - Atölye sayfanızın açıklamasında **desteklenen oyun sürümünü** belirtirseniz kullanıcılar sorunun nedenini hızla bulabilir. Yayınlarken oyun sürümü Atölye öğesinin meta verilerine otomatik olarak da kaydedilebilir.
-- Kodunuzu değiştirirseniz yayınlayabilmeniz için yeniden incelemeden geçmesi gerekir. [Atölye'de Yayınlama](publishing.md) sayfasına bakın.
+- Kodunuzu değiştirdiğinizde inceleme sistemine yeniden gönderilmesi gerekir. [Atölye'de Yayınlama](publishing.md#kod-i̇ncelemesi) sayfasına bakın.
 
 
 ## Çok Oyunculu Hususlar

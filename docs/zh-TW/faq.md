@@ -15,7 +15,7 @@
 |---|---|
 | `[WorkshopModManager]` | 訂閱清單查詢、下載、本機資料夾掃描、載入計畫摘要 |
 | `[WorkshopModRuntime]` | DLL 啟用與在地化合併結果 |
-| `[WorkshopUploader]` | 審核提交與工作坊上傳 |
+| `[WorkshopUploader]` | 工作坊上傳與審核提交 |
 | `[ModGuardClient]` | 與審核伺服器的通訊 |
 | `[WorkshopLobbyMods]` | 多人遊戲房間的模組組合比對 |
 | `모드 내 언어 파일 발견`（在模組中發現語言檔） | 每個在地化檔案讀取到的鍵數量 |
@@ -44,9 +44,11 @@
 以參數傳入的資料夾會被視為與 `WorkshopLocal/` 的子資料夾完全相同。
 
 
-## 我弄丟了 uploadticket.json、mod-guard-manifest.json 與 mod-guard.sig.json。
+## 我弄丟了 uploadticket.json。
 
-如果只缺少憑證檔案（`mod-guard-manifest.json`、`mod-guard.sig.json`），而 `uploadticket.json` 還在，請在面板中選取模組並按下**取得審核憑證**按鈕，從審核伺服器重新下載。但如果連 `uploadticket.json` 也遺失了（例如重灌系統之後），遊戲會把資料夾視為新模組，直接上傳會建立新的工作坊物品，而不是更新現有物品。若要繼續更新現有物品，請依以下順序復原：
+從 1.1.1 開始已不再使用 `mod-guard-manifest.json` 與 `mod-guard.sig.json`，遺失了也沒關係。唯一需要的檔案是 `uploadticket.json`。
+
+如果遺失了 `uploadticket.json`（例如重灌系統之後），遊戲會把資料夾視為新模組，直接上傳會建立新的工作坊物品，而不是更新現有物品。若要繼續更新現有物品，請依以下順序復原：
 
 1. 在工作坊訂閱你自己的模組。
 2. 將 Steam 下載的整個資料夾（`<Steam 收藏庫>/steamapps/workshop/content/2436940/<工作坊物品 ID>/`）複製到 `WorkshopLocal/`。資料夾名稱可以任意取。
@@ -57,4 +59,4 @@
   "publishedFileId": 123456789
 }
 ```
-4. 啟動遊戲後，模組會在面板中顯示為「未申請審核」。依序進行申請審核 → 核准 → 取得審核憑證 → 再次上傳至工作坊，**現有物品就會被更新**。（注意：如果你複製了現有模組的資料夾來製作另一個不同的模組，**務必刪除** `uploadticket.json` 與憑證檔案。若保留下來，新模組會覆寫原本模組的工作坊物品。）
+4. 啟動遊戲，在面板中選取模組並按下**上傳至創意工坊**。**現有物品就會被更新**，如果是程式碼模組，會以相同的物品 ID 重新提交審核。（注意：如果你複製了現有模組的資料夾來製作另一個不同的模組，**務必刪除** `uploadticket.json`。若保留下來，新模組會覆寫原本模組的工作坊物品。）

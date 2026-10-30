@@ -15,7 +15,7 @@ As linhas relacionadas a mods começam com uma tag entre colchetes, então procu
 |---|---|
 | `[WorkshopModManager]` | Consulta da lista de inscrições, downloads, varredura da pasta local, resumo do plano de carregamento |
 | `[WorkshopModRuntime]` | Ativação de DLLs e resultados da mesclagem de localização |
-| `[WorkshopUploader]` | Envio para revisão e upload para a Oficina |
+| `[WorkshopUploader]` | Upload para a Oficina e envio para revisão |
 | `[ModGuardClient]` | Comunicação com o servidor de revisão |
 | `[WorkshopLobbyMods]` | Comparação dos conjuntos de mods em salas multijogador |
 | `모드 내 언어 파일 발견` | Número de chaves lidas de cada arquivo de localização |
@@ -44,9 +44,11 @@ Separe vários caminhos com ponto e vírgula e coloque tudo entre aspas se algum
 As pastas passadas como argumento são tratadas exatamente como subpastas de `WorkshopLocal/`.
 
 
-## Perdi o uploadticket.json, o mod-guard-manifest.json e o mod-guard.sig.json.
+## Perdi o uploadticket.json.
 
-Se apenas os arquivos de certificado (`mod-guard-manifest.json`, `mod-guard.sig.json`) estiverem faltando e o `uploadticket.json` ainda existir, selecione o mod no painel e pressione o botão **Obter prova de aprovação** para baixá-los novamente do servidor de revisão. Porém, se você também perdeu o `uploadticket.json` (por exemplo, depois de formatar o computador), o jogo trata a pasta como um mod novo, então enviá-la assim cria um novo item na Oficina em vez de atualizar o existente. Para continuar atualizando o item existente, recupere-o nesta ordem:
+O `mod-guard-manifest.json` e o `mod-guard.sig.json` não são mais usados a partir da 1.1.1, então não tem problema perdê-los. O único arquivo necessário é o `uploadticket.json`.
+
+Se você perdeu o `uploadticket.json` (por exemplo, depois de formatar o computador), o jogo trata a pasta como um mod novo, então enviá-la assim cria um novo item na Oficina em vez de atualizar o existente. Para continuar atualizando o item existente, recupere-o nesta ordem:
 
 1. Inscreva-se no seu próprio mod na Oficina.
 2. Copie a pasta inteira que a Steam baixou (`<biblioteca Steam>/steamapps/workshop/content/2436940/<ID do item da Oficina>/`) para dentro de `WorkshopLocal/`. Qualquer nome de pasta serve.
@@ -57,4 +59,4 @@ Se apenas os arquivos de certificado (`mod-guard-manifest.json`, `mod-guard.sig.
   "publishedFileId": 123456789
 }
 ```
-4. Ao iniciar o jogo, o mod aparece no painel como "Não enviado". Passe por solicitar revisão → aprovação → obter prova de aprovação → enviar à Oficina novamente, e **o item existente é atualizado**. (Atenção: se você duplicou a pasta de um mod existente para criar um mod diferente, **precisa excluir** o `uploadticket.json` e os arquivos de certificado. Se deixá-los, o novo mod vai sobrescrever o item da Oficina do mod original.)
+4. Inicie o jogo, selecione o mod no painel e pressione **Enviar para a Oficina**. **O item existente é atualizado** e, se for um mod com código, ele é reenviado para revisão com o mesmo ID do item. (Atenção: se você duplicou a pasta de um mod existente para criar um mod diferente, **precisa excluir** o `uploadticket.json`. Se deixá-lo, o novo mod vai sobrescrever o item da Oficina do mod original.)

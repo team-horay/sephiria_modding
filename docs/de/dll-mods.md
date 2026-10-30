@@ -202,6 +202,14 @@ Wenn deine Mod andere Bibliotheken verwendet (z. B. Drittanbieter-Pakete außer 
 - Native (C/C++) DLLs können nicht verwendet werden. Es werden nur verwaltete Assemblys geladen.
 - Wurde eine Assembly mit demselben Namen bereits von einer anderen Mod geladen, wählt das Spiel keine der beiden aus, sondern **hält die Ausführung zurück**. Es ist sicherer, gemeinsam genutzte Bibliotheken in eine separate Mod auszulagern und sie über `dependencies` zu verknüpfen.
 
+### Erzeuge keine DLLs zur Laufzeit!
+
+Ändern sich die DLL-Dateien einer Mod, während die Mod läuft, wird das Laden dieser Mod eingeschränkt. Lege alle DLLs unverändert in den Workshop-Beitrag, ohne jegliche Komprimierung oder Streaming. Folgendes kann also gegen das Prüfsystem verstoßen. Lege alle benötigten DLLs beim Upload in die Mod.
+
+- Die Mod lädt während der Ausführung eine DLL von außen herunter und lädt die Assembly
+- Die Mod erzeugt während der Ausführung eine eigene DLL und führt sie aus
+- Die Mod entpackt eine DLL, die mit einem eigenen Komprimierungsverfahren in ihr verpackt ist, und verwendet sie
+
 
 ## Bauen und Testen
 
@@ -219,7 +227,7 @@ Wenn das Spiel aktualisiert wird, ändert sich `Assembly-CSharp.dll`. Mods, die 
 
 - Baue nach einem Update gegen den neuen `Managed/`-Ordner neu und teste.
 - Wenn du die **unterstützte Spielversion** in der Beschreibung deiner Workshop-Seite vermerkst, finden Nutzer die Ursache schnell. Die Spielversion wird beim Veröffentlichen möglicherweise auch automatisch in den Metadaten des Workshop-Beitrags festgehalten.
-- Wenn du deinen Code änderst, muss er erneut die Prüfung bestehen, bevor du veröffentlichen kannst. Siehe [Im Workshop veröffentlichen](publishing.md).
+- Wenn du deinen Code änderst, muss er erneut beim Prüfsystem eingereicht werden. Siehe [Im Workshop veröffentlichen](publishing.md#code-prüfung).
 
 
 ## Hinweise zum Mehrspielermodus

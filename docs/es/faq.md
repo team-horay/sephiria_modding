@@ -15,7 +15,7 @@ Las líneas relacionadas con mods empiezan con una etiqueta entre corchetes, as�
 |---|---|
 | `[WorkshopModManager]` | Consulta de la lista de suscripciones, descargas, exploración de carpetas locales, resumen del plan de carga |
 | `[WorkshopModRuntime]` | Activación de DLL y resultados de la fusión de localización |
-| `[WorkshopUploader]` | Envío a revisión y subida al Workshop |
+| `[WorkshopUploader]` | Subida al Workshop y envío a revisión |
 | `[ModGuardClient]` | Comunicación con el servidor de revisión |
 | `[WorkshopLobbyMods]` | Comparación de conjuntos de mods en salas multijugador |
 | `모드 내 언어 파일 발견` | Número de claves leídas de cada archivo de localización |
@@ -44,9 +44,11 @@ Separa varias rutas con punto y coma, y pon todo entre comillas si alguna ruta c
 Las carpetas pasadas como argumento se tratan exactamente igual que las subcarpetas de `WorkshopLocal/`.
 
 
-## He perdido uploadticket.json, mod-guard-manifest.json y mod-guard.sig.json.
+## He perdido uploadticket.json.
 
-Si solo faltan los archivos del certificado (`mod-guard-manifest.json`, `mod-guard.sig.json`) y `uploadticket.json` sigue ahí, selecciona el mod en el panel y pulsa el botón **Obtener prueba de aprobación** para volver a descargarlos del servidor de revisión. Sin embargo, si también perdiste `uploadticket.json` (por ejemplo, tras formatear), el juego trata la carpeta como un mod nuevo, así que subirla tal cual crea un elemento nuevo en el Workshop en lugar de actualizar el existente. Para seguir actualizando el elemento existente, recupéralo en este orden:
+`mod-guard-manifest.json` y `mod-guard.sig.json` ya no se usan desde la 1.1.1, así que no pasa nada si los pierdes. El único archivo que necesitas es `uploadticket.json`.
+
+Si perdiste `uploadticket.json` (por ejemplo, tras formatear), el juego trata la carpeta como un mod nuevo, así que subirla tal cual crea un elemento nuevo en el Workshop en lugar de actualizar el existente. Para seguir actualizando el elemento existente, recupéralo en este orden:
 
 1. Suscríbete a tu propio mod en el Workshop.
 2. Copia la carpeta completa que Steam descargó (`<biblioteca de Steam>/steamapps/workshop/content/2436940/<ID del elemento del Workshop>/`) en `WorkshopLocal/`. Vale cualquier nombre de carpeta.
@@ -57,4 +59,4 @@ Si solo faltan los archivos del certificado (`mod-guard-manifest.json`, `mod-gua
   "publishedFileId": 123456789
 }
 ```
-4. Al iniciar el juego, el mod aparece en el panel como "Sin enviar". Pasa por solicitar revisión → aprobación → obtener prueba de aprobación → volver a subir al Workshop, y **el elemento existente se actualiza**. (Nota: si duplicaste la carpeta de un mod existente para hacer un mod distinto, **debes borrar** `uploadticket.json` y los archivos del certificado. Si los dejas, el mod nuevo sobrescribirá el elemento del Workshop del mod original.)
+4. Inicia el juego, selecciona el mod en el panel y pulsa **Subir al Workshop**. **El elemento existente se actualiza** y, si es un mod con código, se vuelve a enviar a revisión con el mismo ID de elemento. (Nota: si duplicaste la carpeta de un mod existente para hacer un mod distinto, **debes borrar** `uploadticket.json`. Si lo dejas, el mod nuevo sobrescribirá el elemento del Workshop del mod original.)

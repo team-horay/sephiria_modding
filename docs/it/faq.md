@@ -15,7 +15,7 @@ Le righe relative alle mod iniziano con un tag tra parentesi quadre, quindi cerc
 |---|---|
 | `[WorkshopModManager]` | Lettura dell'elenco delle iscrizioni, download, scansione delle cartelle locali, riepilogo del piano di caricamento |
 | `[WorkshopModRuntime]` | Attivazione delle DLL e risultati dell'unione delle localizzazioni |
-| `[WorkshopUploader]` | Invio alla revisione e caricamento sul Workshop |
+| `[WorkshopUploader]` | Caricamento sul Workshop e invio alla revisione |
 | `[ModGuardClient]` | Comunicazione con il server di revisione |
 | `[WorkshopLobbyMods]` | Confronto degli insiemi di mod nelle stanze multigiocatore |
 | `모드 내 언어 파일 발견` | Numero di chiavi lette da ciascun file di localizzazione |
@@ -44,9 +44,11 @@ Separa più percorsi con punti e virgola, e racchiudi tutto tra virgolette se un
 Le cartelle passate come argomento vengono trattate esattamente come sottocartelle di `WorkshopLocal/`.
 
 
-## Ho perso uploadticket.json, mod-guard-manifest.json e mod-guard.sig.json.
+## Ho perso uploadticket.json.
 
-Se mancano solo i file di certificato (`mod-guard-manifest.json`, `mod-guard.sig.json`) e `uploadticket.json` è ancora presente, seleziona la mod nel pannello e premi il pulsante **Ottieni prova di approvazione** per scaricarli di nuovo dal server di revisione. Se però hai perso anche `uploadticket.json` (per esempio dopo una formattazione), il gioco tratta la cartella come una nuova mod, quindi caricarla così com'è crea un nuovo elemento del Workshop invece di aggiornare quello esistente. Per continuare ad aggiornare l'elemento esistente, recuperalo in quest'ordine:
+`mod-guard-manifest.json` e `mod-guard.sig.json` non vengono più usati dalla 1.1.1, quindi non è un problema se li perdi. L'unico file necessario è `uploadticket.json`.
+
+Se hai perso `uploadticket.json` (per esempio dopo una formattazione), il gioco tratta la cartella come una nuova mod, quindi caricarla così com'è crea un nuovo elemento del Workshop invece di aggiornare quello esistente. Per continuare ad aggiornare l'elemento esistente, recuperalo in quest'ordine:
 
 1. Iscriviti alla tua mod sul Workshop.
 2. Copia l'intera cartella scaricata da Steam (`<libreria di Steam>/steamapps/workshop/content/2436940/<ID dell'elemento del Workshop>/`) dentro `WorkshopLocal/`. Il nome della cartella è indifferente.
@@ -57,4 +59,4 @@ Se mancano solo i file di certificato (`mod-guard-manifest.json`, `mod-guard.sig
   "publishedFileId": 123456789
 }
 ```
-4. All'avvio del gioco, la mod compare nel pannello come "Non inviato". Ripeti richiesta di revisione → approvazione → ottenimento del certificato di approvazione → caricamento sul Workshop, e **l'elemento esistente viene aggiornato**. (Nota: se hai duplicato una cartella di una mod esistente per crearne una diversa, **devi eliminare** `uploadticket.json` e i file di certificato. Se li lasci, la nuova mod sovrascriverà l'elemento del Workshop della mod originale.)
+4. Avvia il gioco, seleziona la mod nel pannello e premi **Carica nel Workshop**. **L'elemento esistente viene aggiornato** e, se è una mod con codice, viene inviata di nuovo alla revisione con lo stesso ID dell'elemento. (Nota: se hai duplicato una cartella di una mod esistente per crearne una diversa, **devi eliminare** `uploadticket.json`. Se lo lasci, la nuova mod sovrascriverà l'elemento del Workshop della mod originale.)

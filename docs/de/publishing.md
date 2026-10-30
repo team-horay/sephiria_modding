@@ -14,25 +14,34 @@ Diese Seite erklärt, wie du deine Mod in den Steam-Workshop hochlädst, wie das
 
 1. Starte Sephiria.
 2. Öffne auf dem Titelbildschirm das Panel **Steam Workshop** und suche die von dir erstellte Mod.
-3. Wähle deine Mod aus.
-4. Mods mit Code (DLLs) durchlaufen die Code-Prüfung.
-5. Mods ohne Code können sofort in den Workshop hochgeladen werden.
+3. Wähle deine Mod aus und drücke **In den Workshop hochladen**.
+4. Bei Mods ohne Code ist der Upload in den Workshop der letzte Schritt.
+5. Bei Mods mit Code (DLLs) wird die Mod nach Abschluss des Workshop-Uploads automatisch zusammen mit ihrer Workshop-Beitrags-ID beim **Prüfsystem** eingereicht.
 6. Gehe zur hochgeladenen Workshop-Seite, führe einen letzten Test durch (zum Beispiel indem du sie abonnierst) und stelle dann die Sichtbarkeit auf „Öffentlich“.
+
+Ist der Workshop-Upload abgeschlossen und nur die Einreichung zur Prüfung fehlgeschlagen (zum Beispiel wegen eines Netzwerkfehlers), drücke bei derselben Mod erneut **In den Workshop hochladen**. Hat sich der Inhalt nicht geändert, wird die Mod nicht erneut in den Workshop hochgeladen; nur die Einreichung wird erneut gesendet. Die Einreichung muss mit dem Steam-Konto erfolgen, das den Workshop-Beitrag erstellt hat.
 
 ## Code-Prüfung
 
-- Das Prüfsystem untersucht jede Datei in deinem Mod-Ordner. DLLs werden dekompiliert und auf Netzwerkkommunikation, Dateizugriffe, Obfuskation und schädliches Verhalten geprüft; Datendateien wie Bilder, Sounds und JSON werden auf ein gültiges Format geprüft.
-- Werden keine Probleme gefunden, wird die Mod automatisch freigegeben; wirkt etwas verdächtig, prüft ein Operator sie manuell. Eindeutig schädliche Mods werden automatisch abgelehnt.
-- Die Prüfung kombiniert automatische Analyse mit Kontrollen durch Operatoren, und uns ist bewusst, dass kein Prüfsystem jedes Risiko erkennen kann. Trotzdem wollen wir mit dieser vorgelagerten Prüfung und Freigabe die Verbreitung schädlicher Mods verringern. Danke für deine Mithilfe.
-- Ob eine Mod Code enthält, wird anhand des **Dateiinhalts** bestimmt, nicht anhand des Dateinamens. Auch ohne `dll`-Modul unterliegt eine Mod der Prüfung, wenn sie `libraries` hat oder eine DLL oder EXE mit geänderter Dateiendung enthält.
+- Das Prüfsystem dekompiliert DLLs und prüft sie auf Netzwerkkommunikation, Dateizugriffe, Obfuskation und schädliches Verhalten. Die Prüfung kombiniert automatische Analyse mit Kontrollen durch Operatoren, und uns ist bewusst, dass kein Prüfsystem jedes Risiko erkennen kann. Trotzdem wollen wir mit diesem Prüfverfahren die Verbreitung schädlicher Mods verringern. Danke für deine Mithilfe.
+- Jede Mod, die Code (DLLs) enthält, **muss zusätzlich beim Mod-Prüfsystem eingereicht werden.** Lade sie dazu immer über die Schaltfläche **In den Workshop hochladen** im Spiel hoch.
+- Mods, die in den Workshop hochgeladen, aber nicht beim Prüfsystem eingereicht wurden, können von Spielern grundsätzlich nicht ausgeführt werden.
+- Spieler, die eine Mod herunterladen, fragen ihren Prüfstatus anhand der Workshop-Beitrags-ID der Mod und der installierten DLLs ab.
+  - **Eingereicht / Freigegeben**: Die Mod wird ausgeführt. Sie wird auch schon ausgeführt, bevor die Prüfung abgeschlossen ist.
+  - **Nicht eingereicht / Abgelehnt**: Die Mod wird nicht ausgeführt, und der Grund wird im Mod-Panel angezeigt.
+- Wird bei der Prüfung ein Problem festgestellt, kann eine Mod auch nach der Veröffentlichung abgelehnt werden. Bei einer abgelehnten Mod kannst du den Grund im Panel über **Ablehnungsgrund anzeigen** einsehen. Die abgelehnten DLLs können nicht unverändert erneut veröffentlicht werden; behebe das Problem und lade sie erneut hoch.
+- Auch ohne `dll`-Modul unterliegt eine Mod der Prüfung, wenn sie `libraries` hat oder eine DLL oder EXE mit geänderter Dateiendung enthält.
 - Mods, die die Code-Prüfung durchlaufen, dürfen als komprimierter Ordner höchstens 20 MB groß sein.
 
-## Freigabenachweis (nur Mods mit Code)
+### Gründe für eine fehlgeschlagene Prüfung
 
-- Mods, die Code enthalten, erhalten einen Freigabenachweis.
-- Er bescheinigt, dass die Dateien der Mod mit der freigegebenen Version identisch sind.
-- DLL-Mods müssen diesen Nachweis erhalten, bevor Spieler, die die Mod herunterladen, ihren Code ausführen können.
-- Ändert sich nach der Freigabe auch nur eine Datei, wird der Nachweis ungültig und die Mod muss erneut geprüft werden.
+|Meldung|Ursache|
+|---|---|
+|Im Prüfsystem gibt es keine Einreichung.|Die Mod wurde in den Workshop hochgeladen, aber nicht beim Prüfsystem eingereicht. Reiche sie über die Schaltfläche **In den Workshop hochladen** erneut ein.|
+|Das Prüfsystem hat die Genehmigung dieses Mods abgelehnt.|Das Betriebsteam hat die Mod aus einem bestimmten Grund abgelehnt. Sieh dir den Ablehnungsgrund an.|
+|Vom Prüfserver konnten keine Informationen abgerufen werden.|Möglicherweise ist die Internetverbindung des Abonnenten unterbrochen, oder es gibt ein Problem mit dem Prüfserver.|
+|Dieser Mod stammt aus dem vorherigen Prüfsystem.|Der Prüfserver wurde aktualisiert, und die bisherigen Verifizierungsdaten der Mod wurden zurückgesetzt. Reiche sie erneut ein.|
+|Im Mod wurde eine nicht autorisierte DLL erkannt.|Ändert sich die Zusammensetzung der DLL-Dateien in der Mod, während sie läuft, wird das Laden dieser Mod eingeschränkt. Folgendes kann also gegen das Prüfsystem verstoßen: Die Mod lädt während der Ausführung eine DLL von außen herunter und lädt die Assembly; die Mod erzeugt während der Ausführung eine eigene DLL und führt sie aus; die Mod entpackt eine DLL, die mit einem eigenen Komprimierungsverfahren in ihr verpackt ist, und verwendet sie.|
 
 ## Sichtbarkeit und Veröffentlichung
 
@@ -44,24 +53,17 @@ Diese Seite erklärt, wie du deine Mod in den Steam-Workshop hochlädst, wie das
 
 Du kannst deine Mod auf dieselbe Weise aktualisieren, wie du sie veröffentlicht hast.
 
-- DLL-Mods benötigen einen neuen Freigabenachweis.
+- Ein Update, das DLLs ändert, wird nach dem Upload automatisch erneut eingereicht und durchläuft die Prüfung erneut. Hast du keine DLLs geändert, bleibt der Prüfstatus unverändert.
 - Ändere deine `modId` nicht. Die Mod würde als andere Mod behandelt, was unter anderem Abhängigkeiten brechen kann.
 - **Erhöhe bei jedem Update immer `version` in `metadata.json`.** Mod-Versionen werden beim Beitritt zu einer Mehrspieler-Lobby verglichen. Hat sich der Inhalt geändert, aber nicht die Version, können Spieler mit unterschiedlichem Mod-Inhalt im selben Spiel landen und auf Probleme stoßen.
 
 ## Upload-Ticket
 
-Nachdem du die Prüfung angefordert und hochgeladen hast, werden die folgenden Dateien zu deinem Mod-Ordner hinzugefügt. Sie enthalten deine Freigabeinformationen, also **lösche sie nicht.** Wenn du deinen Mod-Ordner mit git verwaltest, ist es am sichersten, auch diese drei Dateien zu committen. Wenn du den Computer wechselst oder neu installierst, brauchst du diese Dateien, um denselben Workshop-Beitrag weiter aktualisieren zu können.
+Nach dem Upload wird `uploadticket.json` zu deinem Mod-Ordner hinzugefügt. Sie enthält deine Workshop-Beitrags-ID und die Informationen zur Einreichung bei der Prüfung, also **lösche sie nicht.** Wenn du deinen Mod-Ordner mit git verwaltest, ist es am sichersten, auch diese Datei zu committen. Wenn du den Computer wechselst oder neu installierst, brauchst du diese Datei, um denselben Workshop-Beitrag weiter aktualisieren zu können. Ohne sie behandelt das Spiel den Ordner als neue, noch nie veröffentlichte Mod.
 
-| Datei | Inhalt |
-|---|---|
-| `uploadticket.json` | Das Prüf-Ticket und die Workshop-Beitrags-ID. Ohne sie behandelt das Spiel den Ordner als neue, noch nie veröffentlichte Mod. |
-| `mod-guard-manifest.json`, `mod-guard.sig.json` | Der Freigabenachweis der Prüfung: die Liste der freigegebenen Dateien und eine Signatur. Wer sie bearbeitet, macht die Freigabe ungültig. |
+`mod-guard-manifest.json` und `mod-guard.sig.json`, die das Prüfsystem vor 1.1.1 verwendet hat, werden nicht mehr verwendet. Auch wenn sie noch vorhanden sind, werden sie nicht in den Workshop hochgeladen, und du kannst sie löschen.
 
-Wie du diese Dateien wiederherstellst, wenn du sie verloren hast, steht in den [FAQ](faq.md).
-
-## Widerruf der Freigabe
-
-Wird nach der Veröffentlichung ein Regelverstoß festgestellt, kann ein Operator die Freigabe widerrufen. Eine widerrufene Mod wird auch dann nicht geladen, wenn sie installiert ist, und im Panel als „Prüffreigabe widerrufen“ angezeigt.
+Wie du die Datei wiederherstellst, wenn du sie verloren hast, steht in den [FAQ](faq.md).
 
 
 ## Mehrspieler-Regeln

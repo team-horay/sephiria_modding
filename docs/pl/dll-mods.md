@@ -202,6 +202,14 @@ Jeśli twój mod korzysta z innych bibliotek (np. pakietów zewnętrznych innych
 - Natywnych (C/C++) plików DLL nie można używać. Ładowane są tylko zestawy zarządzane.
 - Jeśli zestaw o tej samej nazwie został już załadowany przez innego moda, gra nie wybiera jednego z dwóch, lecz **wstrzymuje uruchomienie**. Bezpieczniej jest wydzielić współdzielone biblioteki do osobnego moda i powiązać go przez `dependencies`.
 
+### Nie twórz plików DLL w czasie działania!
+
+Jeśli pliki DLL w modzie zmienią się podczas działania moda, ładowanie tego moda zostaje ograniczone. Umieść wszystkie pliki DLL w elemencie Warsztatu w niezmienionej postaci, bez żadnej kompresji ani strumieniowania. Innymi słowy, następujące działania mogą naruszać zasady systemu weryfikacji. Podczas przesyłania umieść w modzie wszystkie potrzebne pliki DLL.
+
+- Mod podczas działania pobiera plik DLL z zewnątrz i ładuje zestaw
+- Mod podczas działania tworzy i uruchamia własny plik DLL
+- Mod wypakowuje i wykorzystuje plik DLL spakowany w nim własną metodą kompresji
+
 
 ## Kompilacja i testowanie
 
@@ -219,7 +227,7 @@ Gdy gra się aktualizuje, zmienia się `Assembly-CSharp.dll`. Mody korzystające
 
 - Po aktualizacji skompiluj ponownie z nowym folderem `Managed/` i przetestuj.
 - Jeśli w opisie na stronie Warsztatu zaznaczysz **obsługiwaną wersję gry**, użytkownicy szybko znajdą przyczynę problemu. Wersja gry może też być automatycznie zapisywana w metadanych elementu Warsztatu przy publikacji.
-- Jeśli zmienisz kod, musi on ponownie przejść weryfikację, zanim będzie można go opublikować. Zobacz [Publikowanie w Warsztacie](publishing.md).
+- Gdy zmienisz kod, musi on zostać ponownie zgłoszony do systemu weryfikacji. Zobacz [Publikowanie w Warsztacie](publishing.md#weryfikacja-kodu).
 
 
 ## Uwagi dotyczące trybu wieloosobowego

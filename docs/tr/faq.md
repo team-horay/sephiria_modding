@@ -15,7 +15,7 @@ Modla ilgili satırlar köşeli parantez içinde bir etiketle başlar; bu yüzde
 |---|---|
 | `[WorkshopModManager]` | Abonelik listesi sorgulama, indirmeler, yerel klasör tarama, yükleme planı özeti |
 | `[WorkshopModRuntime]` | DLL etkinleştirme ve yerelleştirme birleştirme sonuçları |
-| `[WorkshopUploader]` | İnceleme gönderimi ve Atölye'ye yükleme |
+| `[WorkshopUploader]` | Atölye'ye yükleme ve inceleme gönderimi |
 | `[ModGuardClient]` | İnceleme sunucusuyla iletişim |
 | `[WorkshopLobbyMods]` | Çok oyunculu odalarda mod setlerinin karşılaştırılması |
 | `모드 내 언어 파일 발견` (Korece, "modda dil dosyası bulundu") | Her yerelleştirme dosyasından okunan anahtar sayısı |
@@ -44,9 +44,11 @@ Birden fazla yolu noktalı virgülle ayırın; bir yol boşluk içeriyorsa tamam
 Argüman olarak geçirilen klasörler, tam olarak `WorkshopLocal/` alt klasörleri gibi ele alınır.
 
 
-## uploadticket.json, mod-guard-manifest.json ve mod-guard.sig.json dosyalarını kaybettim.
+## uploadticket.json dosyasını kaybettim.
 
-Yalnızca sertifika dosyaları (`mod-guard-manifest.json`, `mod-guard.sig.json`) eksikse ve `uploadticket.json` hâlâ duruyorsa, panelde modu seçip **Onay kanıtını al** düğmesine basarak bunları inceleme sunucusundan yeniden indirebilirsiniz. Ancak `uploadticket.json` dosyasını da kaybettiyseniz (örneğin biçimlendirmeden sonra), oyun klasörü yeni bir mod olarak ele alır; bu haliyle yüklemek mevcut öğeyi güncellemek yerine yeni bir Atölye öğesi oluşturur. Mevcut öğeyi güncellemeye devam etmek için şu sırayla kurtarın:
+`mod-guard-manifest.json` ve `mod-guard.sig.json` 1.1.1 sürümünden itibaren artık kullanılmıyor; bu yüzden kaybetmeniz sorun değil. İhtiyacınız olan tek dosya `uploadticket.json`.
+
+`uploadticket.json` dosyasını kaybettiyseniz (örneğin biçimlendirmeden sonra), oyun klasörü yeni bir mod olarak ele alır; bu haliyle yüklemek mevcut öğeyi güncellemek yerine yeni bir Atölye öğesi oluşturur. Mevcut öğeyi güncellemeye devam etmek için şu sırayla kurtarın:
 
 1. Atölye'de kendi modunuza abone olun.
 2. Steam'in indirdiği klasörün tamamını (`<Steam kütüphanesi>/steamapps/workshop/content/2436940/<Atölye öğe kimliği>/`) `WorkshopLocal/` içine kopyalayın. Klasör adı önemli değildir.
@@ -57,4 +59,4 @@ Yalnızca sertifika dosyaları (`mod-guard-manifest.json`, `mod-guard.sig.json`)
   "publishedFileId": 123456789
 }
 ```
-4. Oyunu başlattığınızda mod, panelde "Gönderilmedi" olarak görünür. İnceleme iste → onay → onay kanıtını al → Atölye'ye yükle adımlarını yeniden geçin; **mevcut öğe güncellenir**. (Not: Mevcut bir mod klasörünü kopyalayıp farklı bir mod yaptıysanız, `uploadticket.json` ve sertifika dosyalarını **mutlaka silmelisiniz**. Bırakırsanız yeni mod, özgün modun Atölye öğesinin üzerine yazar.)
+4. Oyunu başlatın, panelde modu seçin ve **Atölye'ye yükle** düğmesine basın. **Mevcut öğe güncellenir**; kod içeren bir modsa aynı öğe kimliğiyle yeniden incelemeye gönderilir. (Not: Mevcut bir mod klasörünü kopyalayıp farklı bir mod yaptıysanız, `uploadticket.json` dosyasını **mutlaka silmelisiniz**. Bırakırsanız yeni mod, özgün modun Atölye öğesinin üzerine yazar.)

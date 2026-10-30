@@ -202,6 +202,14 @@ Se la tua mod usa altre librerie (per esempio pacchetti di terze parti diversi d
 - Le DLL native (C/C++) non possono essere usate. Vengono caricati solo assembly gestiti.
 - Se un assembly con lo stesso nome è già stato caricato da un'altra mod, il gioco non ne sceglie uno dei due: **sospende l'esecuzione** della mod. È più sicuro separare le librerie condivise in una mod a parte e collegarla tramite `dependencies`.
 
+### Non creare DLL durante l'esecuzione!
+
+Se i file DLL di una mod cambiano mentre la mod è in esecuzione, il caricamento di quella mod viene limitato. Includi tutte le DLL nell'elemento del Workshop così come sono, senza alcuna compressione o streaming. In altre parole, quanto segue può violare il sistema di revisione. Al momento del caricamento, inserisci nella mod tutte le DLL di cui hai bisogno.
+
+- La mod scarica una DLL dall'esterno durante l'esecuzione e ne carica l'assembly
+- La mod crea ed esegue una propria DLL durante l'esecuzione
+- La mod estrae e usa una DLL racchiusa al suo interno con un proprio formato di compressione
+
 
 ## Compilare e provare
 
@@ -219,7 +227,7 @@ Quando il gioco si aggiorna, `Assembly-CSharp.dll` cambia. Le mod che usano solo
 
 - Dopo un aggiornamento, ricompila contro la nuova cartella `Managed/` e fai dei test.
 - Se indichi la **versione del gioco supportata** nella descrizione della tua pagina del Workshop, gli utenti possono individuare rapidamente la causa dei problemi. La versione del gioco potrebbe anche essere registrata automaticamente nei metadati dell'elemento del Workshop al momento della pubblicazione.
-- Se modifichi il codice, deve passare di nuovo la revisione prima di poter essere pubblicato. Consulta [Pubblicare sul Workshop](publishing.md).
+- Quando modifichi il codice, deve essere inviato di nuovo al sistema di revisione. Consulta [Pubblicare sul Workshop](publishing.md#revisione-del-codice).
 
 
 ## Considerazioni sul multigiocatore

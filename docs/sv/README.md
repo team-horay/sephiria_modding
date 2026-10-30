@@ -18,7 +18,7 @@ För att spelet ska vara tryggt för alla ber vi dig följa reglerna nedan. Öve
 4. **Stör inte spelet**: Få inte spelet att fungera felaktigt med avsikt och stör inte andra spelares normala spelande.
 5. **Ingen datainsamling**: Samla inte in användarinformation och skicka den inte till externa mottagare.
 6. **Kringgå inte åtkomstkontroller**: Kringgå inte på otillåtet sätt kontroller av köp, ägande eller åtkomst i spelet eller på distributionsplattformen.
-7. **Granskning av moddar**: Moddar som innehåller kod (DLL-filer) granskas innan de godkänns, inklusive analys och dekompilering, för att kontrollera att reglerna följs. Godkännandet kan ta en stund. Förfalska inte granskningsresultat eller godkännandemarkeringar. Filerna måste lämnas in i ett granskningsbart skick; obfuskering är förbjuden.
+7. **Granskning av moddar**: Moddar som innehåller kod (DLL-filer) granskas, inklusive analys och dekompilering, för att kontrollera att reglerna följs, och kan avvisas även efter att de har publicerats om ett problem hittas. Förfalska inte granskningsresultat eller godkännandemarkeringar. Filerna måste lämnas in i ett granskningsbart skick; obfuskering är förbjuden.
 8. **Användning av spelets resurser**: Det är tillåtet att dekompilera och analysera spelets kod, grafik, ljud och andra resurser i den utsträckning som behövs för att skapa moddar. Du får dock inte vidaredistribuera extraherade spelresurser i sig.
 9. **Ingen imitation eller manipulation**: Utge dig inte för att vara någon annan, och ändra eller vidaredistribuera inte andras moddar utan deras samtycke.
 
@@ -26,7 +26,7 @@ För att spelet ska vara tryggt för alla ber vi dig följa reglerna nedan. Öve
 
 ## Innan du börjar
 
-- Moddar som innehåller kod (DLL-filer) **granskas** innan de kan laddas upp till Workshop. Granskningen kontrollerar i första hand att koden inte innehåller skadligt beteende. Moddar utan kod, till exempel översättningar och dräkter, kan laddas upp direkt utan granskning. Observera att moddar som granskningssystemet inte kan läsa avvisas (obfuskerade filer, DLL-filer kompilerade från C/C++ och så vidare).
+- Moddar som innehåller kod (DLL-filer) **skickas automatiskt in till granskningssystemet** när du laddar upp dem till Workshop. Granskningen kontrollerar i första hand att koden inte innehåller skadligt beteende, och moddar som inte har skickats in eller har avvisats körs inte i andra spelares spel. Moddar utan kod, till exempel översättningar och dräkter, kan laddas upp direkt utan granskning. Observera att moddar som granskningssystemet inte kan läsa avvisas (obfuskerade filer, DLL-filer kompilerade från C/C++ och så vidare).
 - I flerspelarläge måste alla deltagare i rummet ha samma uppsättning moddar aktiverade. (Personliga UI-moddar som översättningar är undantagna.)
 - När du har aktiverat moddar måste du starta om spelet för att ändra deras ordning eller inaktivera dem igen.
 - Prenumererade moddar är inaktiverade som standard. Du kan själv aktivera dem i listan.

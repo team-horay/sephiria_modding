@@ -18,7 +18,7 @@ Per mantenere il gioco sicuro per tutti, rispetta le regole qui sotto. Le violaz
 4. **Niente interferenze con il gioco**: non provocare intenzionalmente malfunzionamenti del gioco e non interferire con il normale gioco degli altri giocatori.
 5. **Niente raccolta di dati**: non raccogliere informazioni sugli utenti e non inviarle a destinazioni esterne.
 6. **Niente elusione dei controlli di accesso**: non aggirare in modo illecito i controlli di acquisto, proprietà o accesso del gioco o della piattaforma di distribuzione.
-7. **Revisione delle mod**: le mod che contengono codice (DLL) passano per una revisione prima dell'approvazione, che include analisi e decompilazione, per verificare eventuali violazioni delle regole. L'approvazione può richiedere del tempo. Non falsificare i risultati della revisione né i contrassegni di approvazione. I file devono essere forniti in uno stato revisionabile; l'offuscamento è vietato.
+7. **Revisione delle mod**: le mod che contengono codice (DLL) passano per una revisione, che include analisi e decompilazione, per verificare eventuali violazioni delle regole, e possono essere rifiutate anche dopo la pubblicazione se viene trovato un problema. Non falsificare i risultati della revisione né i contrassegni di approvazione. I file devono essere forniti in uno stato revisionabile; l'offuscamento è vietato.
 8. **Uso delle risorse del gioco**: decompilare e analizzare il codice, la grafica, l'audio e le altre risorse del gioco è consentito nella misura necessaria a creare mod. Tuttavia, non ridistribuire le risorse estratte dal gioco in quanto tali.
 9. **Niente furto d'identità o manomissioni**: non spacciarti per altre persone e non modificare né ridistribuire mod create da altri senza il loro consenso.
 
@@ -26,7 +26,7 @@ Per mantenere il gioco sicuro per tutti, rispetta le regole qui sotto. Le violaz
 
 ## Prima di iniziare
 
-- Le mod che contengono codice (DLL) vengono **revisionate** prima di poter essere caricate sul Workshop. La revisione controlla principalmente che il codice non contenga comportamenti malevoli. Le mod senza codice, come traduzioni e costumi, possono essere caricate subito senza revisione. Tieni presente che le mod che il sistema di revisione non riesce a leggere vengono rifiutate (file offuscati, DLL compilate da C/C++, ecc.).
+- Le mod che contengono codice (DLL) vengono **inviate automaticamente al sistema di revisione** quando le carichi sul Workshop. La revisione controlla principalmente che il codice non contenga comportamenti malevoli, e le mod non inviate o rifiutate non vengono eseguite nelle partite degli altri giocatori. Le mod senza codice, come traduzioni e costumi, possono essere caricate subito senza revisione. Tieni presente che le mod che il sistema di revisione non riesce a leggere vengono rifiutate (file offuscati, DLL compilate da C/C++, ecc.).
 - In multigiocatore, tutti i partecipanti della stanza devono avere attivo lo stesso insieme di mod. (Le mod personali di interfaccia, come le traduzioni, sono esenti.)
 - Dopo aver attivato delle mod, devi riavviare il gioco per cambiarne l'ordine o disattivarle di nuovo.
 - Le mod a cui sei iscritto sono disattivate per impostazione predefinita. Puoi attivarle tu stesso dall'elenco.

@@ -18,7 +18,7 @@ Para que el juego siga siendo seguro para todo el mundo, respeta las normas sigu
 4. **Sin interferir en el juego**: No hagas que el juego funcione mal de forma intencionada ni interfieras en el juego normal de otros jugadores.
 5. **Sin recopilación de datos**: No recopiles información de los usuarios ni la envíes a destinos externos.
 6. **Sin eludir comprobaciones de acceso**: No eludas de forma ilegítima las comprobaciones de compra, propiedad o acceso del juego ni de la plataforma de distribución.
-7. **Revisión de mods**: Los mods que contienen código (DLL) pasan por una revisión antes de aprobarse, que incluye análisis y descompilación, para comprobar que no infringen las normas. La aprobación puede tardar un tiempo. No falsifiques resultados de revisión ni marcas de aprobación. Los archivos deben entregarse en un estado que permita revisarlos; la ofuscación está prohibida.
+7. **Revisión de mods**: Los mods que contienen código (DLL) pasan por una revisión, que incluye análisis y descompilación, para comprobar que no infringen las normas, y pueden rechazarse incluso después de publicarse si se detecta un problema. No falsifiques resultados de revisión ni marcas de aprobación. Los archivos deben entregarse en un estado que permita revisarlos; la ofuscación está prohibida.
 8. **Uso de los recursos del juego**: Se permite descompilar y analizar el código, el arte, el sonido y demás recursos del juego en la medida necesaria para crear mods. Sin embargo, no redistribuyas los recursos extraídos del juego como tales.
 9. **Sin suplantación ni manipulación**: No te hagas pasar por otras personas ni modifiques y redistribuyas mods de otros sin su consentimiento.
 
@@ -26,7 +26,7 @@ Para que el juego siga siendo seguro para todo el mundo, respeta las normas sigu
 
 ## Antes de empezar
 
-- Los mods que contienen código (DLL) se **revisan** antes de poder subirlos al Workshop. La revisión comprueba principalmente que el código no tenga comportamiento malicioso. Los mods sin código, como traducciones y trajes, se pueden subir de inmediato sin revisión. Ten en cuenta que los mods que el sistema de revisión no puede leer serán rechazados (archivos ofuscados, DLL compiladas desde C/C++, etc.).
+- Los mods que contienen código (DLL) se **envían automáticamente al sistema de revisión** cuando los subes al Workshop. La revisión comprueba principalmente que el código no tenga comportamiento malicioso, y los mods que no se han enviado o que se han rechazado no se ejecutan en las partidas de otros jugadores. Los mods sin código, como traducciones y trajes, se pueden subir de inmediato sin revisión. Ten en cuenta que los mods que el sistema de revisión no puede leer serán rechazados (archivos ofuscados, DLL compiladas desde C/C++, etc.).
 - En multijugador, todos los participantes de la sala deben tener activado el mismo conjunto de mods. (Los mods de UI personales, como las traducciones, están exentos.)
 - Después de activar mods, tienes que reiniciar el juego para cambiar su orden o volver a desactivarlos.
 - Los mods suscritos están desactivados por defecto. Puedes activarlos tú mismo desde la lista.

@@ -202,6 +202,14 @@ Si votre mod utilise d'autres bibliothèques (par ex. des paquets tiers autres q
 - Les DLL natives (C/C++) ne peuvent pas être utilisées. Seuls les assemblys managés sont chargés.
 - Si un assembly du même nom a déjà été chargé par un autre mod, le jeu n'en choisit pas un des deux : il **suspend l'exécution** de votre mod. Il est plus sûr de séparer les bibliothèques partagées dans un mod distinct et de le lier via `dependencies`.
 
+### Ne créez pas de DLL à l'exécution !
+
+Si les fichiers DLL d'un mod changent pendant l'exécution du mod, le chargement de ce mod est restreint. Incluez toutes les DLL telles quelles dans l'élément du Workshop, sans aucune compression ni streaming. Autrement dit, les cas suivants peuvent enfreindre le système d'examen. Placez toutes les DLL nécessaires dans le mod au moment de le publier.
+
+- Le mod télécharge une DLL depuis l'extérieur pendant son exécution et charge l'assembly
+- Le mod crée et exécute sa propre DLL pendant son exécution
+- Le mod extrait une DLL empaquetée en lui avec son propre format de compression et l'utilise
+
 
 ## Compiler et tester
 
@@ -219,7 +227,7 @@ Lorsque le jeu est mis à jour, `Assembly-CSharp.dll` change. Les mods qui n'uti
 
 - Après une mise à jour, recompilez avec le nouveau dossier `Managed/` et testez.
 - Si vous indiquez la **version du jeu prise en charge** dans la description de votre page Workshop, les utilisateurs pourront trouver rapidement la cause d'un problème. La version du jeu peut aussi être enregistrée automatiquement dans les métadonnées de l'élément du Workshop lors de la publication.
-- Si vous modifiez votre code, il doit à nouveau passer l'examen avant de pouvoir être publié. Consultez [Publier dans le Workshop](publishing.md).
+- Si vous modifiez votre code, il doit à nouveau être soumis au système d'examen. Consultez [Publier dans le Workshop](publishing.md#examen-du-code).
 
 
 ## Considérations pour le multijoueur

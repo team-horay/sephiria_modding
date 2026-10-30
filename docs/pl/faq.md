@@ -15,7 +15,7 @@ Wiersze związane z modami zaczynają się od tagu w nawiasach kwadratowych, wi�
 |---|---|
 | `[WorkshopModManager]` | Pobieranie listy subskrypcji, pobieranie plików, skanowanie folderu lokalnego, podsumowanie planu ładowania |
 | `[WorkshopModRuntime]` | Aktywacja DLL i wyniki scalania lokalizacji |
-| `[WorkshopUploader]` | Zgłoszenie do weryfikacji i przesyłanie do Warsztatu |
+| `[WorkshopUploader]` | Przesyłanie do Warsztatu i zgłoszenie do weryfikacji |
 | `[ModGuardClient]` | Komunikacja z serwerem weryfikacji |
 | `[WorkshopLobbyMods]` | Porównanie zestawów modów w pokojach trybu wieloosobowego |
 | `모드 내 언어 파일 발견` | Liczba kluczy odczytanych z każdego pliku lokalizacji (komunikat po koreańsku, „znaleziono plik językowy w modzie”) |
@@ -44,9 +44,11 @@ Kilka ścieżek rozdziel średnikami, a jeśli ścieżka zawiera spacje, ujmij c
 Foldery przekazane jako argumenty są traktowane dokładnie tak samo jak podfoldery `WorkshopLocal/`.
 
 
-## Zgubiły mi się pliki uploadticket.json, mod-guard-manifest.json i mod-guard.sig.json.
+## Zgubił mi się plik uploadticket.json.
 
-Jeśli brakuje tylko plików certyfikatu (`mod-guard-manifest.json`, `mod-guard.sig.json`), a `uploadticket.json` nadal istnieje, wybierz moda w panelu i naciśnij przycisk **Pobierz dowód zatwierdzenia**, aby ponownie pobrać je z serwera weryfikacji. Jeśli jednak brakuje również `uploadticket.json` (na przykład po formatowaniu dysku), gra traktuje folder jako nowego moda, więc przesłanie go w tej postaci utworzy nowy element w Warsztacie zamiast zaktualizować istniejący. Aby dalej aktualizować istniejący element, odzyskaj go w tej kolejności:
+Od wersji 1.1.1 pliki `mod-guard-manifest.json` i `mod-guard.sig.json` nie są już używane, więc ich utrata nie stanowi problemu. Potrzebny jest tylko plik `uploadticket.json`.
+
+Jeśli brakuje `uploadticket.json` (na przykład po formatowaniu dysku), gra traktuje folder jako nowego moda, więc przesłanie go w tej postaci utworzy nowy element w Warsztacie zamiast zaktualizować istniejący. Aby dalej aktualizować istniejący element, odzyskaj go w tej kolejności:
 
 1. Zasubskrybuj własnego moda w Warsztacie.
 2. Skopiuj cały folder pobrany przez Steam (`<biblioteka Steam>/steamapps/workshop/content/2436940/<ID elementu Warsztatu>/`) do `WorkshopLocal/`. Nazwa folderu może być dowolna.
@@ -57,4 +59,4 @@ Jeśli brakuje tylko plików certyfikatu (`mod-guard-manifest.json`, `mod-guard.
   "publishedFileId": 123456789
 }
 ```
-4. Po uruchomieniu gry mod wyświetli się w panelu jako „Nie przesłano”. Przejdź ponownie przez: zgłoszenie do weryfikacji → zatwierdzenie → pobranie dowodu zatwierdzenia → przesłanie do Warsztatu, a **istniejący element zostanie zaktualizowany**. (Uwaga: jeśli folder istniejącego moda został zduplikowany, aby stworzyć innego moda, **musisz usunąć** `uploadticket.json` i pliki certyfikatu. Jeśli je zostawisz, nowy mod nadpisze element oryginalnego moda w Warsztacie.)
+4. Uruchom grę, wybierz moda w panelu i naciśnij **Prześlij do Warsztatu**. **Istniejący element zostanie zaktualizowany**, a jeśli to mod z kodem, zostanie ponownie zgłoszony do weryfikacji z tym samym ID elementu. (Uwaga: jeśli folder istniejącego moda został zduplikowany, aby stworzyć innego moda, **musisz usunąć** `uploadticket.json`. Jeśli go zostawisz, nowy mod nadpisze element oryginalnego moda w Warsztacie.)

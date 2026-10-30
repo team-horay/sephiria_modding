@@ -18,7 +18,7 @@ Afin que le jeu reste sûr pour tout le monde, veuillez respecter les règles ci
 4. **Aucune perturbation du jeu** : ne provoquez pas intentionnellement de dysfonctionnement du jeu et n'entravez pas le jeu normal des autres joueurs.
 5. **Aucune collecte de données** : ne collectez pas d'informations sur les utilisateurs et ne les transmettez pas à l'extérieur.
 6. **Aucun contournement des vérifications d'accès** : ne contournez pas illicitement les vérifications d'achat, de propriété ou d'accès du jeu ou de la plateforme de distribution.
-7. **Examen des mods** : les mods contenant du code (DLL) font l'objet d'un examen avant approbation, comprenant une analyse et une décompilation, afin de vérifier le respect des règles. L'approbation peut prendre un certain temps. Ne falsifiez pas les résultats de l'examen ni les marques d'approbation. Les fichiers doivent être fournis dans un état permettant leur examen ; l'obfuscation est interdite.
+7. **Examen des mods** : les mods contenant du code (DLL) font l'objet d'un examen, comprenant une analyse et une décompilation, afin de vérifier le respect des règles, et peuvent être refusés même après leur publication si un problème est détecté. Ne falsifiez pas les résultats de l'examen ni les marques d'approbation. Les fichiers doivent être fournis dans un état permettant leur examen ; l'obfuscation est interdite.
 8. **Utilisation des ressources du jeu** : la décompilation et l'analyse du code, des graphismes, du son et des autres ressources du jeu sont autorisées dans la mesure nécessaire à la création de mods. Toutefois, ne redistribuez pas les ressources extraites du jeu elles-mêmes.
 9. **Aucune usurpation ni altération** : ne vous faites pas passer pour une autre personne, et ne modifiez ni ne redistribuez les mods créés par d'autres sans leur consentement.
 
@@ -26,7 +26,7 @@ Afin que le jeu reste sûr pour tout le monde, veuillez respecter les règles ci
 
 ## Avant de commencer
 
-- Les mods contenant du code (DLL) sont **examinés** avant de pouvoir être publiés dans le Workshop. L'examen vérifie principalement que le code ne contient pas de comportement malveillant. Les mods sans code, comme les traductions et les tenues, peuvent être publiés immédiatement sans examen. Notez que les mods que le système d'examen ne peut pas lire seront refusés (fichiers obfusqués, DLL compilées en C/C++, etc.).
+- Les mods contenant du code (DLL) sont automatiquement **soumis au système d'examen** lorsque vous les publiez dans le Workshop. L'examen vérifie principalement que le code ne contient pas de comportement malveillant, et les mods non soumis ou refusés ne s'exécutent pas dans les parties des autres joueurs. Les mods sans code, comme les traductions et les tenues, peuvent être publiés immédiatement sans examen. Notez que les mods que le système d'examen ne peut pas lire seront refusés (fichiers obfusqués, DLL compilées en C/C++, etc.).
 - En multijoueur, tous les participants du salon doivent avoir activé le même ensemble de mods. (Les mods d'interface personnels, comme les traductions, en sont exemptés.)
 - Après avoir activé des mods, vous devez redémarrer le jeu pour changer leur ordre ou les désactiver à nouveau.
 - Les mods auxquels vous êtes abonné sont désactivés par défaut. Vous pouvez les activer vous-même depuis la liste.

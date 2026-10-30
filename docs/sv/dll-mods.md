@@ -202,6 +202,14 @@ Om din mod använder andra bibliotek (t.ex. tredjepartspaket utöver Newtonsoft.
 - Native-DLL:er (C/C++) kan inte användas. Endast hanterade assemblies läses in.
 - Om en assembly med samma namn redan har lästs in av en annan mod väljer spelet inte en av de två; det **avvaktar med att köra** den. Det är säkrare att bryta ut delade bibliotek till en separat mod och koppla den via `dependencies`.
 
+### Skapa inte DLL-filer under körning!
+
+Om DLL-filerna i en mod ändras medan modden körs begränsas inläsningen av modden. Ta med alla DLL-filer i Workshop-objektet som de är, utan någon komprimering eller streaming. Det innebär att följande kan bryta mot granskningssystemets regler. Lägg alla DLL-filer du behöver i modden när du laddar upp den.
+
+- Modden laddar ner en DLL utifrån medan den körs och läser in assemblyn
+- Modden skapar och kör en egen DLL medan den körs
+- Modden packar upp en DLL som är packad i den med ett eget komprimeringsformat och använder den
+
 
 ## Bygga och testa
 
@@ -219,7 +227,7 @@ När spelet uppdateras ändras `Assembly-CSharp.dll`. Moddar som bara använder 
 
 - Efter en uppdatering: bygg om mot den nya `Managed/`-mappen och testa.
 - Om du anger **vilken spelversion som stöds** i beskrivningen på din Workshop-sida kan användarna snabbt hitta orsaken. Spelversionen kan också registreras automatiskt i Workshop-objektets metadata när du publicerar.
-- Om du ändrar din kod måste den godkännas i granskningen igen innan du kan publicera. Se [Publicera på Workshop](publishing.md).
+- När du ändrar din kod måste den skickas in till granskningssystemet igen. Se [Publicera på Workshop](publishing.md#kodgranskning).
 
 
 ## Att tänka på i flerspelarläge

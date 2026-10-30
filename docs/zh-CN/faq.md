@@ -15,7 +15,7 @@
 |---|---|
 | `[WorkshopModManager]` | 订阅列表查询、下载、本地文件夹扫描、加载计划摘要 |
 | `[WorkshopModRuntime]` | DLL 激活和本地化合并结果 |
-| `[WorkshopUploader]` | 审核提交和创意工坊上传 |
+| `[WorkshopUploader]` | 创意工坊上传和审核提交 |
 | `[ModGuardClient]` | 与审核服务器的通信 |
 | `[WorkshopLobbyMods]` | 多人游戏房间中模组集合的比较 |
 | `모드 내 언어 파일 발견` | 从每个本地化文件读取的键数量 |
@@ -44,9 +44,11 @@
 通过参数传入的文件夹会被当作 `WorkshopLocal/` 的子文件夹来处理。
 
 
-## 我丢失了 uploadticket.json、mod-guard-manifest.json 和 mod-guard.sig.json。
+## 我丢失了 uploadticket.json。
 
-如果只是凭证文件（`mod-guard-manifest.json`、`mod-guard.sig.json`）丢失而 `uploadticket.json` 仍然存在，在面板中选择该模组并点击**获取审核凭证**按钮，即可从审核服务器重新下载。但如果连 `uploadticket.json` 也丢失了（例如重装系统之后），游戏会把该文件夹视为新模组，直接上传会创建一个新的创意工坊物品，而不是更新原有的物品。若要继续更新原有物品，请按以下顺序恢复：
+从 1.1.1 起不再使用 `mod-guard-manifest.json` 和 `mod-guard.sig.json`，丢失了也没关系。唯一需要的文件是 `uploadticket.json`。
+
+如果丢失了 `uploadticket.json`（例如重装系统之后），游戏会把该文件夹视为新模组，直接上传会创建一个新的创意工坊物品，而不是更新原有的物品。若要继续更新原有物品，请按以下顺序恢复：
 
 1. 在创意工坊订阅你自己的模组。
 2. 把 Steam 下载的整个文件夹（`<Steam 库>/steamapps/workshop/content/2436940/<创意工坊物品 ID>/`）复制到 `WorkshopLocal/` 中。文件夹名随意。
@@ -57,4 +59,4 @@
   "publishedFileId": 123456789
 }
 ```
-4. 启动游戏后，该模组在面板中显示为“未申请审核”。依次完成申请审核 → 批准 → 获取审核凭证 → 再次上传到创意工坊，**原有物品就会被更新**。（注意：如果你是复制了现有模组的文件夹来制作另一个不同的模组，**必须删除** `uploadticket.json` 和凭证文件。否则新模组会覆盖原模组的创意工坊物品。）
+4. 启动游戏，在面板中选择该模组并点击**上传到创意工坊**。**原有物品就会被更新**，如果是代码模组，还会以同一物品 ID 重新提交审核。（注意：如果你是复制了现有模组的文件夹来制作另一个不同的模组，**必须删除** `uploadticket.json`。否则新模组会覆盖原模组的创意工坊物品。）

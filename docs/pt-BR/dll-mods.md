@@ -202,6 +202,14 @@ Se o seu mod usa outras bibliotecas (por exemplo, pacotes de terceiros além do 
 - DLLs nativas (C/C++) não podem ser usadas. Apenas assemblies gerenciados são carregados.
 - Se um assembly com o mesmo nome já tiver sido carregado por outro mod, o jogo não escolhe um dos dois; ele **suspende a execução** dele. É mais seguro separar bibliotecas compartilhadas em um mod à parte e vinculá-lo por meio de `dependencies`.
 
+### Não crie DLLs em tempo de execução!
+
+Se os arquivos DLL de um mod mudarem enquanto o mod está em execução, o carregamento desse mod é restringido. Inclua todas as DLLs no item da Oficina como estão, sem nenhuma compressão ou streaming. Ou seja, o seguinte pode violar o sistema de revisão. Coloque no mod todas as DLLs de que você precisa ao enviá-lo.
+
+- O mod baixa uma DLL de fora durante a execução e carrega o assembly
+- O mod cria e executa a própria DLL durante a execução
+- O mod extrai e usa uma DLL empacotada dentro dele com um esquema de compressão próprio
+
 
 ## Compilando e testando
 
@@ -219,7 +227,7 @@ Quando o jogo é atualizado, o `Assembly-CSharp.dll` muda. Mods que usam apenas 
 
 - Depois de uma atualização, recompile usando a nova pasta `Managed/` e teste.
 - Se você anotar a **versão do jogo suportada** na descrição da sua página na Oficina, os usuários conseguem encontrar a causa rapidamente. A versão do jogo também pode ser registrada automaticamente nos metadados do item da Oficina quando você publica.
-- Se alterar o seu código, ele precisa passar pela revisão novamente antes de poder ser publicado. Consulte [Publicando na Oficina](publishing.md).
+- Quando alterar o seu código, ele precisa ser enviado ao sistema de revisão novamente. Consulte [Publicando na Oficina](publishing.md#revisão-de-código).
 
 
 ## Considerações sobre multijogador

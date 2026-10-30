@@ -18,7 +18,7 @@ Damit das Spiel für alle sicher bleibt, halte dich bitte an die folgenden Regel
 4. **Keine Störung des Spiels**: Bringe das Spiel nicht absichtlich zum Fehlverhalten und störe nicht das normale Spiel anderer Spieler.
 5. **Keine Datensammlung**: Sammle keine Nutzerdaten und sende sie nicht an externe Ziele.
 6. **Kein Umgehen von Zugangsprüfungen**: Umgehe nicht unrechtmäßig die Kauf-, Besitz- oder Zugangsprüfungen des Spiels oder der Vertriebsplattform.
-7. **Mod-Prüfung**: Mods, die Code (DLLs) enthalten, durchlaufen vor der Freigabe eine Prüfung, einschließlich Analyse und Dekompilierung, um Regelverstöße zu erkennen. Die Freigabe kann einige Zeit dauern. Fälsche keine Prüfergebnisse oder Freigabekennzeichen. Dateien müssen in einem prüfbaren Zustand bereitgestellt werden; Obfuskation ist verboten.
+7. **Mod-Prüfung**: Mods, die Code (DLLs) enthalten, durchlaufen eine Prüfung, einschließlich Analyse und Dekompilierung, um Regelverstöße zu erkennen, und können auch nach der Veröffentlichung abgelehnt werden, wenn ein Problem festgestellt wird. Fälsche keine Prüfergebnisse oder Freigabekennzeichen. Dateien müssen in einem prüfbaren Zustand bereitgestellt werden; Obfuskation ist verboten.
 8. **Verwendung von Spiel-Assets**: Das Dekompilieren und Analysieren von Code, Grafiken, Sounds und anderen Assets des Spiels ist in dem Umfang erlaubt, der zum Erstellen von Mods nötig ist. Extrahierte Spiel-Assets selbst dürfen jedoch nicht weiterverbreitet werden.
 9. **Kein Identitätsmissbrauch oder Manipulation**: Gib dich nicht als andere aus und verändere oder verbreite keine Mods anderer ohne deren Zustimmung.
 
@@ -26,7 +26,7 @@ Damit das Spiel für alle sicher bleibt, halte dich bitte an die folgenden Regel
 
 ## Bevor du anfängst
 
-- Mods, die Code (DLLs) enthalten, werden **geprüft**, bevor sie in den Workshop hochgeladen werden können. Die Prüfung untersucht den Code hauptsächlich auf schädliches Verhalten. Mods ohne Code, etwa Übersetzungen und Kostüme, können sofort ohne Prüfung hochgeladen werden. Beachte, dass Mods, die das Prüfsystem nicht lesen kann, abgelehnt werden (obfuskierte Dateien, aus C/C++ kompilierte DLLs usw.).
+- Mods, die Code (DLLs) enthalten, werden beim Hochladen in den Workshop automatisch **beim Prüfsystem eingereicht**. Die Prüfung untersucht den Code hauptsächlich auf schädliches Verhalten, und Mods, die nicht eingereicht oder abgelehnt wurden, laufen in den Spielen anderer Spieler nicht. Mods ohne Code, etwa Übersetzungen und Kostüme, können sofort ohne Prüfung hochgeladen werden. Beachte, dass Mods, die das Prüfsystem nicht lesen kann, abgelehnt werden (obfuskierte Dateien, aus C/C++ kompilierte DLLs usw.).
 - Im Mehrspielermodus müssen alle Teilnehmer eines Raums dieselben Mods aktiviert haben. (Persönliche UI-Mods wie Übersetzungen sind davon ausgenommen.)
 - Nachdem du Mods aktiviert hast, musst du das Spiel neu starten, um ihre Reihenfolge zu ändern oder sie wieder zu deaktivieren.
 - Abonnierte Mods sind standardmäßig deaktiviert. Du kannst sie selbst in der Liste aktivieren.

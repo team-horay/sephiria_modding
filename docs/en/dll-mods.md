@@ -202,6 +202,14 @@ If your mod uses other libraries (e.g. third-party packages other than Newtonsof
 - Native (C/C++) DLLs can't be used. Only managed assemblies are loaded.
 - If an assembly with the same name has already been loaded by another mod, the game doesn't pick one of the two; it **holds off running** it. It's safer to split shared libraries into a separate mod and link it through `dependencies`.
 
+### Don't Create DLLs at Runtime!
+
+If the DLL files in a mod change while the mod is running, loading that mod is restricted. Include every DLL in the Workshop item as is, without any compression or streaming. In other words, the following can violate the review system. Put every DLL you need in the mod when you upload it.
+
+- The mod downloads a DLL from outside while running and loads the assembly
+- The mod creates and runs its own DLL while running
+- The mod extracts a DLL packed inside it with its own compression scheme and uses it
+
 
 ## Building and Testing
 
@@ -219,7 +227,7 @@ When the game updates, `Assembly-CSharp.dll` changes. Mods that use only officia
 
 - After an update, rebuild against the new `Managed/` folder and test.
 - If you note the **supported game version** in your Workshop page's description, users can find the cause quickly. The game version may also be recorded automatically in the Workshop item's metadata when you publish.
-- If you change your code, it must pass review again before you can publish. See [Publishing to the Workshop](publishing.md).
+- When you change your code, it must be submitted to the review system again. See [Publishing to the Workshop](publishing.md#code-review).
 
 
 ## Multiplayer Considerations

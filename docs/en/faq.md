@@ -15,7 +15,7 @@ Mod-related lines start with a tag in square brackets, so search for that tag.
 |---|---|
 | `[WorkshopModManager]` | Subscription list lookup, downloads, local folder scanning, load plan summary |
 | `[WorkshopModRuntime]` | DLL activation and localization merge results |
-| `[WorkshopUploader]` | Review submission and Workshop upload |
+| `[WorkshopUploader]` | Workshop upload and review submission |
 | `[ModGuardClient]` | Communication with the review server |
 | `[WorkshopLobbyMods]` | Comparison of mod sets in multiplayer rooms |
 | `모드 내 언어 파일 발견` | Number of keys read from each localization file |
@@ -44,9 +44,11 @@ Separate multiple paths with semicolons, and wrap the whole thing in quotes if a
 Folders passed as arguments are treated exactly like subfolders of `WorkshopLocal/`.
 
 
-## I lost uploadticket.json, mod-guard-manifest.json, and mod-guard.sig.json.
+## I lost uploadticket.json.
 
-If only the certificate files (`mod-guard-manifest.json`, `mod-guard.sig.json`) are missing and `uploadticket.json` is still there, select the mod in the panel and press the **Get Approval Certificate** button to download them again from the review server. However, if you also lost `uploadticket.json` (for example, after reformatting), the game treats the folder as a new mod, so uploading it as is creates a new Workshop item instead of updating the existing one. To keep updating the existing item, recover it in this order:
+`mod-guard-manifest.json` and `mod-guard.sig.json` are no longer used as of 1.1.1, so it's fine if you lose them. The only file you need is `uploadticket.json`.
+
+If you lost `uploadticket.json` (for example, after reformatting), the game treats the folder as a new mod, so uploading it as is creates a new Workshop item instead of updating the existing one. To keep updating the existing item, recover it in this order:
 
 1. Subscribe to your own mod on the Workshop.
 2. Copy the entire folder Steam downloaded (`<Steam library>/steamapps/workshop/content/2436940/<Workshop item ID>/`) into `WorkshopLocal/`. Any folder name is fine.
@@ -57,4 +59,4 @@ If only the certificate files (`mod-guard-manifest.json`, `mod-guard.sig.json`) 
   "publishedFileId": 123456789
 }
 ```
-4. When you launch the game, the mod shows as "Not yet submitted for review" in the panel. Go through request review → approval → get approval certificate → upload to the Workshop again, and **the existing item is updated**. (Note: if you duplicated an existing mod folder to make a different mod, you **must delete** `uploadticket.json` and the certificate files. If you leave them, the new mod will overwrite the original mod's Workshop item.)
+4. Launch the game, select the mod in the panel, and press **Upload to Workshop**. **The existing item is updated**, and if it's a code mod, it's resubmitted for review under the same item ID. (Note: if you duplicated an existing mod folder to make a different mod, you **must delete** `uploadticket.json`. If you leave it, the new mod will overwrite the original mod's Workshop item.)

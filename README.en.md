@@ -18,7 +18,7 @@ To keep the game safe for everyone, please follow the rules below. Violations ma
 4. **No disrupting play**: Do not intentionally make the game malfunction or interfere with other players' normal play.
 5. **No data collection**: Do not collect user information or send it to external destinations.
 6. **No bypassing access checks**: Do not illegitimately bypass purchase, ownership, or access checks of the game or the distribution platform.
-7. **Mod review**: Mods that contain code (DLLs) go through a review before approval, including analysis and decompilation, to check for rule violations. Approval may take some time. Do not forge review results or approval marks. Files must be provided in a reviewable state; obfuscation is prohibited.
+7. **Mod review**: Mods that contain code (DLLs) go through a review, including analysis and decompilation, to check for rule violations, and may be rejected even after they are published if a problem is found. Do not forge review results or approval marks. Files must be provided in a reviewable state; obfuscation is prohibited.
 8. **Use of game assets**: Decompiling and analyzing the game's code, art, sound, and other assets is allowed to the extent needed for making mods. However, do not redistribute extracted game assets themselves.
 9. **No impersonation or tampering**: Do not impersonate others, or modify and redistribute mods made by others without their consent.
 
@@ -26,7 +26,7 @@ To keep the game safe for everyone, please follow the rules below. Violations ma
 
 ## Before You Start
 
-- Mods that contain code (DLLs) are **reviewed** before they can be uploaded to the Workshop. The review mainly checks the code for malicious behavior. Mods without code, such as translations and costumes, can be uploaded right away without review. Note that mods the review system cannot read will be rejected (obfuscated files, DLLs compiled from C/C++, etc.).
+- Mods that contain code (DLLs) are automatically **submitted to the review system** when you upload them to the Workshop. The review mainly checks the code for malicious behavior, and mods that haven't been submitted or have been rejected won't run in other players' games. Mods without code, such as translations and costumes, can be uploaded right away without review. Note that mods the review system cannot read will be rejected (obfuscated files, DLLs compiled from C/C++, etc.).
 - In multiplayer, every participant in the room must have the same set of mods enabled. (Personal UI mods such as translations are exempt.)
 - After enabling mods, you need to restart the game to change their order or disable them again.
 - Subscribed mods are disabled by default. You can enable them yourself from the list.

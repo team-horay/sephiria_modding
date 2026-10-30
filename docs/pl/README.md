@@ -18,7 +18,7 @@ Aby gra pozostała bezpieczna dla wszystkich, przestrzegaj poniższych zasad. Ic
 4. **Zakaz zakłócania rozgrywki**: Nie powoduj celowo błędnego działania gry ani nie przeszkadzaj innym graczom w normalnej rozgrywce.
 5. **Zakaz zbierania danych**: Nie zbieraj informacji o użytkownikach ani nie wysyłaj ich do zewnętrznych odbiorców.
 6. **Zakaz obchodzenia zabezpieczeń dostępu**: Nie obchodź w nieuprawniony sposób weryfikacji zakupu, własności ani dostępu do gry lub platformy dystrybucji.
-7. **Weryfikacja modów**: Mody zawierające kod (pliki DLL) przechodzą przed zatwierdzeniem weryfikację, obejmującą analizę i dekompilację, pod kątem naruszeń zasad. Zatwierdzenie może zająć trochę czasu. Nie fałszuj wyników weryfikacji ani oznaczeń zatwierdzenia. Pliki muszą być dostarczone w stanie umożliwiającym weryfikację; obfuskacja jest zabroniona.
+7. **Weryfikacja modów**: Mody zawierające kod (pliki DLL) przechodzą weryfikację, obejmującą analizę i dekompilację, pod kątem naruszeń zasad i mogą zostać odrzucone nawet po publikacji, jeśli zostanie wykryty problem. Nie fałszuj wyników weryfikacji ani oznaczeń zatwierdzenia. Pliki muszą być dostarczone w stanie umożliwiającym weryfikację; obfuskacja jest zabroniona.
 8. **Korzystanie z zasobów gry**: Dekompilacja i analiza kodu, grafiki, dźwięków i innych zasobów gry jest dozwolona w zakresie niezbędnym do tworzenia modów. Nie rozpowszechniaj jednak samych wyodrębnionych zasobów gry.
 9. **Zakaz podszywania się i ingerowania w cudze mody**: Nie podszywaj się pod innych ani nie modyfikuj i nie rozpowszechniaj cudzych modów bez zgody ich autorów.
 
@@ -26,7 +26,7 @@ Aby gra pozostała bezpieczna dla wszystkich, przestrzegaj poniższych zasad. Ic
 
 ## Zanim zaczniesz
 
-- Mody zawierające kod (pliki DLL) są **weryfikowane**, zanim będzie można je przesłać do Warsztatu. Weryfikacja sprawdza przede wszystkim, czy kod nie zawiera złośliwych działań. Mody bez kodu, takie jak tłumaczenia i stroje, można przesyłać od razu, bez weryfikacji. Pamiętaj, że mody, których system weryfikacji nie jest w stanie odczytać, zostaną odrzucone (pliki poddane obfuskacji, DLL skompilowane z C/C++ itp.).
+- Mody zawierające kod (pliki DLL) są podczas przesyłania do Warsztatu automatycznie **zgłaszane do systemu weryfikacji**. Weryfikacja sprawdza przede wszystkim, czy kod nie zawiera złośliwych działań, a mody niezgłoszone lub odrzucone nie są uruchamiane w grach innych graczy. Mody bez kodu, takie jak tłumaczenia i stroje, można przesyłać od razu, bez weryfikacji. Pamiętaj, że mody, których system weryfikacji nie jest w stanie odczytać, zostaną odrzucone (pliki poddane obfuskacji, DLL skompilowane z C/C++ itp.).
 - W trybie wieloosobowym wszyscy uczestnicy w pokoju muszą mieć włączony ten sam zestaw modów. (Nie dotyczy to osobistych modów interfejsu, takich jak tłumaczenia.)
 - Po włączeniu modów musisz zrestartować grę, aby zmienić ich kolejność lub ponownie je wyłączyć.
 - Subskrybowane mody są domyślnie wyłączone. Możesz je samodzielnie włączyć na liście.

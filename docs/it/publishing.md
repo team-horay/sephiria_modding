@@ -14,25 +14,34 @@ Questa pagina spiega come caricare la tua mod sullo Steam Workshop, come funzion
 
 1. Avvia Sephiria.
 2. Apri il pannello **Steam Workshop** nella schermata del titolo e trova la mod che hai creato.
-3. Seleziona la tua mod.
-4. Le mod che includono codice (DLL) passano per la revisione del codice.
-5. Le mod senza codice possono essere caricate subito sul Workshop.
+3. Seleziona la tua mod e premi **Carica nel Workshop**.
+4. Per le mod senza codice, il caricamento sul Workshop è l'ultimo passaggio.
+5. Per le mod che includono codice (DLL), una volta completato il caricamento sul Workshop, la mod viene inviata automaticamente al **sistema di revisione** insieme all'ID dell'elemento del Workshop.
 6. Vai alla pagina del Workshop appena caricata, fai un test finale (per esempio iscrivendoti), poi cambia la visibilità in "Pubblico".
+
+Se il caricamento sul Workshop è stato completato ma non è riuscito solo l'invio alla revisione (per esempio a causa di un errore di rete), premi di nuovo **Carica nel Workshop** sulla stessa mod. Se il contenuto non è cambiato, la mod non viene caricata di nuovo sul Workshop; viene solo ripetuto l'invio. L'invio deve essere effettuato con l'account Steam che ha creato l'elemento del Workshop.
 
 ## Revisione del codice
 
-- Il sistema di revisione controlla ogni file della cartella della mod. Le DLL vengono decompilate e verificate per comunicazioni di rete, accesso ai file, offuscamento e comportamenti malevoli; i file di dati come immagini, suoni e JSON vengono verificati per la validità del formato.
-- Se non vengono trovati problemi, la mod viene approvata automaticamente; se qualcosa sembra sospetto, un operatore lo controlla manualmente. Le mod chiaramente malevole vengono rifiutate automaticamente.
-- La revisione combina analisi automatica e controlli da parte di un operatore, e siamo consapevoli che nessun sistema di revisione può intercettare ogni rischio. Puntiamo comunque a ridurre la diffusione di mod malevole grazie a questo processo preventivo di revisione e approvazione. Grazie per la collaborazione.
-- Se una mod contiene codice lo si stabilisce dal **contenuto** dei file, non dal nome. Anche senza un modulo `dll`, una mod è soggetta a revisione se ha `libraries` o contiene una DLL o un EXE con estensione modificata.
+- Il sistema di revisione decompila le DLL e le verifica per comunicazioni di rete, accesso ai file, offuscamento e comportamenti malevoli. La revisione combina analisi automatica e controlli da parte di un operatore, e siamo consapevoli che nessun sistema di revisione può intercettare ogni rischio. Puntiamo comunque a ridurre la diffusione di mod malevole grazie a questo processo di revisione. Grazie per la collaborazione.
+- Ogni mod che contiene codice (DLL) **deve essere inviata anche al sistema di revisione delle mod.** Per farlo, caricala sempre tramite il pulsante **Carica nel Workshop** del gioco.
+- Le mod caricate sul Workshop ma non inviate al sistema di revisione in genere non possono essere eseguite dai giocatori.
+- I giocatori che scaricano una mod ne verificano lo stato di revisione tramite l'ID dell'elemento del Workshop e le DLL installate.
+  - **Inviata / Approvata**: la mod viene eseguita. Viene eseguita anche prima che la revisione sia completata.
+  - **Non inviata / Rifiutata**: la mod non viene eseguita e il motivo viene mostrato nel pannello delle mod.
+- Se durante la revisione viene trovato un problema, una mod può essere rifiutata anche dopo la pubblicazione. Per una mod rifiutata, puoi vedere il motivo con **Visualizza il motivo del rifiuto** nel pannello. Le DLL rifiutate non possono essere pubblicate di nuovo così come sono; correggi il problema e caricala di nuovo.
+- Anche senza un modulo `dll`, una mod è soggetta a revisione se ha `libraries` o contiene una DLL o un EXE con estensione modificata.
 - Le mod che passano per la revisione del codice devono pesare al massimo 20 MB una volta compressa la cartella.
 
-## Certificato di approvazione (solo mod con codice)
+### Motivi della revisione non superata
 
-- Le mod che contengono codice ricevono un certificato di approvazione.
-- Certifica che i file della mod sono identici alla versione approvata.
-- Le mod DLL devono passare per questa certificazione prima che i giocatori che le scaricano possano eseguirne il codice.
-- Se anche un solo file cambia dopo la certificazione, il certificato diventa non valido e la mod deve essere revisionata di nuovo.
+|Messaggio|Causa|
+|---|---|
+|Non esiste alcuna richiesta nel sistema di revisione.|La mod è stata caricata sul Workshop ma non è stata inviata al sistema di revisione. Inviala di nuovo con il pulsante **Carica nel Workshop**.|
+|Il sistema di revisione ha rifiutato l'approvazione di questa mod.|Il team operativo ha rifiutato la mod per qualche motivo. Controlla il motivo del rifiuto.|
+|Impossibile ottenere informazioni dal server di revisione.|La connessione a internet dell'iscritto potrebbe non funzionare, oppure potrebbe esserci un problema con il server di revisione.|
+|Questa mod proviene dal precedente sistema di revisione.|Il server di revisione è stato aggiornato e i dati di verifica esistenti della mod sono stati azzerati. Inviala di nuovo.|
+|Nella mod è stata rilevata una DLL non autorizzata.|Se l'insieme dei file DLL della mod cambia mentre la mod è in esecuzione, il caricamento di quella mod viene limitato. In altre parole, quanto segue può violare il sistema di revisione: la mod scarica una DLL dall'esterno durante l'esecuzione e ne carica l'assembly; la mod crea ed esegue una propria DLL durante l'esecuzione; la mod estrae e usa una DLL racchiusa al suo interno con un proprio formato di compressione.|
 
 ## Visibilità e pubblicazione
 
@@ -44,24 +53,17 @@ Questa pagina spiega come caricare la tua mod sullo Steam Workshop, come funzion
 
 Puoi aggiornare la tua mod nello stesso modo in cui l'hai pubblicata.
 
-- Le mod DLL hanno bisogno di un nuovo certificato di approvazione.
+- Un aggiornamento che modifica le DLL viene inviato di nuovo automaticamente dopo il caricamento e passa di nuovo per la revisione. Se non hai modificato alcuna DLL, lo stato della revisione resta invariato.
 - Non cambiare il `modId`. La mod verrebbe trattata come una mod diversa, con il rischio di rompere le dipendenze e altro ancora.
 - **Aumenta sempre `version` in `metadata.json` a ogni aggiornamento.** Le versioni delle mod vengono confrontate quando si entra in una lobby multigiocatore, quindi se il contenuto è cambiato ma la versione no, giocatori con contenuti diversi possono ritrovarsi nella stessa partita e avere problemi.
 
 ## Ticket di caricamento
 
-Dopo la richiesta di revisione e il caricamento, i file qui sotto vengono aggiunti alla cartella della mod. Contengono le informazioni di approvazione della revisione, quindi **non eliminarli.** Se gestisci la cartella della mod con git, la cosa più sicura è committare anche questi tre file. Se cambi computer o formatti, ti serviranno per continuare ad aggiornare lo stesso elemento del Workshop.
+Dopo il caricamento, `uploadticket.json` viene aggiunto alla cartella della mod. Contiene l'ID dell'elemento del Workshop e le informazioni sull'invio alla revisione, quindi **non eliminarlo.** Se gestisci la cartella della mod con git, la cosa più sicura è committare anche questo file. Se cambi computer o formatti, ti servirà per continuare ad aggiornare lo stesso elemento del Workshop. Senza di esso, il gioco tratta la cartella come una nuova mod mai pubblicata.
 
-| File | Contenuto |
-|---|---|
-| `uploadticket.json` | Il ticket di revisione e l'ID dell'elemento del Workshop. Senza di esso, il gioco tratta la cartella come una nuova mod mai pubblicata. |
-| `mod-guard-manifest.json`, `mod-guard.sig.json` | Il certificato di approvazione della revisione: l'elenco dei file approvati e una firma. Modificarli invalida l'approvazione. |
+`mod-guard-manifest.json` e `mod-guard.sig.json`, usati dal sistema di revisione prima della 1.1.1, non vengono più usati. Anche se rimangono, non vengono caricati sul Workshop e puoi eliminarli.
 
-Consulta le [FAQ](faq.md) per sapere come recuperare questi file se li perdi.
-
-## Revoca dell'approvazione
-
-Se dopo la pubblicazione viene rilevata una violazione delle regole, un operatore può revocare l'approvazione. Una mod revocata non viene caricata anche se è installata, e nel pannello compare come "Approvazione della revisione revocata".
+Consulta le [FAQ](faq.md) per sapere come recuperare il file se lo perdi.
 
 
 ## Regole del multigiocatore
