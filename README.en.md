@@ -16,7 +16,7 @@ To keep the game safe for everyone, please follow the rules below. Violations ma
 2. **Non-commercial use**: All mods must be made and distributed for non-commercial purposes.
 3. **No rights infringement or harmful content**: Content that infringes on others' copyright, privacy, or likeness rights, or that contains sexual content or promotes hate, harassment, or real-world violence, is prohibited.
 4. **No disrupting play**: Do not intentionally make the game malfunction or interfere with other players' normal play.
-5. **No data collection**: Do not collect user information or send it to external destinations.
+5. **No data collection**: Do not collect user information unrelated to the game (such as account, file, or device information), or send information to external destinations without users knowing. If you send game-related information (such as leaderboard records or bug reports), let users know what information is sent.
 6. **No bypassing access checks**: Do not illegitimately bypass purchase, ownership, or access checks of the game or the distribution platform.
 7. **Mod review**: Mods that contain code (DLLs) go through a review, including analysis and decompilation, to check for rule violations, and may be rejected even after they are published if a problem is found. Do not forge review results or approval marks. Files must be provided in a reviewable state; obfuscation is prohibited.
 8. **Use of game assets**: Decompiling and analyzing the game's code, art, sound, and other assets is allowed to the extent needed for making mods. However, do not redistribute extracted game assets themselves.

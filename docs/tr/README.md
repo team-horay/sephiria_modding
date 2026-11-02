@@ -16,7 +16,7 @@ Oyunun herkes için güvenli kalması adına lütfen aşağıdaki kurallara uyun
 2. **Ticari olmayan kullanım**: Tüm modlar ticari olmayan amaçlarla yapılmalı ve dağıtılmalıdır.
 3. **Hak ihlali ve zararlı içerik yasaktır**: Başkalarının telif, gizlilik veya görüntü haklarını ihlal eden, cinsel içerik barındıran ya da nefreti, tacizi veya gerçek dünyadaki şiddeti teşvik eden içerikler yasaktır.
 4. **Oyunu bozmak yasaktır**: Oyunun kasıtlı olarak hatalı çalışmasına yol açmayın ve diğer oyuncuların normal oyun deneyimine müdahale etmeyin.
-5. **Veri toplamak yasaktır**: Kullanıcı bilgilerini toplamayın ve dışarıya göndermeyin.
+5. **Veri toplamak yasaktır**: Oyunla ilgisi olmayan kullanıcı bilgilerini (hesap, dosya veya cihaz bilgileri gibi) toplamayın ve kullanıcıların haberi olmadan bilgileri dışarıya göndermeyin. Oyunla ilgili bilgileri (skor tablosu kayıtları, hata bildirimleri gibi) gönderiyorsanız, hangi bilgilerin gönderildiğini kullanıcılara bildirin.
 6. **Erişim denetimlerini atlatmak yasaktır**: Oyunun veya dağıtım platformunun satın alma, sahiplik ya da erişim denetimlerini usulsüz şekilde atlatmayın.
 7. **Mod incelemesi**: Kod (DLL) içeren modlar, kural ihlali olup olmadığını denetlemek için analiz ve derleme çözme (decompile) dahil bir incelemeden geçer ve bir sorun bulunursa yayınlandıktan sonra bile reddedilebilir. İnceleme sonuçlarını veya onay işaretlerini sahte olarak üretmeyin. Dosyalar incelenebilir durumda sunulmalıdır; karartma (obfuscation) yasaktır.
 8. **Oyun varlıklarının kullanımı**: Oyunun kodunu, çizimlerini, seslerini ve diğer varlıklarını mod yapmak için gereken ölçüde çözümlemek ve analiz etmek serbesttir. Ancak çıkarılan oyun varlıklarını olduğu gibi yeniden dağıtmayın.

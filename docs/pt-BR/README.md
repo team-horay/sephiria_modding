@@ -16,7 +16,7 @@ Para manter o jogo seguro para todos, siga as regras abaixo. Violações podem r
 2. **Uso não comercial**: todos os mods devem ser criados e distribuídos sem fins comerciais.
 3. **Sem violação de direitos nem conteúdo nocivo**: é proibido conteúdo que viole direitos autorais, privacidade ou direito de imagem de terceiros, bem como conteúdo sexual ou que promova ódio, assédio ou violência no mundo real.
 4. **Não atrapalhe o jogo dos outros**: não faça o jogo funcionar mal de propósito nem interfira no jogo normal de outros jogadores.
-5. **Sem coleta de dados**: não colete informações dos usuários nem as envie para destinos externos.
+5. **Sem coleta de dados**: não colete informações dos usuários não relacionadas ao jogo (como dados da conta, arquivos ou do dispositivo) nem envie informações para destinos externos sem o conhecimento dos usuários. Se você enviar informações relacionadas ao jogo (como registros de placar ou relatórios de bugs), informe aos usuários quais informações são enviadas.
 6. **Sem burlar verificações de acesso**: não burle de forma ilegítima as verificações de compra, posse ou acesso do jogo ou da plataforma de distribuição.
 7. **Revisão de mods**: mods que contêm código (DLLs) passam por uma revisão, incluindo análise e descompilação, para verificar violações das regras, e podem ser rejeitados mesmo depois de publicados se algum problema for encontrado. Não falsifique resultados de revisão nem selos de aprovação. Os arquivos devem ser fornecidos em um estado que permita a revisão; ofuscação é proibida.
 8. **Uso dos recursos do jogo**: descompilar e analisar o código, a arte, o som e outros recursos do jogo é permitido na medida necessária para criar mods. No entanto, não redistribua os recursos extraídos do jogo em si.
