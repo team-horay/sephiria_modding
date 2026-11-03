@@ -181,6 +181,7 @@ If you declare `installation` as `local_only` or `host_only` but your mod touche
 - A general-purpose data module for mods. It isn't used in typical cases; it's mainly used for dependencies between mods.
 - `consumer` specifies which mod will use this data module, but you usually omit it. If omitted, every mod listed in `dependencies` can read this data.
 - If you have multiple parent mods and the data is meant for only one of them, put that mod's `modId` in `consumer`. That value must also be in `dependencies`.
+- A `data` module is for data that isn't code (JSON, images, etc.). Don't put DLLs in it. The game doesn't run DLLs in a `data` module, and having another mod load and use them isn't supported. If it contains a DLL, the mod is subject to code review. To share code, see [Using Another Mod's Library](dll-mods.md#using-another-mods-library).
 
 ### libraries
 
@@ -209,6 +210,7 @@ If you declare `installation` as `local_only` or `host_only` but your mod touche
 - In that case, you can declare a dependency on another mod using `dependencies`.
 - When a parent mod is specified, your mod can't be loaded before that parent mod.
 - If a parent mod is missing, disabled, or fails to load, loading of all its child mods is canceled.
+- A child mod's DLLs can reference the DLLs in the parent's `modules` and `libraries`. Don't copy the parent's DLLs into the child mod. See [Using Another Mod's Library](dll-mods.md#using-another-mods-library) for details.
 - A dependency can have the following three fields.
 
 | Field | Required | Rule |

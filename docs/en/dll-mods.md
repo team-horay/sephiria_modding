@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **Don't bundle `0Harmony.dll` with your mod.** A bundled copy is ignored, and even if you include a different version, your mod won't run on that version.
 - Using your `modId` as-is for the Harmony ID keeps it from colliding with others.
 - Patches break on game updates far more easily than the official API. Do what you can with events, and keep patches as a last resort.
-- External loaders such as BepInEx and MelonLoader are not supported.
+- External loaders such as BepInEx and MelonLoader are not supported. A mod that works like an external loader (one that finds and runs plugin DLLs from outside the Workshop) gets a warning and is enabled only after the user accepts it. See [Mods That Run Code from Outside the Workshop](#mods-that-run-code-from-outside-the-workshop) for details.
 
 
 ## Helper DLLs
@@ -200,15 +200,44 @@ If your mod uses other libraries (e.g. third-party packages other than Newtonsof
 
 - Don't include DLLs that already ship with the game (Unity, Mirror, Newtonsoft.Json, 0Harmony, etc.). The game's copy loads first, so the copy your mod includes is either ignored or conflicts.
 - Native (C/C++) DLLs can't be used. Only managed assemblies are loaded.
-- If an assembly with the same name has already been loaded by another mod, the game doesn't pick one of the two; it **holds off running** it. It's safer to split shared libraries into a separate mod and link it through `dependencies`.
+- If an assembly with the same name has already been loaded by another mod, the game doesn't pick one of the two for a DLL in `modules`; it **holds off running** it. For a DLL in `libraries`, the game uses the one that's already loaded and ignores your copy, which can break things if the versions differ. It's safer to split shared libraries into a separate mod and link it through `dependencies`.
+
+### Using Another Mod's Library
+
+If several mods use the same code, put that code in one parent mod and have the child mods link to it through `dependencies`.
+
+1. The parent mod declares the shared code in `modules` or `libraries` and adds `Library` to its `tags`.
+2. The child mod lists the parent's `modId` in `dependencies` and builds against the parent's DLL with `Private=false`. **Don't copy the parent's DLL into the child mod.**
+3. The game loads the parent mod first, so the child's references resolve to the parent's assembly that's already loaded.
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- The child mod still needs its own `dll` module and `entryClass`. A parent mod finding and loading the child's DLLs itself isn't supported. Instead, have the child call the parent's registration function from its own `OnModLoaded`.
+- If the parent changes its public types or members in an update, child mods can break. Avoid removing or changing existing public APIs in a shared library.
 
 ### Don't Create DLLs at Runtime!
 
-If the DLL files in a mod change while the mod is running, loading that mod is restricted. Include every DLL in the Workshop item as is, without any compression or streaming. In other words, the following can violate the review system. Put every DLL you need in the mod when you upload it.
+All code a mod runs must be inside a reviewed Workshop item. If the DLL files in a mod change while the mod is running, loading that mod is restricted. Include every DLL in the Workshop item as is, without any compression or streaming. In other words, the following can violate the review system. Put every DLL you need in the mod when you upload it.
 
 - The mod downloads a DLL from outside while running and loads the assembly
-- The mod creates and runs its own DLL while running
+- The mod creates and runs its own DLL while running (including rewriting another DLL with Mono.Cecil or similar and then running it)
 - The mod extracts a DLL packed inside it with its own compression scheme and uses it
+
+### Mods That Run Code from Outside the Workshop
+
+A mod that finds and runs DLLs the user puts **outside its mod folder**, such as in the game install folder or `AppData` (for example, a compatibility mod for another loader's plugins), isn't rejected, but the review system adds a **warning** to it.
+
+- When the user enables the mod, a warning appears, and the mod is enabled only if they accept it. The user is asked again when the mod is updated.
+- External DLLs run this way are not reviewed, and problems they cause are not supported.
+- A mod that downloads such DLLs itself while running falls under the prohibited cases above.
+
+To use another mod's code, don't load DLLs directly from that mod's folder. Link to it through `dependencies` as described in [Using Another Mod's Library](#using-another-mods-library). DLLs the game didn't load itself skip the load order, name conflict, and dependency checks, so this isn't supported.
+
+If you need to rewrite a DLL (for example, converting IL to a different Harmony API), do it before uploading and include the converted DLL in your mod.
 
 
 ## Building and Testing

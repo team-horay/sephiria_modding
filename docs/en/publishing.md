@@ -32,6 +32,7 @@ If the Workshop upload finished but only the review submission failed (for examp
 - If a problem is found during review, a mod can be rejected even after it has been published. For a rejected mod, you can see the reason with **View Rejection Reason** in the panel. The rejected DLLs can't be published again as they are; fix the issue and upload again.
 - Even without a `dll` module, a mod is subject to review if it has `libraries` or contains a DLL or EXE with a changed extension.
 - Mods that go through code review must be 20 MB or less when the folder is compressed.
+- If a mod has a feature that isn't grounds for rejection but that users should know about (for example, running DLLs from outside the Workshop), it may be approved with a **warning**. A mod with a warning is enabled only after the user accepts the warning. See [Mods That Run Code from Outside the Workshop](dll-mods.md#mods-that-run-code-from-outside-the-workshop) for details.
 
 ### Review Failure Reasons
 
