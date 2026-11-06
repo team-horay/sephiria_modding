@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **`0Harmony.dll` dosyasını modunuzla birlikte paketlemeyin.** Paketlenmiş kopya yok sayılır; farklı bir sürüm eklemiş olsanız bile modunuz o sürümde çalışmaz.
 - Harmony kimliği olarak `modId` değerinizi olduğu gibi kullanmak başkalarıyla çakışmasını önler.
 - Yamalar, oyun güncellemelerinde resmi API'den çok daha kolay bozulur. Yapabildiklerinizi olaylarla yapın ve yamaları son çare olarak saklayın.
-- BepInEx ve MelonLoader gibi harici yükleyiciler desteklenmez.
+- BepInEx ve MelonLoader gibi harici yükleyiciler desteklenmez. Harici bir yükleyici gibi çalışan bir mod (Atölye dışındaki eklenti DLL'lerini bulup çalıştıran bir mod) uyarı alır ve yalnızca kullanıcı onayladıktan sonra etkinleştirilir. Ayrıntılar için [Atölye Dışındaki Kodu Çalıştıran Modlar](#atölye-dışındaki-kodu-çalıştıran-modlar) bölümüne bakın.
 
 
 ## Yardımcı DLL'ler
@@ -200,15 +200,44 @@ Modunuz başka kütüphaneler kullanıyorsa (örn. Newtonsoft.Json dışındaki 
 
 - Oyunla birlikte gelen DLL'leri (Unity, Mirror, Newtonsoft.Json, 0Harmony vb.) dahil etmeyin. Önce oyunun kopyası yüklenir; bu yüzden modunuzun içerdiği kopya ya yok sayılır ya da çakışır.
 - Yerel (C/C++) DLL'ler kullanılamaz. Yalnızca yönetilen derlemeler yüklenir.
-- Aynı ada sahip bir derleme başka bir mod tarafından zaten yüklenmişse, oyun ikisinden birini seçmez; çalıştırmayı **askıya alır**. Paylaşılan kütüphaneleri ayrı bir moda ayırıp `dependencies` ile bağlamak daha güvenlidir.
+- Aynı ada sahip bir derleme başka bir mod tarafından zaten yüklenmişse, `modules` içindeki bir DLL için oyun ikisinden birini seçmez; çalıştırmayı **askıya alır**. `libraries` içindeki bir DLL için ise oyun zaten yüklü olanı kullanır ve sizin kopyanızı yok sayar; sürümler farklıysa bu hatalara yol açabilir. Paylaşılan kütüphaneleri ayrı bir moda ayırıp `dependencies` ile bağlamak daha güvenlidir.
+
+### Başka Bir Modun Kütüphanesini Kullanma
+
+Birden fazla mod aynı kodu kullanıyorsa, bu kodu tek bir üst moda koyun ve alt modları `dependencies` ile ona bağlayın.
+
+1. Üst mod, paylaşılan kodu `modules` veya `libraries` içinde bildirir ve `tags` alanına `Library` ekler.
+2. Alt mod, `dependencies` içine üst modun `modId` değerini yazar ve üst modun DLL'ini `Private=false` ile referans alarak derlenir. **Üst modun DLL'ini alt moda kopyalamayın.**
+3. Oyun önce üst modu yükler; bu yüzden alt modun referansları, zaten yüklenmiş olan üst modun derlemesine çözülür.
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- Alt modun yine de kendi `dll` modülü ve `entryClass` değeri olmalıdır. Üst modun, alt modun DLL'lerini kendi başına bulup yüklediği bir yapı desteklenmez. Bunun yerine alt modun kendi `OnModLoaded` metodundan üst modun kayıt işlevini çağırmasını sağlayın.
+- Üst mod bir güncellemede herkese açık türlerini veya üyelerini değiştirirse alt modlar bozulabilir. Paylaşılan bir kütüphanede mevcut herkese açık API'leri silmemeye veya değiştirmemeye dikkat edin.
 
 ### Çalışma Zamanında DLL Oluşturmayın!
 
-Mod çalışırken moddaki DLL dosyaları değişirse o modun yüklenmesi kısıtlanır. Tüm DLL'leri herhangi bir sıkıştırma veya akış (streaming) olmadan, olduğu gibi Atölye öğesine dahil edin. Yani aşağıdakiler inceleme sistemini ihlal edebilir. İhtiyacınız olan tüm DLL'leri yüklerken moda koyun.
+Bir modun çalıştırdığı tüm kod, incelemeden geçmiş bir Atölye öğesinin içinde olmalıdır. Mod çalışırken moddaki DLL dosyaları değişirse o modun yüklenmesi kısıtlanır. Tüm DLL'leri herhangi bir sıkıştırma veya akış (streaming) olmadan, olduğu gibi Atölye öğesine dahil edin. Yani aşağıdakiler inceleme sistemini ihlal edebilir. İhtiyacınız olan tüm DLL'leri yüklerken moda koyun.
 
 - Mod çalışırken dışarıdan bir DLL indirip derlemeyi yükler
-- Mod çalışırken kendi DLL'ini oluşturup çalıştırır
+- Mod çalışırken kendi DLL'ini oluşturup çalıştırır (Mono.Cecil gibi bir araçla başka bir DLL'i yeniden yazıp sonra çalıştırmak da dahil)
 - Mod, içinde kendi sıkıştırma yöntemiyle paketlenmiş bir DLL'i çıkarıp kullanır
+
+### Atölye Dışındaki Kodu Çalıştıran Modlar
+
+Kullanıcının oyun kurulum klasörü veya `AppData` gibi **mod klasörünün dışına** koyduğu DLL'leri bulup çalıştıran bir mod (örneğin başka bir yükleyicinin eklentileriyle uyumluluk sağlayan bir mod) reddedilmez, ancak inceleme sistemi ona bir **uyarı** ekler.
+
+- Kullanıcı modu etkinleştirirken bir uyarı penceresi çıkar ve mod yalnızca kullanıcı onaylarsa etkinleşir. Mod güncellendiğinde kullanıcıya yeniden sorulur.
+- Bu şekilde çalıştırılan harici DLL'ler incelemeden geçmez ve bunların yol açtığı sorunlar için destek verilmez.
+- Bir modun bu tür DLL'leri çalışırken kendisinin indirmesi, yukarıdaki yasak durumlara girer.
+
+Başka bir modun kodunu kullanmak için o modun klasöründen doğrudan DLL yüklemeyin; [Başka Bir Modun Kütüphanesini Kullanma](#başka-bir-modun-kütüphanesini-kullanma) bölümünde anlatıldığı gibi `dependencies` ile bağlayın. Oyunun kendisinin yüklemediği DLL'ler yükleme sırası, ad çakışması ve bağımlılık denetimlerini atladığı için desteklenmez.
+
+Bir DLL'i yeniden yazmanız gerekiyorsa (örneğin başka bir Harmony API'sine uygun IL dönüşümü), bunu yüklemeden önce yapın ve dönüştürülmüş DLL'i modunuza ekleyin.
 
 
 ## Derleme ve Test Etme
@@ -236,6 +265,145 @@ Oyun güncellendiğinde `Assembly-CSharp.dll` değişir. Yalnızca resmi olaylar
 - Modunuz oyun durumunu yalnızca `Serverside` olaylarında değiştiriyorsa ve değiştirdiği değerler zaten eşitlenen oyun durumuysa (örn. `customStats`), yani katılımcıların koda veya kayda ihtiyacı yoksa, `host_only` olarak bildirebilirsiniz. Katılımcılar o zaman modu indirmez. Yeni eşya kaydeden, `RegisterNetworkPrefab` kullanan veya `Clientside` olaylarında herhangi bir şeyi değiştiren bir mod `host_only` olamaz.
 - Ağ üzerinden doğan nesnelerin (birimler, mermiler vb.) katılımcıların tarafında da oluşturulabilmesi için `RegisterNetworkPrefab` ile kaydedilmesi gerekir. Bir `stableKey` geçirirseniz mod sürümünüz değişse bile aynı kimlik korunur.
 - Sunucu sahibi ve katılımcıların mod **yükleme sırası** bile aynı olmalıdır. Sonuçları bu sıraya bağlı olan kodlardan kaçının.
+
+
+## Ağ Eşitleme (SyncVar, RPC, Command)
+
+Sephiria'nın çok oyunculu özelliği, açık kaynaklı ağ kütüphanesi "Mirror" ile gerçekleştirilmiştir. Mirror'da aşağıdaki öznitelikleri bildirerek iletişim özelliklerini kolayca kullanabilirsiniz.
+
+- `[SyncVar]`: Sınıf üye değişkenine eklenen özniteliktir. Bir değişkenin değerini sunucu ile istemciler arasında eşitler.
+- `[ClientRpc]`, `[TargetRpc]`: İşleve eklenen özniteliklerdir. Sunucu, istemcilerden bir işlevi çalıştırmalarını ister.
+- `[Command]`: İşleve eklenen özniteliktir. İstemci, sunucudan bir işlevi çalıştırmasını ister.
+
+Mod ortamında yukarıdaki öznitelikler düzgün kullanılamaz. Bunlar ancak kod derlenirken Mirror'ın Weaver'ı her özniteliğe karşılık gelen iletim kodunu eklediğinde çalışır; dışarıda üretilen DLL'ler Weaver'dan geçmediği için derleme başarılı olsa bile bu öznitelikler hiçbir işlev görmez. Bu tür hata, sunucu sahibinin ekranında normal görünür ve yalnızca katılımcının ekranında sorun çıkarır; bu yüzden tek başınıza test ederek fark etmek zordur. (DLL'i zorla Weaver'dan geçirseniz bile işlev karması çakışması gibi hatalar olabilir.)
+
+
+### `SyncVar<T>`, `ModRpc`
+
+Bunu çözmek için Sephiria, yukarıdaki özniteliklerin yerini alan mod odaklı iletişim kodunu sunar: `SyncVar<T>` ve `ModRpc`.
+
+| Yapmak istediğiniz | Kullanılacak |
+|---|---|
+| Bir değeri sürekli eşit tutmak (sonradan giren katılımcılar dahil) | `SyncVar<T>` |
+| Sunucudan tüm istemcilere çağrı | `ModRpc.Send` |
+| Sunucudan belirli bir istemciye çağrı | `ModRpc.SendTo` |
+| İstemciden sunucuya çağrı | `ModRpc.SendCommand` |
+| Oyunun zaten eşitlediği bir değeri değiştirmek | `Network<FieldName>` özelliği |
+
+- Bu özellik oyunun 1.1.2 sürümünden itibaren kullanılabilir.
+- Bu özelliği kullanan modlarda `multiplayer.installation` değerini `everyone` olarak bildirin.
+
+
+### Bileşen Hazırlama
+
+`SyncVar<T>` ve `ModRpc` yalnızca `NetworkBehaviour` sınıfından türeyen bileşenlerde kullanılabilir. Bu bileşen, hem sunucu sahibinde hem de katılımcıda aynı nesneye **aynı sırayla** eklenmiş olmalıdır. Zaten doğmuş bir nesneye `AddComponent` ile eklenen bileşen eşitleme kapsamına girmez; bu yüzden nesneyi ağ prefab'ı olarak kaydetmeden önce eklenmiş olması gerekir.
+
+```csharp
+private static GameObject prefab;
+
+// OnModLoaded içinde HorayModAPI.OnAllDatabasesReady olayına abone olun.
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // Etkin olmayan bir üst nesnenin altına koyun. Prefab'ın Awake'i çalışmaz, Instantiate ile oluşturulan kopya ise etkin olarak başlar.
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// Sunucuda doğurulur. İkinci argümanı verirseniz o oyuncu sahip olur.
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`: Değer Eşitleme
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // Weaver olmadığı için yapıcıda elle kaydedin. Alanların sırası her zaman aynı olmalıdır.
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- Değeri **sunucuda** `stack.Value = 3` gibi değiştirin. Katılımcının değiştirdiği değer sunucuya iletilmez.
+- Sonradan giren katılımcı da girişte mevcut değeri alır.
+- `Callback`, sunucu sahibinde değer atandığında, katılımcıda ise değer alındığında çağrılır. Girişte alınan değer varsayılandan farklıysa o sırada da çağrılır. Geri çağırmada oluşan istisna günlüğe yazılır ve eşitleme sürer.
+- `int`, `float`, `string`, `Vector3` gibi temel türleri kullanabilirsiniz. Modun oluşturduğu struct'lar için serileştirme kodu otomatik üretilmez; bu yüzden onları alanlara bölerek kullanın.
+- Başka bir nesneye işaret etmek için `SyncVar<GameObject>` yerine `netId` değerini `SyncVar<uint>` ile gönderin. Alan tarafta o nesne henüz oluşturulmamış olabilir.
+- Bir bileşene, devralınanlar dahil en fazla 64 SyncVar kaydedilebilir.
+
+### `ModRpc`: İşlev Çağırma
+
+Mod yüklenirken işlevi bir kez kaydedin. Çağırırken adı `modId:functionName` biçimindedir.
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// Sunucu → bu nesneyi gören tüm istemciler
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Sunucu → tek bir istemci. Bağlantı yerine null verirseniz nesnenin sahibine gönderilir.
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// İstemci → sunucu
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- Yazdığınız sırayla okuyun. Yazma ve okumanın sırası ya da türleri farklıysa değerler bozulur veya istisna oluşur.
+- `RegisterCommand`, varsayılan olarak yalnızca **nesnenin sahibi** tarafından çağrılabilir. Sahibi olmayan bir nesnede çağrı almak için `requiresAuthority: false` verin. Bu durumda herhangi bir katılımcı çağırabilir. Hile gibi risklere dikkat edin.
+- Kaydedilen yönden farklı bir yönde göndermek ya da kaydedilmemiş bir ad göndermek yalnızca hata günlüğü bırakır ve gönderim yapılmaz.
+- Alan tarafta işlev yoksa ya da bileşen türü farklıysa yalnızca uyarı günlüğü bırakılır ve çağrı yok sayılır. İşleyicide oluşan istisna da günlüğe yazılır ve oyun çalışmaya devam eder.
+- Varsayılan kanal güvenilir iletimdir. Sık gönderilen efektler için `channelId: Channels.Unreliable` argümanını verebilirsiniz.
+
+### Mutlaka Uyulması Gerekenler
+
+- İstemci, Command aracılığıyla rastgele değerler gönderebilir. Yuva numarası, miktar, hedef gibi değerleri sunucu işleyicisinde doğrulayın.
+- Sonradan giren katılımcı, girişinden önce gönderilen RPC'leri almaz. Korunması gereken durumu `SyncVar<T>` ile gönderin; RPC'yi ses ve efekt gibi gelip geçen işler için kullanın.
+- **RPC, SyncVar'dan önce gelebilir.** RPC işleyicisinde `stack.Value` değerini okursanız önceki değer olabilir. Yeni değere ihtiyacınız varsa onu RPC argümanıyla birlikte gönderin ya da `Callback` içinde işleyin.
+
+### Sephiria Ana Oyun Kodundaki Değerleri Değiştirme
+
+Bir oyun sınıfının `[SyncVar]` alanına doğrudan atama yapmak katılımcılara iletilmez. Başına `Network` eklenmiş özelliği kullanın. Büyük/küçük harf, alan adıyla aynıdır.
+
+```csharp
+unit.maxHp = 500;         // Yalnızca sunucu sahibinin değeri değişir.
+unit.NetworkmaxHp = 500;  // Katılımcılara da iletilir.
+```
+
+Nesne doğmadan önce (prefab'da ya da `Instantiate` hemen sonrasında) doğrudan atama yapsanız da değer doğma sırasında birlikte iletilir.
+
+### Test Etme
+
+Sunucu sahibi tek başına bu sorunları ortaya çıkaramaz. Yayınlamadan önce iki bilgisayarla hem sunucu sahibinin hem de katılımcının ekranını kontrol edin ve değeri değiştirdikten sonra sonradan giren katılımcı durumunu da deneyin. Yerel paketi (`WorkshopLocal`) etkinleştirirseniz başkaları odaya giremez; bu yüzden çok oyunculu testleri Atölye'ye Unlisted olarak yüklenmiş bir öğeye abone olarak yapın. İlk yüklenen öğe otomatik olarak Unlisted olur.
 
 
 ## Sorun Giderme

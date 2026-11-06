@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **Packa inte med `0Harmony.dll` i din mod.** En medföljande kopia ignoreras, och även om du tar med en annan version körs din mod inte på den versionen.
 - Om du använder ditt `modId` som det är som Harmony-ID krockar det inte med andras.
 - Patchar går sönder vid speluppdateringar betydligt lättare än det officiella API:et. Gör vad du kan med händelser och spara patchar som en sista utväg.
-- Externa laddare som BepInEx och MelonLoader stöds inte.
+- Externa laddare som BepInEx och MelonLoader stöds inte. En mod som fungerar som en extern laddare (en som hittar och kör plugin-DLL-filer utanför Workshop) får en varning och aktiveras först när användaren godkänner den. Se [Moddar som kör kod utanför Workshop](#moddar-som-kör-kod-utanför-workshop) för mer information.
 
 
 ## Hjälp-DLL:er
@@ -200,15 +200,44 @@ Om din mod använder andra bibliotek (t.ex. tredjepartspaket utöver Newtonsoft.
 
 - Ta inte med DLL-filer som redan följer med spelet (Unity, Mirror, Newtonsoft.Json, 0Harmony och så vidare). Spelets kopia läses in först, så kopian i din mod ignoreras antingen eller orsakar konflikter.
 - Native-DLL:er (C/C++) kan inte användas. Endast hanterade assemblies läses in.
-- Om en assembly med samma namn redan har lästs in av en annan mod väljer spelet inte en av de två; det **avvaktar med att köra** den. Det är säkrare att bryta ut delade bibliotek till en separat mod och koppla den via `dependencies`.
+- Om en assembly med samma namn redan har lästs in av en annan mod väljer spelet, för en DLL i `modules`, inte en av de två; det **avvaktar med att köra** den. För en DLL i `libraries` använder spelet den som redan är inläst och ignorerar din medföljande kopia, vilket kan ge fel om versionerna skiljer sig åt. Det är säkrare att bryta ut delade bibliotek till en separat mod och koppla den via `dependencies`.
+
+### Använda en annan mods bibliotek
+
+Om flera moddar använder samma kod, lägg koden i en överordnad mod och koppla de underordnade moddarna till den via `dependencies`.
+
+1. Den överordnade modden deklarerar den delade koden i `modules` eller `libraries` och lägger till `Library` i sina `tags`.
+2. Den underordnade modden anger den överordnade moddens `modId` i `dependencies` och byggs mot den överordnade moddens DLL med `Private=false`. **Kopiera inte den överordnade moddens DLL in i den underordnade modden.**
+3. Spelet läser in den överordnade modden först, så den underordnade moddens referenser löses mot den överordnade moddens redan inlästa assembly.
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- Den underordnade modden behöver fortfarande en egen `dll`-modul och `entryClass`. Att den överordnade modden själv letar upp och läser in den underordnade moddens DLL-filer stöds inte. Låt i stället den underordnade modden anropa den överordnade moddens registreringsfunktion från sin egen `OnModLoaded`.
+- Om den överordnade modden ändrar sina publika typer eller medlemmar i en uppdatering kan underordnade moddar gå sönder. Undvik att ta bort eller ändra befintliga publika API:er i ett delat bibliotek.
 
 ### Skapa inte DLL-filer under körning!
 
-Om DLL-filerna i en mod ändras medan modden körs begränsas inläsningen av modden. Ta med alla DLL-filer i Workshop-objektet som de är, utan någon komprimering eller streaming. Det innebär att följande kan bryta mot granskningssystemets regler. Lägg alla DLL-filer du behöver i modden när du laddar upp den.
+All kod som en mod kör måste finnas i ett granskat Workshop-objekt. Om DLL-filerna i en mod ändras medan modden körs begränsas inläsningen av modden. Ta med alla DLL-filer i Workshop-objektet som de är, utan någon komprimering eller streaming. Det innebär att följande kan bryta mot granskningssystemets regler. Lägg alla DLL-filer du behöver i modden när du laddar upp den.
 
 - Modden laddar ner en DLL utifrån medan den körs och läser in assemblyn
-- Modden skapar och kör en egen DLL medan den körs
+- Modden skapar och kör en egen DLL medan den körs (inklusive att skriva om en annan DLL med Mono.Cecil eller liknande och sedan köra den)
 - Modden packar upp en DLL som är packad i den med ett eget komprimeringsformat och använder den
+
+### Moddar som kör kod utanför Workshop
+
+En mod som hittar och kör DLL-filer som användaren lägger **utanför moddens mapp**, till exempel i spelets installationsmapp eller i `AppData` (till exempel en kompatibilitetsmod för en annan laddares plugin), avvisas inte, men granskningssystemet lägger till en **varning** på den.
+
+- När användaren aktiverar modden visas en varning, och modden aktiveras bara om användaren godkänner den. När modden uppdateras frågas användaren igen.
+- Externa DLL-filer som körs på det här sättet granskas inte, och problem som de orsakar stöds inte.
+- En mod som själv laddar ner sådana DLL-filer medan den körs omfattas av de förbjudna fallen ovan.
+
+Om du vill använda en annan mods kod ska du inte läsa in DLL-filer direkt från den moddens mapp. Koppla i stället till den via `dependencies`, som beskrivs i [Använda en annan mods bibliotek](#använda-en-annan-mods-bibliotek). DLL-filer som spelet inte själv har läst in hoppar över laddningsordningen samt kontrollerna av namnkonflikter och beroenden, så de stöds inte.
+
+Om du behöver skriva om en DLL (till exempel konvertera IL för ett annat Harmony-API) ska du göra det före uppladdningen och lägga den konverterade DLL-filen i din mod.
 
 
 ## Bygga och testa
@@ -236,6 +265,145 @@ När spelet uppdateras ändras `Assembly-CSharp.dll`. Moddar som bara använder 
 - Om din mod bara ändrar spelets tillstånd i `Serverside`-händelser, och värdena den ändrar är speltillstånd som redan synkroniseras (t.ex. `customStats`) så att deltagarna inte behöver någon kod eller registrering, kan du deklarera den som `host_only`. Deltagarna laddar då inte ner modden. En mod som registrerar nya föremål, använder `RegisterNetworkPrefab` eller ändrar något i `Clientside`-händelser kan inte vara `host_only`.
 - Objekt som spawnas över nätverket (enheter, projektiler och så vidare) måste registreras med `RegisterNetworkPrefab` för att skapas även på deltagarnas sida. Om du anger en `stableKey` behålls samma ID även när din modversion ändras.
 - Värden och deltagarna måste till och med ha samma **laddningsordning** för moddar. Undvik kod vars resultat beror på den ordningen.
+
+
+## Nätverkssynkronisering (SyncVar, RPC, Command)
+
+Sephirias flerspelarläge är byggt på nätverksbiblioteket med öppen källkod "Mirror". I Mirror kan du enkelt använda nätverksfunktioner genom att deklarera följande attribut.
+
+- `[SyncVar]`: Ett attribut du sätter på en medlemsvariabel i en klass. Det synkroniserar variabelns värde mellan servern och klienterna.
+- `[ClientRpc]`, `[TargetRpc]`: Attribut du sätter på en funktion. De ber klienter köra funktionen från servern.
+- `[Command]`: Ett attribut du sätter på en funktion. Det ber servern köra funktionen från en klient.
+
+I en modmiljö går det inte att använda attributen ovan på vanligt sätt. De fungerar bara när Mirrors Weaver lägger in motsvarande överföringskod vid kompilering, och en DLL som skapats utanför spelet går inte genom Weaver. Även om bygget lyckas gör attributen ovan därför ingenting. Den här sortens bugg ser normal ut på värdens skärm och ställer bara till problem på deltagarnas skärmar, så den är svår att upptäcka om du testar ensam. (Även om man tvingade koden genom Weaver kan det finnas buggar som kollisioner mellan funktionshashar.)
+
+
+### `SyncVar<T>`, `ModRpc`
+
+För att lösa detta tillhandahåller Sephiria nätverkskod för moddar som ersätter attributen ovan: `SyncVar<T>` och `ModRpc`.
+
+| Det du vill göra | Det du använder |
+|---|---|
+| Hålla ett värde synkroniserat (inklusive deltagare som ansluter senare) | `SyncVar<T>` |
+| Server → anrop hos alla klienter | `ModRpc.Send` |
+| Server → anrop hos en specifik klient | `ModRpc.SendTo` |
+| Klient → anrop hos servern | `ModRpc.SendCommand` |
+| Ändra ett värde som spelet redan synkroniserar | Egenskapen `Network<FieldName>` |
+
+- Den här funktionen finns från spelversion 1.1.2.
+- En mod som använder den här funktionen ska deklarera `multiplayer.installation` som `everyone`.
+
+
+### Förbereda en komponent
+
+`SyncVar<T>` och `ModRpc` kan bara användas i en komponent som ärver från `NetworkBehaviour`. Komponenten måste sitta på samma objekt hos både värden och deltagaren, **i samma ordning**. Om du lägger till den med `AddComponent` på ett objekt som redan har spawnats ingår den inte i synkroniseringen, så den måste redan sitta på objektet innan du registrerar det som ett nätverksprefab.
+
+```csharp
+private static GameObject prefab;
+
+// Prenumerera på HorayModAPI.OnAllDatabasesReady i OnModLoaded.
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // Placera det under en inaktiv förälder. Prefabens Awake körs inte, och en Instantiate-kopia startar aktiv.
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// Spawna på servern. Om du anger det andra argumentet blir den spelaren ägare.
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`: synkronisera värden
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // Det finns ingen Weaver, så registrera direkt i konstruktorn. Fältens ordning måste alltid vara densamma.
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- Ändra värdet **på servern**, som `stack.Value = 3`. Ett värde som en deltagare ändrar skickas inte till servern.
+- En deltagare som ansluter senare får också det aktuella värdet när hen går in.
+- `Callback` anropas hos värden när du tilldelar ett värde och hos deltagaren när den tar emot ett värde. Den anropas också om värdet som togs emot vid inträdet skiljer sig från standardvärdet. Ett undantag i en callback skrivs till loggen och synkroniseringen fortsätter.
+- Du kan använda grundläggande typer som `int`, `float`, `string` och `Vector3`. För en struct som din mod själv definierar skapas ingen serialiseringskod automatiskt, så dela upp den i separata fält.
+- För att peka på ett annat objekt, skicka dess `netId` som en `SyncVar<uint>` i stället för att använda `SyncVar<GameObject>`. Objektet kanske ännu inte har skapats hos mottagaren.
+- En enskild komponent kan registrera högst 64 SyncVar, ärvda inräknade.
+
+### `ModRpc`: anropa funktioner
+
+Registrera en funktion en gång när modden läses in. Namnet du använder vid anrop är `modId:functionName`.
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// Server → alla klienter som ser det här objektet
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Server → en klient. Om du anger null som anslutning skickas det till objektets ägare.
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Klient → server
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- Läs i samma ordning som du skrev. Om ordningen eller typerna för skrivning och läsning skiljer sig blir värdena förvanskade eller ett undantag uppstår.
+- `RegisterCommand` kan som standard anropas **endast av objektets ägare**. För att ta emot det på ett objekt som saknar ägare anger du `requiresAuthority: false`. I så fall kan vilken deltagare som helst anropa det. Se upp för fusk och liknande.
+- Om du skickar i en annan riktning än den du registrerade, eller skickar ett namn som inte registrerats, loggas bara ett fel och ingenting skickas.
+- Om funktionen saknas hos mottagaren eller komponenttypen är en annan loggas bara en varning och anropet ignoreras. Ett undantag i en hanterare loggas också och spelet fortsätter.
+- Standardkanalen är tillförlitlig överföring. För effekter som skickas ofta kan du ange argumentet `channelId: Channels.Unreliable`.
+
+### Det här måste du följa
+
+- En klient kan skicka godtyckliga värden via ett Command. Validera platsnummer, antal, mål och liknande i serverns hanterare.
+- En deltagare som ansluter senare får inte RPC:er som skickades före inträdet. Skicka tillstånd som måste bestå med `SyncVar<T>` och använd RPC:er bara för flyktiga händelser som ljud och effekter.
+- **Ett RPC kan komma fram före SyncVar.** Om du läser `stack.Value` i en RPC-hanterare kan det fortfarande vara det tidigare värdet. Om du behöver det nya värdet, skicka med det som RPC-argument eller hantera det i `Callback`.
+
+### Ändra värden i Sephirias baskod
+
+Om du tilldelar direkt till ett `[SyncVar]`-fält i en spelklass skickas det inte till deltagarna. Använd egenskapen med `Network` framför. Stor och liten bokstav är exakt som fältnamnet.
+
+```csharp
+unit.maxHp = 500;         // Bara värdens värde ändras.
+unit.NetworkmaxHp = 500;  // Skickas också till deltagarna.
+```
+
+Innan ett objekt spawnas (på en prefab eller direkt efter `Instantiate`) följer en direkt tilldelning också med när objektet spawnas.
+
+### Testa
+
+Med bara värden syns inte problemen ovan. Innan du publicerar, kontrollera både värdens och deltagarens skärm på två datorer, och testa också fallet där någon ansluter senare efter att du ändrat ett värde. Om du aktiverar ett lokalt paket (`WorkshopLocal`) kan andra inte ansluta till rummet, så gör flerspelartester genom att prenumerera på ett objekt du laddat upp till Workshop som Unlisted. Ett objekt du laddar upp för första gången blir automatiskt Unlisted.
 
 
 ## Felsökning

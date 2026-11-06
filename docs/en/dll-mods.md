@@ -267,6 +267,145 @@ When the game updates, `Assembly-CSharp.dll` changes. Mods that use only officia
 - The host and participants must have even the same mod **load order**. Avoid code whose results depend on that order.
 
 
+## Network Synchronization (SyncVar, RPC, Command)
+
+Sephiria's multiplayer is built on the open-source networking library 'Mirror'. In Mirror, you can use networking features easily by declaring the following attributes.
+
+- `[SyncVar]`: An attribute you put on a class member variable. It synchronizes the variable's value between the server and clients.
+- `[ClientRpc]`, `[TargetRpc]`: Attributes you put on a function. They ask clients to run the function from the server.
+- `[Command]`: An attribute you put on a function. It asks the server to run the function from a client.
+
+You cannot use the attributes above normally in a mod environment. They only work when Mirror's Weaver inserts the matching transmission code at compile time, and a DLL built outside the game doesn't go through the Weaver, so even if the build succeeds, the attributes above do nothing. This kind of bug looks fine on the host's screen and only breaks on the participant's screen, so it is hard to find by testing alone. (Even if you forced the code through the Weaver, there could still be bugs such as function hash collisions.)
+
+
+### `SyncVar<T>`, `ModRpc`
+
+To solve this, Sephiria provides networking code for mods that replaces the attributes above: `SyncVar<T>` and `ModRpc`.
+
+| What you want to do | What to use |
+|---|---|
+| Keep a value in sync (including participants who join late) | `SyncVar<T>` |
+| Server → call on all clients | `ModRpc.Send` |
+| Server → call on a specific client | `ModRpc.SendTo` |
+| Client → call on the server | `ModRpc.SendCommand` |
+| Change a value the game already synchronizes | `Network<FieldName>` property |
+
+- This feature is available from game version 1.1.2.
+- A mod that uses this feature should declare `multiplayer.installation` as `everyone`.
+
+
+### Preparing a Component
+
+`SyncVar<T>` and `ModRpc` can only be used in a component that inherits `NetworkBehaviour`. This component must be attached to the same object on both the host and the participant, **in the same order**. If you attach it with `AddComponent` to an object that has already spawned, it is not included in synchronization, so it must already be attached before you register the object as a network prefab.
+
+```csharp
+private static GameObject prefab;
+
+// Subscribe to HorayModAPI.OnAllDatabasesReady in OnModLoaded.
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // Keep it under an inactive parent. The prefab's Awake does not run, and an Instantiate'd copy starts active.
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// Spawn on the server. If you pass the second argument, that player becomes the owner.
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`: Synchronizing Values
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // There is no Weaver, so register it directly in the constructor. The field order must always be the same.
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- Change the value **on the server**, like `stack.Value = 3`. A value changed by a participant is not sent to the server.
+- A participant who joins late also receives the current value when they enter.
+- `Callback` is called on the host when you assign a value, and on a participant when it receives a value. It is also called if the value received on entry differs from the default. An exception thrown in a callback is written to the log and synchronization continues.
+- You can use basic types such as `int`, `float`, `string`, and `Vector3`. Serialization code is not generated automatically for a struct your mod defines, so split it into separate fields.
+- To refer to another object, send its `netId` as a `SyncVar<uint>` instead of using `SyncVar<GameObject>`. That object may not have been created yet on the receiving side.
+- A single component can register up to 64 SyncVars, counting those it inherits.
+
+### `ModRpc`: Calling Functions
+
+Register a function once when the mod loads. The name you use when calling it is `modId:functionName`.
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// Server → every client that can see this object
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Server → one client. If you pass null for the connection, it is sent to the object's owner.
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Client → server
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- Read in the same order you wrote. If the order or types of writes and reads differ, values get scrambled or an exception is thrown.
+- By default, `RegisterCommand` can be called **only by the object's owner**. To receive it on an object that has no owner, pass `requiresAuthority: false`. In that case any participant can call it. Beware of cheating and the like.
+- If you send in a direction other than the one you registered, or send a name you haven't registered, only an error is logged and nothing is sent.
+- If the function doesn't exist on the receiving side or the component type is different, only a warning is logged and the call is ignored. An exception thrown in a handler is also logged and the game keeps running.
+- The default channel is reliable transport. For frequently sent effects, you can pass the `channelId: Channels.Unreliable` argument.
+
+### What You Must Follow
+
+- A client can send arbitrary values through a Command. Validate slot numbers, quantities, targets, and so on in the server handler.
+- A participant who joins late does not receive RPCs sent before they entered. Send state that must persist with `SyncVar<T>`, and use RPCs only for passing events such as sounds and effects.
+- **An RPC can arrive before the SyncVar.** If you read `stack.Value` in an RPC handler, it may still be the previous value. If you need the new value, send it along as an RPC argument or handle it in `Callback`.
+
+### Changing Values in Sephiria's Base Game Code
+
+If you assign directly to a `[SyncVar]` field of a game class, it is not sent to participants. Use the property with `Network` prepended. The capitalization is the field name exactly as it is.
+
+```csharp
+unit.maxHp = 500;         // Only the host's value changes.
+unit.NetworkmaxHp = 500;  // It is also sent to participants.
+```
+
+Before an object spawns (on a prefab, or right after `Instantiate`), a direct assignment is also sent along when it spawns.
+
+### Testing
+
+The problems above don't show up with the host alone. Before publishing, check both the host's and the participant's screens on two PCs, and also test the case where someone joins late after you change a value. If you enable a local package (`WorkshopLocal`), others cannot join the room, so do multiplayer testing by subscribing to an item you uploaded to the Workshop as Unlisted. An item you upload for the first time is automatically Unlisted.
+
+
 ## Troubleshooting
 
 | Symptom | What to check |

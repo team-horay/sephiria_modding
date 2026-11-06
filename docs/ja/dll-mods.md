@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **`0Harmony.dll` をMODに同梱しないでください。** 同梱したコピーは無視され、別のバージョンを入れたとしても、MODはそのバージョンでは動作しません。
 - HarmonyのIDに `modId` をそのまま使えば、他と衝突しません。
 - パッチは公式APIよりもゲームの更新でずっと壊れやすいです。できることはイベントで済ませ、パッチは最後の手段にしてください。
-- BepInExやMelonLoaderなどの外部ローダーには対応していません。
+- BepInExやMelonLoaderなどの外部ローダーには対応していません。外部ローダーのように動作するMOD(ワークショップ外のプラグインDLLを探して実行するMOD)には警告が付き、ユーザーが同意した場合にのみ有効になります。詳しくは[ワークショップ外のコードを実行するMOD](#ワークショップ外のコードを実行するmod)をご覧ください。
 
 
 ## 補助DLL
@@ -200,15 +200,44 @@ MODが他のライブラリ(Newtonsoft.Json以外のサードパーティパッ�
 
 - ゲームにすでに同梱されているDLL(Unity、Mirror、Newtonsoft.Json、0Harmonyなど)は含めないでください。ゲーム側のコピーが先にロードされるため、MODに含めたコピーは無視されるか衝突します。
 - ネイティブ(C/C++)DLLは使えません。マネージドアセンブリだけがロードされます。
-- 同じ名前のアセンブリがすでに別のMODによってロードされている場合、ゲームはどちらか一方を選ぶのではなく、**実行を保留**します。共有ライブラリは別のMODに分けて、`dependencies` で結び付けるほうが安全です。
+- 同じ名前のアセンブリがすでに別のMODによってロードされている場合、`modules` のDLLについては、ゲームはどちらか一方を選ぶのではなく、**実行を保留**します。`libraries` のDLLについては、すでにロードされているほうを代わりに使い、同梱したコピーは無視するため、バージョンが異なると正しく動作しない可能性があります。共有ライブラリは別のMODに分けて、`dependencies` で結び付けるほうが安全です。
+
+### 他のMODのライブラリを使う
+
+複数のMODが同じコードを使う場合は、そのコードを1つの親MODに入れ、子MODから `dependencies` で結び付けてください。
+
+1. 親MODは共有コードを `modules` または `libraries` に宣言し、`tags` に `Library` を入れます。
+2. 子MODは `dependencies` に親MODの `modId` を記し、親MODのDLLを `Private=false` で参照してビルドします。**親MODのDLLを子MODにコピーして入れないでください。**
+3. ゲームは親MODを先にロードするため、子MODの参照は、すでにロードされた親MODのアセンブリとして解決されます。
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- 子MODも自分の `dll` モジュールと `entryClass` を持つ必要があります。親MODが子MODのDLLを自分で探してロードする構造には対応していません。子MODが自分の `OnModLoaded` から親MODの登録関数を呼ぶ形で作ってください。
+- 親MODがアップデートで公開されている型やメンバーを変更すると、子MODが動作しなくなる可能性があります。共有ライブラリでは、既存の公開APIを削除したり変更したりしないよう注意してください。
 
 ### 実行中にDLLを作らないでください!
 
-MODの実行中にMOD内のDLLファイルが変わると、そのMODのロードが制限されます。すべてのDLLは、圧縮やストリーミングなどを一切せず、そのままワークショップアイテムに含めてください。つまり、次のようなものは審査システムに違反する可能性があります。必要なDLLはすべて、アップロードする時点でMODに入れておいてください。
+MODが実行するコードは、すべて審査を受けたワークショップアイテムの中に含まれている必要があります。MODの実行中にMOD内のDLLファイルが変わると、そのMODのロードが制限されます。すべてのDLLは、圧縮やストリーミングなどを一切せず、そのままワークショップアイテムに含めてください。つまり、次のようなものは審査システムに違反する可能性があります。必要なDLLはすべて、アップロードする時点でMODに入れておいてください。
 
 - 実行中に外部からDLLをダウンロードしてアセンブリをロードするMOD
-- 実行中に独自のDLLを作成して実行するMOD
+- 実行中に独自のDLLを作成して実行するMOD(Mono.Cecilなどで別のDLLを書き換えてから実行するMODも含みます)
 - 内部に独自の圧縮方式で格納したDLLを展開して使うMOD
+
+### ワークショップ外のコードを実行するMOD
+
+ゲームのインストールフォルダーや `AppData` など、**MODフォルダーの外**にユーザーが自分で置いたDLLを探して実行するMOD(例: 他のローダー用プラグインとの互換MOD)は、却下はされませんが、審査システムによって**警告**が付きます。
+
+- ユーザーがそのMODを有効にするときに警告ウィンドウが表示され、同意した場合にのみ有効になります。MODがアップデートされると、あらためて確認されます。
+- このように実行される外部DLLは審査を受けておらず、それによって生じた問題はサポートの対象外です。
+- MODがそのようなDLLを実行中に自分でダウンロードする場合は、上記の禁止事項に該当します。
+
+他のMODのコードを使いたい場合は、そのMODのフォルダーからDLLを直接ロードせず、[他のMODのライブラリを使う](#他のmodのライブラリを使う)のように `dependencies` で結び付けてください。ゲームが自分でロードしていないDLLは、ロード順序・名前の衝突・依存関係のチェックを通らないため、サポートしていません。
+
+DLLを書き換える必要がある場合(例: 別のHarmony API向けのIL変換)は、アップロードする前にあらかじめ変換し、変換後のDLLをMODに入れてアップロードしてください。
 
 
 ## ビルドとテスト
@@ -236,6 +265,145 @@ dotnet build -c Release
 - MODが `Serverside` イベントでのみゲームの状態を変更し、変更する値がすでに同期されているゲームの状態(`customStats` など)で、参加者側にコードや登録が不要な場合は、`host_only` と宣言できます。その場合、参加者はMODをダウンロードしません。新しいアイテムを登録する、`RegisterNetworkPrefab` を使う、`Clientside` イベントで何かを変更するMODは `host_only` にできません。
 - ネットワーク経由でスポーンされるオブジェクト(ユニット、弾など)は、参加者側でも生成されるように `RegisterNetworkPrefab` で登録する必要があります。`stableKey` を渡すと、MODのバージョンが変わっても同じIDが維持されます。
 - ホストと参加者は、MODの**ロード順**まで同じである必要があります。結果がその順序に依存するコードは避けてください。
+
+
+## ネットワーク同期 (SyncVar, RPC, Command)
+
+Sephiriaのマルチプレイ機能は、オープンソースのネットワークライブラリ「Mirror」で実装されています。Mirrorでは、次の属性(アトリビュート)を宣言するだけで、通信機能を簡単に利用できます。
+
+- `[SyncVar]`: クラスのメンバー変数に付ける属性です。サーバーとクライアントの間で変数の値を同期します。
+- `[ClientRpc]`, `[TargetRpc]`: 関数に付ける属性です。サーバーからクライアントに関数の実行を要求します。
+- `[Command]`: 関数に付ける属性です。クライアントからサーバーに関数の実行を要求します。
+
+MOD環境では、上記の属性を正常に使えません。コードのコンパイル時にMirrorのWeaverが各属性に対応する送信コードを挿入して初めて動作しますが、外部で生成したDLLはWeaverを通らないため、ビルドが成功しても上記の属性は何の機能も果たしません。このバグはホストの画面では正常に見え、参加者の画面でだけ問題が起きるので、1人でテストしても見つけにくいです。(Weaverを無理やり通したとしても、関数のハッシュ衝突などのバグが起きる可能性があります。)
+
+
+### `SyncVar<T>`, `ModRpc`
+
+これを解決するため、Sephiriaでは上記の属性の代わりとなる、MOD用の通信コードを提供しています。`SyncVar<T>` と `ModRpc` です。
+
+| やりたいこと | 使うもの |
+|---|---|
+| 値を常に一致させておく (後から入ってきた参加者を含む) | `SyncVar<T>` |
+| サーバー → 全クライアントの呼び出し | `ModRpc.Send` |
+| サーバー → 特定のクライアントの呼び出し | `ModRpc.SendTo` |
+| クライアント → サーバーの呼び出し | `ModRpc.SendCommand` |
+| ゲームがすでに同期している値を変更する | `Network<FieldName>` プロパティ |
+
+- この機能はゲームバージョン1.1.2から使えます。
+- この機能を使うMODは、`multiplayer.installation` を `everyone` に宣言してください。
+
+
+### コンポーネントの準備
+
+`SyncVar<T>` と `ModRpc` は、`NetworkBehaviour` を継承したコンポーネントでのみ使えます。このコンポーネントは、ホストと参加者の両方で、同じオブジェクトに**同じ順序で**付いている必要があります。すでにスポーンされたオブジェクトに `AddComponent` で付けても同期の対象にならないので、ネットワークプレハブとして登録する前に付けておいてください。
+
+```csharp
+private static GameObject prefab;
+
+// OnModLoadedでHorayModAPI.OnAllDatabasesReadyを購読します。
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // 非アクティブな親の下に置きます。プレハブのAwakeは実行されず、Instantiateした複製はアクティブな状態で始まります。
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// サーバーでスポーンします。2番目の引数を渡すと、そのプレイヤーが所有者になります。
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`: 値の同期
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // Weaverがないので、コンストラクターで直接登録します。フィールドの順序は常に同じでなければなりません。
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- 値は**サーバーで** `stack.Value = 3` のように変更します。参加者が変更した値はサーバーに伝わりません。
+- 後から入ってきた参加者も、入場時に現在の値を受け取ります。
+- `Callback` は、ホストでは値を代入したときに、参加者では値を受信したときに呼ばれます。入場時に受け取った値がデフォルト値と異なる場合も呼ばれます。コールバック内で発生した例外はログに記録され、同期は続行されます。
+- `int`、`float`、`string`、`Vector3` などの基本データ型を使えます。MODが作ったstructはシリアライズコードが自動生成されないので、フィールドに分けて書いてください。
+- 他のオブジェクトを指すときは、`SyncVar<GameObject>` の代わりに `netId` を `SyncVar<uint>` で送ってください。受信側にそのオブジェクトがまだ生成されていない場合があります。
+- 1つのコンポーネントに登録できるSyncVarの数は、継承したものを含めて64個です。
+
+### `ModRpc`: 関数の呼び出し
+
+MODのロード時に関数を1回登録します。呼び出すときの名前は `modId:functionName` です。
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// サーバー → このオブジェクトが見えているすべてのクライアント
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// サーバー → 1つのクライアント。接続にnullを渡すと、オブジェクトの所有者に送ります。
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// クライアント → サーバー
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- 書いた順番どおりに読んでください。書き込みと読み取りの順序やデータ型が異なると、値がずれたり例外が発生したりします。
+- `RegisterCommand` は、デフォルトでは**オブジェクトの所有者だけ**が呼び出せます。所有者のいないオブジェクトで受け取りたい場合は、`requiresAuthority: false` を渡してください。この場合、どの参加者でも呼び出せます。チートなどに注意してください。
+- 登録した名前と異なる方向に送ったり、登録していない名前を送ったりすると、エラーログが残るだけで送信されません。
+- 受信側に関数がない場合やコンポーネントの型が異なる場合は、警告ログを残して無視します。ハンドラー内で発生した例外もログに記録され、ゲームは続行されます。
+- デフォルトのチャンネルは信頼性のある転送(Reliable)です。頻繁に送る演出なら、`channelId: Channels.Unreliable` 引数を渡せます。
+
+### 必ず守ること
+
+- クライアントはCommandを通じて任意の値を送れます。スロット番号、数量、対象などをサーバーのハンドラーで検証してください。
+- 後から入ってきた参加者は、入場前のRPCを受け取れません。保持すべき状態は `SyncVar<T>` で送り、RPCは音やエフェクトのような一過性のものに使ってください。
+- **RPCがSyncVarより先に届くことがあります。** RPCハンドラーで `stack.Value` を読むと、古い値の場合があります。新しい値が必要なら、RPCの引数として一緒に送るか、`Callback` で処理してください。
+
+### Sephiria本編コードの数値変更
+
+ゲームクラスの `[SyncVar]` フィールドに直接代入しても、参加者には伝わりません。先頭に `Network` を付けたプロパティを使ってください。大文字小文字はフィールド名のままです。
+
+```csharp
+unit.maxHp = 500;         // ホストの値だけが変わります。
+unit.NetworkmaxHp = 500;  // 参加者にも伝わります。
+```
+
+オブジェクトがスポーンされる前(プレハブや `Instantiate` の直後)であれば、直接代入してもスポーン時に値が一緒に伝わります。
+
+### テスト
+
+ホスト1人では上記の問題は表面化しません。公開前に2台のPCで、ホストと参加者の両方の画面を確認し、値を変更した後に遅れて入場する場合までテストしてください。ローカルパッケージ(`WorkshopLocal`)を有効にすると他の人が部屋に入れなくなるので、マルチのテストは、ワークショップにUnlisted(限定公開)でアップロードしたアイテムをサブスクライブして行います。初めてアップロードしたアイテムは自動的にUnlistedになります。
 
 
 ## トラブルシューティング

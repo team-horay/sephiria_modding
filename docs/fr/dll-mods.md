@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **N'embarquez pas `0Harmony.dll` avec votre mod.** Une copie embarquée est ignorée, et même si vous incluez une version différente, votre mod ne s'exécutera pas sur cette version.
 - Utiliser votre `modId` tel quel comme ID Harmony évite les collisions avec les autres.
 - Les patchs se cassent bien plus facilement que l'API officielle lors des mises à jour du jeu. Faites ce que vous pouvez avec les événements, et gardez les patchs en dernier recours.
-- Les chargeurs externes comme BepInEx et MelonLoader ne sont pas pris en charge.
+- Les chargeurs externes comme BepInEx et MelonLoader ne sont pas pris en charge. Un mod qui se comporte comme un chargeur externe (c'est-à-dire qui trouve et exécute des DLL de plugins situées hors du Workshop) reçoit un avertissement et n'est activé qu'après acceptation par l'utilisateur. Voir [Mods qui exécutent du code extérieur au Workshop](#mods-qui-exécutent-du-code-extérieur-au-workshop) pour plus de détails.
 
 
 ## DLL auxiliaires
@@ -200,15 +200,44 @@ Si votre mod utilise d'autres bibliothèques (par ex. des paquets tiers autres q
 
 - N'incluez pas de DLL déjà livrées avec le jeu (Unity, Mirror, Newtonsoft.Json, 0Harmony, etc.). La copie du jeu se charge en premier, donc celle incluse dans votre mod est soit ignorée, soit en conflit.
 - Les DLL natives (C/C++) ne peuvent pas être utilisées. Seuls les assemblys managés sont chargés.
-- Si un assembly du même nom a déjà été chargé par un autre mod, le jeu n'en choisit pas un des deux : il **suspend l'exécution** de votre mod. Il est plus sûr de séparer les bibliothèques partagées dans un mod distinct et de le lier via `dependencies`.
+- Si un assembly du même nom a déjà été chargé par un autre mod, pour une DLL de `modules` le jeu n'en choisit pas un des deux : il **suspend l'exécution**. Pour une DLL de `libraries`, le jeu utilise celle qui est déjà chargée et ignore votre copie, ce qui peut provoquer des dysfonctionnements si les versions diffèrent. Il est plus sûr de séparer les bibliothèques partagées dans un mod distinct et de le lier via `dependencies`.
+
+### Utiliser la bibliothèque d'un autre mod
+
+Si plusieurs mods utilisent le même code, placez ce code dans un mod parent et liez les mods enfants à celui-ci via `dependencies`.
+
+1. Le mod parent déclare le code partagé dans `modules` ou `libraries` et ajoute `Library` à ses `tags`.
+2. Le mod enfant indique le `modId` du mod parent dans `dependencies` et se compile contre la DLL du mod parent avec `Private=false`. **Ne copiez pas la DLL du mod parent dans le mod enfant.**
+3. Le jeu charge d'abord le mod parent ; les références du mod enfant sont donc résolues vers l'assembly du mod parent déjà chargé.
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- Le mod enfant doit aussi avoir son propre module `dll` et son `entryClass`. Il n'est pas pris en charge que le mod parent trouve et charge lui-même les DLL du mod enfant. Faites plutôt appeler par le mod enfant la fonction d'enregistrement du mod parent depuis son propre `OnModLoaded`.
+- Si le mod parent modifie ses types ou membres publics lors d'une mise à jour, les mods enfants peuvent cesser de fonctionner. Évitez de supprimer ou de modifier les API publiques existantes d'une bibliothèque partagée.
 
 ### Ne créez pas de DLL à l'exécution !
 
-Si les fichiers DLL d'un mod changent pendant l'exécution du mod, le chargement de ce mod est restreint. Incluez toutes les DLL telles quelles dans l'élément du Workshop, sans aucune compression ni streaming. Autrement dit, les cas suivants peuvent enfreindre le système d'examen. Placez toutes les DLL nécessaires dans le mod au moment de le publier.
+Tout le code qu'un mod exécute doit se trouver dans un élément du Workshop examiné. Si les fichiers DLL d'un mod changent pendant l'exécution du mod, le chargement de ce mod est restreint. Incluez toutes les DLL telles quelles dans l'élément du Workshop, sans aucune compression ni streaming. Autrement dit, les cas suivants peuvent enfreindre le système d'examen. Placez toutes les DLL nécessaires dans le mod au moment de le publier.
 
 - Le mod télécharge une DLL depuis l'extérieur pendant son exécution et charge l'assembly
-- Le mod crée et exécute sa propre DLL pendant son exécution
+- Le mod crée et exécute sa propre DLL pendant son exécution (y compris réécrire une autre DLL avec Mono.Cecil ou un outil similaire, puis l'exécuter)
 - Le mod extrait une DLL empaquetée en lui avec son propre format de compression et l'utilise
+
+### Mods qui exécutent du code extérieur au Workshop
+
+Un mod qui trouve et exécute des DLL que l'utilisateur place **en dehors de son dossier de mod**, par exemple dans le dossier d'installation du jeu ou dans `AppData` (par exemple un mod de compatibilité avec les plugins d'un autre chargeur), n'est pas rejeté, mais le système d'examen lui ajoute un **avertissement**.
+
+- Lorsque l'utilisateur active le mod, un avertissement s'affiche, et le mod n'est activé que s'il l'accepte. La question est reposée à chaque mise à jour du mod.
+- Les DLL externes exécutées de cette façon ne sont pas examinées, et les problèmes qu'elles causent ne sont pas pris en charge.
+- Un mod qui télécharge lui-même ces DLL pendant son exécution relève des cas interdits ci-dessus.
+
+Pour utiliser le code d'un autre mod, ne chargez pas de DLL directement depuis le dossier de ce mod ; liez-le via `dependencies` comme décrit dans [Utiliser la bibliothèque d'un autre mod](#utiliser-la-bibliothèque-dun-autre-mod). Les DLL que le jeu n'a pas chargées lui-même échappent à l'ordre de chargement, à la vérification des conflits de noms et à celle des dépendances ; elles ne sont donc pas prises en charge.
+
+Si vous devez réécrire une DLL (par exemple convertir l'IL pour une autre API Harmony), faites-le avant la publication et incluez la DLL convertie dans votre mod.
 
 
 ## Compiler et tester
@@ -236,6 +265,145 @@ Lorsque le jeu est mis à jour, `Assembly-CSharp.dll` change. Les mods qui n'uti
 - Si votre mod ne modifie l'état du jeu que dans des événements `Serverside`, et que les valeurs modifiées sont un état de jeu déjà synchronisé (par ex. `customStats`), de sorte que les participants n'ont besoin ni de code ni d'enregistrement, vous pouvez le déclarer `host_only`. Les participants ne téléchargent alors pas le mod. Un mod qui enregistre de nouveaux objets, utilise `RegisterNetworkPrefab` ou modifie quoi que ce soit dans des événements `Clientside` ne peut pas être `host_only`.
 - Les objets créés via le réseau (unités, projectiles, etc.) doivent être enregistrés avec `RegisterNetworkPrefab` pour être créés aussi du côté des participants. Si vous passez une `stableKey`, le même ID est conservé même lorsque la version de votre mod change.
 - L'hôte et les participants doivent même avoir le même **ordre de chargement** des mods. Évitez le code dont le résultat dépend de cet ordre.
+
+
+## Synchronisation réseau (SyncVar, RPC, Command)
+
+Le multijoueur de Sephiria repose sur la bibliothèque réseau open source « Mirror ». Mirror permet d'utiliser facilement les fonctions de communication en déclarant les attributs suivants.
+
+- `[SyncVar]` : attribut placé sur une variable membre d'une classe. Il synchronise la valeur de la variable entre le serveur et les clients.
+- `[ClientRpc]`, `[TargetRpc]` : attributs placés sur une fonction. Ils demandent aux clients d'exécuter la fonction depuis le serveur.
+- `[Command]` : attribut placé sur une fonction. Il demande au serveur d'exécuter la fonction depuis un client.
+
+Ces attributs ne fonctionnent pas correctement dans un environnement de mods. Ils ne marchent que si le Weaver de Mirror insère, lors de la compilation, le code de transmission correspondant à chaque attribut ; or une DLL générée en dehors du jeu ne passe pas par le Weaver, si bien que même si la compilation réussit, ces attributs ne font strictement rien. Ce type de bug paraît normal sur l'écran de l'hôte et ne pose problème que sur l'écran des participants : il est donc difficile à détecter en testant seul. (Même en forçant le passage par le Weaver, des bugs tels que des collisions de hachage de fonction peuvent subsister.)
+
+
+### `SyncVar<T>`, `ModRpc`
+
+Pour résoudre ce problème, Sephiria fournit à la place du code de communication destiné aux mods : `SyncVar<T>` et `ModRpc`.
+
+| Ce que vous voulez faire | À utiliser |
+|---|---|
+| Garder une valeur synchronisée en permanence (y compris pour un participant qui arrive en retard) | `SyncVar<T>` |
+| Appel du serveur vers tous les clients | `ModRpc.Send` |
+| Appel du serveur vers un client précis | `ModRpc.SendTo` |
+| Appel d'un client vers le serveur | `ModRpc.SendCommand` |
+| Modifier une valeur que le jeu synchronise déjà | Propriété `Network<FieldName>` |
+
+- Cette fonctionnalité est disponible à partir de la version 1.1.2 du jeu.
+- Un mod qui utilise cette fonctionnalité doit déclarer `multiplayer.installation` à `everyone`.
+
+
+### Préparer le composant
+
+`SyncVar<T>` et `ModRpc` ne peuvent être utilisés que dans un composant qui hérite de `NetworkBehaviour`. Ce composant doit être attaché au même objet, **dans le même ordre**, chez l'hôte et chez les participants. Si vous l'attachez avec `AddComponent` à un objet déjà instancié, il n'est pas pris en compte par la synchronisation : il doit donc déjà être attaché avant l'enregistrement de l'objet comme prefab réseau.
+
+```csharp
+private static GameObject prefab;
+
+// Abonnez-vous à HorayModAPI.OnAllDatabasesReady depuis OnModLoaded.
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // Placez-le sous un parent inactif. L'Awake du prefab ne s'exécute pas, et les copies créées avec Instantiate démarrent actives.
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// Faites apparaître l'objet depuis le serveur. Si vous passez le deuxième argument, ce joueur en devient le propriétaire.
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>` : synchroniser une valeur
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // Comme il n'y a pas de Weaver, enregistrez-la vous-même dans le constructeur. L'ordre des champs doit toujours être le même.
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- Modifiez la valeur **sur le serveur**, par exemple avec `stack.Value = 3`. Une valeur modifiée par un participant n'est pas transmise au serveur.
+- Un participant qui arrive en retard reçoit lui aussi la valeur actuelle à son entrée.
+- `Callback` est appelé chez l'hôte lorsqu'une valeur est affectée, et chez les participants lorsqu'une valeur est reçue. Il est aussi appelé si la valeur reçue à l'entrée diffère de la valeur par défaut. Une exception levée dans le callback est consignée dans le journal et la synchronisation continue.
+- Vous pouvez utiliser des types de base comme `int`, `float`, `string` et `Vector3`. Le code de sérialisation n'est pas généré automatiquement pour un struct créé par un mod ; envoyez donc ses champs séparément.
+- Pour désigner un autre objet, n'utilisez pas `SyncVar<GameObject>` : envoyez son `netId` dans un `SyncVar<uint>`. Il est possible que, côté réception, cet objet ne soit pas encore créé.
+- Le nombre de SyncVar enregistrables sur un composant est de 64, héritage compris.
+
+### `ModRpc` : appeler une fonction
+
+Enregistrez une fois la fonction au chargement du mod. Le nom utilisé à l'appel est `modId:functionName`.
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// Serveur → tous les clients qui voient cet objet
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Serveur → un client. Si vous passez null comme connexion, l'envoi va au propriétaire de l'objet.
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// Client → serveur
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- Lisez dans l'ordre où vous avez écrit. Si l'ordre ou les types de l'écriture et de la lecture diffèrent, les valeurs sont faussées ou une exception est levée.
+- Par défaut, seul **le propriétaire de l'objet** peut appeler `RegisterCommand`. Pour le recevoir sur un objet sans propriétaire, passez `requiresAuthority: false`. Dans ce cas, n'importe quel participant peut l'appeler. Prenez garde à la triche, etc.
+- Si vous envoyez dans une direction différente de celle de l'enregistrement, ou sous un nom non enregistré, seul un message d'erreur est consigné et rien n'est transmis.
+- Si la fonction est absente côté réception ou si le type du composant diffère, seul un avertissement est consigné et l'appel est ignoré. Une exception levée dans le gestionnaire est également consignée, et le jeu continue.
+- Le canal par défaut est le transport fiable. Pour des effets envoyés fréquemment, vous pouvez passer l'argument `channelId: Channels.Unreliable`.
+
+### Points à respecter absolument
+
+- Un client peut envoyer n'importe quelle valeur via un Command. Validez dans le gestionnaire serveur le numéro d'emplacement, la quantité, la cible, etc.
+- Un participant qui arrive en retard ne reçoit pas les RPC antérieurs à son entrée. Envoyez l'état à conserver avec `SyncVar<T>`, et réservez les RPC aux événements passagers comme les sons et les effets.
+- **Un RPC peut arriver avant le SyncVar.** Si vous lisez `stack.Value` dans le gestionnaire d'un RPC, vous pouvez obtenir l'ancienne valeur. Si vous avez besoin de la nouvelle valeur, envoyez-la aussi comme argument du RPC, ou traitez-la dans `Callback`.
+
+### Modifier les valeurs du code de base de Sephiria
+
+Si vous affectez directement un champ `[SyncVar]` d'une classe du jeu, la valeur n'est pas transmise aux participants. Utilisez la propriété préfixée par `Network`. La casse est celle du nom du champ, telle quelle.
+
+```csharp
+unit.maxHp = 500;         // Seule la valeur de l'hôte change.
+unit.NetworkmaxHp = 500;  // Elle est aussi transmise aux participants.
+```
+
+Avant l'apparition de l'objet (juste après le prefab ou `Instantiate`), même une affectation directe est transmise avec la valeur lors de l'apparition.
+
+### Test
+
+L'hôte seul ne fait pas apparaître les problèmes ci-dessus. Avant de publier, vérifiez avec deux PC l'écran de l'hôte et celui du participant, et testez aussi le cas d'une entrée tardive après avoir modifié une valeur. Quand le paquet local (`WorkshopLocal`) est activé, personne d'autre ne peut rejoindre la partie ; pour tester le multijoueur, abonnez-vous donc à un élément que vous avez mis en ligne sur le Workshop en Unlisted. Un élément mis en ligne pour la première fois est automatiquement Unlisted.
 
 
 ## Dépannage

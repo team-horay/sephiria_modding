@@ -267,6 +267,145 @@ dotnet build -c Release
 - 호스트와 참가자의 모드 **로드 순서**까지 같아야 합니다. 순서에 따라 결과가 달라지는 코드는 쓰지 않는 것이 좋습니다.
 
 
+## 네트워크 동기화 (SyncVar, RPC, Command)
+
+세피리아의 멀티플레이 기능은 오픈 소스 네트워크 라이브러리 'Mirror'로 구현되었습니다. Mirror에서는 다음 애트리뷰트를 선언하여 통신 기능을 쉽게 이용할 수 있습니다.
+
+- `[SyncVar]`: 클래스 멤버 변수에 붙이는 애트리뷰트입니다. 서버와 클라이언트 간 변수 값을 동기화합니다.
+- `[ClientRpc]`, `[TargetRpc]`: 함수에 붙이는 애트리뷰트입니다. 서버에서 클라이언트에게 함수를 실행하도록 요청합니다.
+- `[Command]`: 함수에 붙이는 애트리뷰트입니다. 클라이언트에서 서버에게 함수를 실행하도록 요청합니다.
+
+모드 환경에서는 위 애트리뷰트를 정상적으로 사용할 수 없습니다. 코드가 컴파일될 때 Mirror의 Weaver가 각 애트리뷰트에 대응하는 전송 코드를 넣어줘야 동작하는데, 외부에서 생성한 DLL은 Weaver를 거치지 않기 때문에 빌드가 성공적으로 되더라도 위 애트리뷰트는 아무런 기능을 하지 않습니다. 이러한 버그는 호스트 화면에서는 정상으로 보이고 참가자 화면에서만 문제가 생기므로, 혼자 테스트해서는 발견하기 어렵습니다. (만약 Weaver를 강제로 거쳤다 하더라도, 함수 해시 충돌 등의 버그가 있을 수 있습니다.) 
+
+
+### `SyncVar<T>`, `ModRpc`
+
+이를 해결하기 위해, 세피리아에서는 위 애트리뷰트를 대체할 모드용 통신 코드를 제공합니다. `SyncVar<T>`와 `ModRpc`입니다.
+
+| 하려는 일 | 사용할 것 |
+|---|---|
+| 값을 계속 맞춰 두기 (늦게 들어온 참가자 포함) | `SyncVar<T>` |
+| 서버 → 전체 클라이언트 호출 | `ModRpc.Send` |
+| 서버 → 특정 클라이언트 호출 | `ModRpc.SendTo` |
+| 클라이언트 → 서버 호출 | `ModRpc.SendCommand` |
+| 게임이 이미 동기화하는 값 바꾸기 | `Network필드명` 속성 |
+
+- 이 기능은 게임 버전 1.1.2 부터 사용 가능합니다. 
+- 이 기능을 이용하는 모드는 `multiplayer.installation`을 `everyone`으로 선언하세요.
+
+
+### 컴포넌트 준비
+
+`SyncVar<T>`와 `ModRpc`는 `NetworkBehaviour`를 상속한 컴포넌트에서만 사용 가능합니다. 이 컴포넌트는 호스트와 참가자 양쪽에서 같은 오브젝트에 **같은 순서로** 붙어 있어야 합니다. 이미 스폰된 오브젝트에 `AddComponent`로 붙이면 동기화 대상에 들어가지 않으니, 네트워크 프리팹으로 등록하기 전에 이미 붙어 있어야 합니다.
+
+```csharp
+private static GameObject prefab;
+
+// OnModLoaded에서 HorayModAPI.OnAllDatabasesReady에 구독합니다.
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // 비활성 부모 아래에 둡니다. 프리팹의 Awake는 돌지 않고, Instantiate한 복제본은 활성으로 시작합니다.
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// 서버에서 스폰합니다. 두 번째 인자를 주면 그 플레이어가 소유자가 됩니다.
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`: 값 동기화
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // Weaver가 없으므로 생성자에서 직접 등록합니다. 필드 순서는 항상 같아야 합니다.
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- 값은 **서버에서** `stack.Value = 3`처럼 바꿉니다. 참가자가 바꾼 값은 서버로 전달되지 않습니다.
+- 늦게 들어온 참가자도 입장할 때 현재 값을 받습니다.
+- `Callback`은 호스트에서는 값을 넣을 때, 참가자에서는 값을 받을 때 호출됩니다. 입장할 때 받은 값이 기본값과 다르면 그때도 호출됩니다. 콜백에서 난 예외는 로그에 남고 동기화는 계속됩니다.
+- `int`, `float`, `string`, `Vector3` 같은 기본 자료형을 쓸 수 있습니다. 모드가 만든 struct는 직렬화 코드가 자동으로 만들어지지 않으므로 필드를 나누어 쓰세요.
+- 다른 오브젝트를 가리킬 때는 `SyncVar<GameObject>` 대신 `netId`를 `SyncVar<uint>`로 보내세요. 받는 쪽에 그 오브젝트가 아직 생성되지 않았을 수 있습니다.
+- 한 컴포넌트에 등록할 수 있는 수는 상속받은 것까지 합쳐 64개입니다.
+
+### `ModRpc`: 함수 호출
+
+모드를 로드할 때 함수를 한 번 등록합니다. 호출할 때의 이름은 `모드ID:함수명`입니다.
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// 서버 → 이 오브젝트가 보이는 모든 클라이언트
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// 서버 → 한 클라이언트. 연결에 null을 주면 오브젝트 소유자에게 보냅니다.
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// 클라이언트 → 서버
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- 쓴 순서대로 읽으세요. 쓰기와 읽기의 순서·자료형이 다르면 값이 틀어지거나 예외가 납니다.
+- `RegisterCommand`는 기본적으로 **오브젝트 소유자만** 호출할 수 있습니다. 소유자가 없는 오브젝트에서 받으려면 `requiresAuthority: false`를 입력하세요. 이 경우 어느 참가자든 호출할 수 있습니다. 치트 등에 유의하세요.
+- 등록한 이름과 다른 방향으로 보내거나, 등록하지 않은 이름을 보내면 오류 로그만 남고 전송되지 않습니다.
+- 받는 쪽에 함수가 없거나 컴포넌트 타입이 다르면 경고 로그만 남기고 무시합니다. 핸들러에서 난 예외도 로그에 남고 게임은 계속 진행됩니다.
+- 기본 채널은 신뢰 전송입니다. 자주 보내는 연출이면 `channelId: Channels.Unreliable` 인자를 줄 수 있습니다.
+
+### 꼭 지켜야 할 것
+
+- 클라이언트는 Command를 통해 임의의 값을 보낼 수 있습니다. 슬롯 번호, 수량, 대상 등을 서버 핸들러에서 검증하세요.
+- 늦게 들어온 참가자는 입장 전의 RPC를 받지 못합니다. 유지해야 하는 상태는 `SyncVar<T>`로 보내고, RPC는 소리·이펙트처럼 지나가는 일에 쓰세요.
+- **RPC가 SyncVar보다 먼저 도착할 수 있습니다.** RPC 핸들러에서 `stack.Value`를 읽으면 이전 값일 수 있습니다. 새 값이 필요하면 RPC 인자로 함께 보내거나 `Callback`에서 처리하세요.
+
+### 세피리아 본편 코드의 수치 변경
+
+게임 클래스의 `[SyncVar]` 필드에 직접 대입하면 참가자에게 전달되지 않습니다. 앞에 `Network`를 붙인 속성을 쓰세요. 대소문자는 필드 이름 그대로입니다.
+
+```csharp
+unit.maxHp = 500;         // 호스트 값만 바뀝니다.
+unit.NetworkmaxHp = 500;  // 참가자에게도 전달됩니다.
+```
+
+오브젝트가 스폰되기 전(프리팹이나 `Instantiate` 직후)에는 직접 대입해도 스폰할 때 값이 함께 전달됩니다.
+
+### 테스트
+
+호스트 혼자서는 위 문제가 드러나지 않습니다. 게시 전에 두 PC로 호스트와 참가자 양쪽 화면을 확인하고, 값을 바꾼 뒤 늦게 입장하는 경우까지 시험해 보세요. 로컬 패키지(`WorkshopLocal`)를 켜면 다른 사람이 방에 들어올 수 없으므로, 멀티 테스트는 창작마당에 Unlisted로 올린 항목을 구독해서 합니다. 처음 올린 항목은 자동으로 Unlisted입니다.
+
+
 ## 문제해결
 
 | 증상 | 확인할 것 |

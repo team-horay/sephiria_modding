@@ -187,7 +187,7 @@ protected override void OnModLoaded()
 - **不要把 `0Harmony.dll` 打包进你的模组。** 打包的副本会被忽略；即使你附带了不同的版本，模组也不会在那个版本上运行。
 - 直接用你的 `modId` 作为 Harmony ID 可以避免与其他模组冲突。
 - 补丁比官方 API 更容易因游戏更新而失效。能用事件解决的尽量用事件，补丁只作为最后的手段。
-- 不支持 BepInEx、MelonLoader 等外部加载器。
+- 不支持 BepInEx、MelonLoader 等外部加载器。行为类似外部加载器的模组（即查找并运行创意工坊之外的插件 DLL 的模组）会被加上警告，只有用户同意后才会启用。详情请参阅[运行创意工坊之外代码的模组](#运行创意工坊之外代码的模组)。
 
 
 ## 辅助 DLL
@@ -200,15 +200,44 @@ protected override void OnModLoaded()
 
 - 不要包含游戏已自带的 DLL（Unity、Mirror、Newtonsoft.Json、0Harmony 等）。游戏自带的副本会先加载，所以模组附带的副本要么被忽略，要么产生冲突。
 - 不能使用原生（C/C++）DLL。只加载托管程序集。
-- 如果同名的程序集已经被另一个模组加载，游戏不会在两者中选择其一，而是**暂停运行**它。更稳妥的做法是把共享库拆分成单独的模组，并通过 `dependencies` 关联。
+- 如果同名的程序集已经被另一个模组加载，对于 `modules` 中的 DLL，游戏不会在两者中选择其一，而是**暂停运行**它。对于 `libraries` 中的 DLL，游戏会改用已加载的那个并忽略你附带的副本，因此版本不同时可能出现异常。更稳妥的做法是把共享库拆分成单独的模组，并通过 `dependencies` 关联。
+
+### 使用其他模组的库
+
+如果多个模组使用相同的代码，请把这些代码放进一个上级模组，并让下级模组通过 `dependencies` 关联到它。
+
+1. 上级模组在 `modules` 或 `libraries` 中声明共用代码，并在 `tags` 中加入 `Library`。
+2. 下级模组在 `dependencies` 中填写上级模组的 `modId`，并以 `Private=false` 引用上级模组的 DLL 进行构建。**不要把上级模组的 DLL 复制到下级模组中。**
+3. 游戏会先加载上级模组，因此下级模组的引用会解析为已加载的上级模组的程序集。
+
+```json
+"dependencies": [
+  { "modId": "someone.shared-runtime", "workshopId": "123456789" }
+]
+```
+
+- 下级模组仍需拥有自己的 `dll` 模块和 `entryClass`。不支持由上级模组自行查找并加载下级模组 DLL 的结构。请让下级模组在自己的 `OnModLoaded` 中调用上级模组的注册函数。
+- 如果上级模组在更新中更改了公开的类型或成员，下级模组可能会失效。共享库请注意不要删除或更改已有的公开 API。
 
 ### 不要在运行时生成 DLL！
 
-如果模组运行期间模组内的 DLL 文件发生变化，该模组的加载会受到限制。请把所有 DLL 原样包含在创意工坊物品中，不要进行任何压缩或流式传输。也就是说，以下做法可能违反审核系统。请在上传时就把所需的所有 DLL 放进模组。
+模组运行的所有代码都必须包含在已通过审核的创意工坊物品中。如果模组运行期间模组内的 DLL 文件发生变化，该模组的加载会受到限制。请把所有 DLL 原样包含在创意工坊物品中，不要进行任何压缩或流式传输。也就是说，以下做法可能违反审核系统。请在上传时就把所需的所有 DLL 放进模组。
 
 - 模组在运行时从外部下载 DLL 并加载程序集
-- 模组在运行时自行生成并运行 DLL
+- 模组在运行时自行生成并运行 DLL（包括用 Mono.Cecil 等工具改写其他 DLL 后再运行）
 - 模组将以自有压缩方式打包在内部的 DLL 解压后使用
+
+### 运行创意工坊之外代码的模组
+
+如果模组会查找并运行用户放在**模组文件夹之外**（例如游戏安装文件夹或 `AppData`）的 DLL（例如兼容其他加载器插件的模组），不会被驳回，但审核系统会给它加上**警告**。
+
+- 用户启用该模组时会弹出警告窗口，只有同意后才会启用。模组更新后会再次询问。
+- 以这种方式运行的外部 DLL 不会经过审核，由此产生的问题不在支持范围内。
+- 模组在运行时自行下载这类 DLL，属于上述禁止的情形。
+
+如果要使用其他模组的代码，请不要直接从该模组的文件夹加载 DLL，而是像[使用其他模组的库](#使用其他模组的库)所述那样通过 `dependencies` 关联。游戏没有亲自加载的 DLL 不会经过加载顺序、名称冲突和依赖检查，因此不受支持。
+
+如果需要改写 DLL（例如针对其他 Harmony API 进行 IL 转换），请在上传之前先完成转换，并把转换后的 DLL 放进模组上传。
 
 
 ## 构建与测试
@@ -236,6 +265,145 @@ dotnet build -c Release
 - 如果你的模组只在 `Serverside` 事件中修改游戏状态，并且修改的值是已经会同步的游戏状态（例如 `customStats`），参与者不需要任何代码或注册，那么可以声明为 `host_only`。这样参与者就不需要下载该模组。注册新物品、使用 `RegisterNetworkPrefab`、或在 `Clientside` 事件中修改任何内容的模组都不能是 `host_only`。
 - 通过网络生成的对象（单位、投射物等）必须用 `RegisterNetworkPrefab` 注册，才能同时在参与者一侧创建。如果传入 `stableKey`，即使模组版本变化也会保持相同的 ID。
 - 主机和参与者连模组的**加载顺序**也必须一致。避免编写结果依赖于该顺序的代码。
+
+
+## 网络同步（SyncVar, RPC, Command）
+
+Sephiria 的多人联机功能是用开源网络库“Mirror”实现的。在 Mirror 中，只需声明下列特性（Attribute），就可以轻松使用通信功能。
+
+- `[SyncVar]`：加在类成员变量上的特性。在服务器和客户端之间同步变量的值。
+- `[ClientRpc]`、`[TargetRpc]`：加在函数上的特性。由服务器请求客户端执行函数。
+- `[Command]`：加在函数上的特性。由客户端请求服务器执行函数。
+
+在模组环境中，上述特性无法正常使用。代码编译时，需要由 Mirror 的 Weaver 为每个特性插入对应的传输代码，它们才能工作；但外部生成的 DLL 不会经过 Weaver，所以即使构建成功，上述特性也不会起任何作用。这类 bug 在主机画面上看起来一切正常，只有参与者的画面才会出问题，因此只靠自己一个人测试很难发现。（即使强行让 DLL 经过了 Weaver，也可能出现函数哈希冲突等 bug。）
+
+
+### `SyncVar<T>`、`ModRpc`
+
+为了解决这个问题，Sephiria 提供了可替代上述特性的模组专用通信代码，即 `SyncVar<T>` 和 `ModRpc`。
+
+| 想做的事 | 使用的东西 |
+|---|---|
+| 让数值始终保持一致（包括后加入的参与者） | `SyncVar<T>` |
+| 服务器 → 所有客户端调用 | `ModRpc.Send` |
+| 服务器 → 特定客户端调用 | `ModRpc.SendTo` |
+| 客户端 → 服务器调用 | `ModRpc.SendCommand` |
+| 修改游戏已经在同步的值 | `Network<FieldName>` 属性 |
+
+- 此功能从游戏版本 1.1.2 开始可用。
+- 使用此功能的模组，请将 `multiplayer.installation` 声明为 `everyone`。
+
+
+### 准备组件
+
+`SyncVar<T>` 和 `ModRpc` 只能在继承自 `NetworkBehaviour` 的组件中使用。该组件必须在主机和参与者双方的同一个对象上，以**相同的顺序**挂载。对已经生成的对象用 `AddComponent` 添加组件，不会被纳入同步范围，所以必须在注册为网络预制体之前就已经挂载好。
+
+```csharp
+private static GameObject prefab;
+
+// 在 OnModLoaded 中订阅 HorayModAPI.OnAllDatabasesReady。
+private static void RegisterPrefab()
+{
+    if (prefab) return;
+
+    // 放在未激活的父对象下。预制体的 Awake 不会运行，Instantiate 出来的副本则以激活状态开始。
+    var holder = new GameObject("MyMod_Prefabs");
+    holder.SetActive(false);
+    Object.DontDestroyOnLoad(holder);
+
+    prefab = new GameObject("FlameOrb");
+    prefab.transform.SetParent(holder.transform);
+    prefab.AddComponent<NetworkIdentity>();
+    prefab.AddComponent<FlameOrb>();
+    HorayModAPI.RegisterNetworkPrefab(prefab, "yourname.my-mod:flame-orb");
+}
+
+// 在服务器上生成。传入第二个参数后，该玩家就成为所有者。
+private static void SpawnFor(PlayerAvatar player)
+{
+    var orb = Object.Instantiate(prefab);
+    NetworkServer.Spawn(orb, player.connectionToClient);
+}
+```
+
+### `SyncVar<T>`：同步数值
+
+```csharp
+public class FlameOrb : NetworkBehaviour
+{
+    public readonly SyncVar<int> stack = new SyncVar<int>(0);
+
+    public FlameOrb()
+    {
+        // 没有 Weaver，所以在构造函数中手动注册。字段顺序必须始终相同。
+        InitSyncObject(stack);
+    }
+
+    private void Awake()
+    {
+        stack.Callback += (oldValue, newValue) => UpdateVisual(newValue);
+    }
+
+    private void UpdateVisual(int value) { }
+}
+```
+
+- 数值要**在服务器上**修改，例如 `stack.Value = 3`。参与者修改的值不会传给服务器。
+- 后加入的参与者在进入时也会收到当前值。
+- `Callback` 在主机上于赋值时调用，在参与者上于收到值时调用。进入时收到的值与默认值不同，此时也会调用。回调中发生的异常会记录到日志，同步继续进行。
+- 可以使用 `int`、`float`、`string`、`Vector3` 等基本数据类型。模组自己定义的 struct 不会自动生成序列化代码，请拆分成多个字段来使用。
+- 要指向其他对象时，不要用 `SyncVar<GameObject>`，而是把 `netId` 用 `SyncVar<uint>` 发送。接收方可能还没有生成该对象。
+- 一个组件上最多可注册的 SyncVar 数量，连同继承来的在内共 64 个。
+
+### `ModRpc`：调用函数
+
+加载模组时注册一次函数。调用时使用的名称是 `modId:functionName`。
+
+```csharp
+protected override void OnModLoaded()
+{
+    ModRpc.RegisterRpc<FlameOrb>("yourname.my-mod", "explode", (orb, r) => orb.PlayExplosion(r.ReadVector3()));
+    ModRpc.RegisterCommand<FlameOrb>("yourname.my-mod", "ignite", (orb, r, sender) => orb.ServerIgnite(r.ReadInt(), sender));
+}
+```
+
+```csharp
+// 服务器 → 所有能看到该对象的客户端
+ModRpc.Send(this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// 服务器 → 一个客户端。连接传入 null 时，发送给对象的所有者。
+ModRpc.SendTo(connectionToClient, this, "yourname.my-mod:explode", w => w.WriteVector3(position));
+
+// 客户端 → 服务器
+ModRpc.SendCommand(this, "yourname.my-mod:ignite", w => w.WriteInt(slot));
+```
+
+- 请按写入的顺序读取。写入和读取的顺序、数据类型不一致，会导致值错位或抛出异常。
+- `RegisterCommand` 默认只有**对象的所有者**才能调用。如果要在没有所有者的对象上接收，请传入 `requiresAuthority: false`。这种情况下任何参与者都可以调用，请注意作弊等风险。
+- 如果按与注册时不同的方向发送，或发送未注册的名称，只会留下错误日志，不会发送。
+- 接收方没有该函数或组件类型不同时，只会留下警告日志并忽略。处理程序中发生的异常也会记录到日志，游戏继续运行。
+- 默认通道是可靠传输。如果是频繁发送的演出效果，可以传入 `channelId: Channels.Unreliable` 参数。
+
+### 必须遵守的事项
+
+- 客户端可以通过 Command 发送任意值。请在服务器处理程序中验证槽位编号、数量、目标等。
+- 后加入的参与者收不到进入之前的 RPC。需要保持的状态请用 `SyncVar<T>` 发送，RPC 只用于声音、特效这类转瞬即逝的事情。
+- **RPC 可能比 SyncVar 先到达。** 在 RPC 处理程序中读取 `stack.Value`，可能得到旧值。如果需要新值，请把它作为 RPC 参数一起发送，或者在 `Callback` 中处理。
+
+### 修改 Sephiria 本体代码中的数值
+
+直接对游戏类的 `[SyncVar]` 字段赋值，不会传给参与者。请使用前面加了 `Network` 的属性。大小写与字段名完全一致。
+
+```csharp
+unit.maxHp = 500;         // 只有主机的值会改变。
+unit.NetworkmaxHp = 500;  // 参与者也会收到。
+```
+
+对象生成之前（预制体或刚 `Instantiate` 之后），直接赋值也会在生成时一并传递。
+
+### 测试
+
+只有主机一个人时，上述问题不会暴露。发布前请用两台电脑，同时检查主机和参与者双方的画面，并且要测试修改数值之后再晚进入的情况。启用本地包（`WorkshopLocal`）后其他人无法进入房间，所以多人测试要订阅以 Unlisted 上传到创意工坊的物品来进行。第一次上传的物品会自动设为 Unlisted。
 
 
 ## 故障排查
