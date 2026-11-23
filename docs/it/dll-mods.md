@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **Non includere `0Harmony.dll` nella tua mod.** Una copia inclusa viene ignorata, e anche se ne includi una versione diversa, la tua mod non girerà su quella versione.
+- Il MonoMod che l'Harmony integrato usa internamente non può essere referenziato da una mod. Se ti servono direttamente le funzionalità di MonoMod (RuntimeDetour, ecc.), includi la versione ufficiale come descritto in [DLL di supporto](#dll-di-supporto).
 - Usare il tuo `modId` così com'è come ID di Harmony evita collisioni con gli altri.
 - Le patch si rompono con gli aggiornamenti del gioco molto più facilmente dell'API ufficiale. Fai il possibile con gli eventi e tieni le patch come ultima risorsa.
 - I loader esterni come BepInEx e MelonLoader non sono supportati. Una mod che si comporta come un loader esterno (cioè che trova ed esegue DLL di plugin esterne al Workshop) riceve un avviso e viene attivata solo dopo che l'utente lo ha accettato. Per i dettagli vedi [Mod che eseguono codice esterno al Workshop](#mod-che-eseguono-codice-esterno-al-workshop).
@@ -199,7 +200,8 @@ Se la tua mod usa altre librerie (per esempio pacchetti di terze parti diversi d
 ```
 
 - Non includere DLL già fornite con il gioco (Unity, Mirror, Newtonsoft.Json, 0Harmony, ecc.). La copia del gioco viene caricata per prima, quindi quella inclusa nella tua mod viene ignorata oppure va in conflitto.
-- Le DLL native (C/C++) non possono essere usate. Vengono caricati solo assembly gestiti.
+- Se ti serve uno strumento comune come MonoMod o Mono.Cecil, includi i file della versione ufficiale così come sono, senza modificarli. Un file compilato da te o modificato, oppure unito a un'altra DLL (ILMerge, ILRepack, ecc.), non può essere verificato come versione ufficiale e può essere rifiutato.
+- Le DLL native (C/C++) non possono essere usate. Vengono caricati solo assembly gestiti. Una mod che tiene codice nativo dentro un altro file e lo estrae per usarlo, o che carica direttamente una libreria nativa durante l'esecuzione, viene rifiutata. Chiamare tramite `DllImport` funzioni che fanno già parte di Windows non rientra in questo caso.
 - Se un assembly con lo stesso nome è già stato caricato da un'altra mod, per una DLL in `modules` il gioco non ne sceglie uno dei due: **sospende l'esecuzione**. Per una DLL in `libraries`, il gioco usa quella già caricata e ignora la tua copia, il che può causare malfunzionamenti se le versioni sono diverse. È più sicuro separare le librerie condivise in una mod a parte e collegarla tramite `dependencies`.
 
 ### Usare la libreria di un'altra mod
@@ -221,11 +223,14 @@ Se più mod usano lo stesso codice, inseriscilo in una mod principale e collega 
 
 ### Non creare DLL durante l'esecuzione!
 
-Tutto il codice eseguito da una mod deve trovarsi in un elemento del Workshop sottoposto a revisione. Se i file DLL di una mod cambiano mentre la mod è in esecuzione, il caricamento di quella mod viene limitato. Includi tutte le DLL nell'elemento del Workshop così come sono, senza alcuna compressione o streaming. In altre parole, quanto segue può violare il sistema di revisione. Al momento del caricamento, inserisci nella mod tutte le DLL di cui hai bisogno.
+Tutto il codice eseguito da una mod deve trovarsi in un elemento del Workshop sottoposto a revisione, ciascuna parte come file DLL separato. Se i file DLL di una mod cambiano mentre la mod è in esecuzione, il caricamento di quella mod viene limitato. Includi tutte le DLL nell'elemento del Workshop così come sono, senza alcuna compressione o streaming. In altre parole, quanto segue viola il sistema di revisione e può portare al rifiuto della mod, anche se è già pubblicata. Al momento del caricamento, inserisci nella mod tutte le DLL di cui hai bisogno.
 
 - La mod scarica una DLL dall'esterno durante l'esecuzione e ne carica l'assembly
 - La mod crea ed esegue una propria DLL durante l'esecuzione (compreso riscrivere un'altra DLL con Mono.Cecil o simili e poi eseguirla)
 - La mod estrae e usa una DLL racchiusa al suo interno con un proprio formato di compressione
+- La mod tiene un'altra DLL o un EXE nelle risorse di una DLL oppure in un file immagine o di dati e lo estrae per usarlo (anche se non è compresso né cifrato)
+- La mod crea durante l'esecuzione un file fuori dalla cartella della mod, ad esempio nella cartella temporanea, e lo carica o lo esegue come codice
+- La mod carica direttamente una libreria nativa durante l'esecuzione
 
 ### Mod che eseguono codice esterno al Workshop
 

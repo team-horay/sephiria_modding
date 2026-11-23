@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **Don't bundle `0Harmony.dll` with your mod.** A bundled copy is ignored, and even if you include a different version, your mod won't run on that version.
+- The MonoMod that the built-in Harmony uses internally can't be referenced from a mod. If you need MonoMod features directly (RuntimeDetour and so on), include the official release as described in [Helper DLLs](#helper-dlls).
 - Using your `modId` as-is for the Harmony ID keeps it from colliding with others.
 - Patches break on game updates far more easily than the official API. Do what you can with events, and keep patches as a last resort.
 - External loaders such as BepInEx and MelonLoader are not supported. A mod that works like an external loader (one that finds and runs plugin DLLs from outside the Workshop) gets a warning and is enabled only after the user accepts it. See [Mods That Run Code from Outside the Workshop](#mods-that-run-code-from-outside-the-workshop) for details.
@@ -199,7 +200,8 @@ If your mod uses other libraries (e.g. third-party packages other than Newtonsof
 ```
 
 - Don't include DLLs that already ship with the game (Unity, Mirror, Newtonsoft.Json, 0Harmony, etc.). The game's copy loads first, so the copy your mod includes is either ignored or conflicts.
-- Native (C/C++) DLLs can't be used. Only managed assemblies are loaded.
+- If you need a shared tool such as MonoMod or Mono.Cecil, include the official release files as they are, without modifying them. A file you built yourself or modified, or one merged into another DLL (ILMerge, ILRepack, and so on), can't be verified as an official release and may be rejected.
+- Native (C/C++) DLLs can't be used. Only managed assemblies are loaded. A mod that keeps native code inside another file and extracts it for use, or that loads a native library directly at runtime, is rejected. Calling functions that are already part of Windows through `DllImport` doesn't fall under this.
 - If an assembly with the same name has already been loaded by another mod, the game doesn't pick one of the two for a DLL in `modules`; it **holds off running** it. For a DLL in `libraries`, the game uses the one that's already loaded and ignores your copy, which can break things if the versions differ. It's safer to split shared libraries into a separate mod and link it through `dependencies`.
 
 ### Using Another Mod's Library
@@ -221,11 +223,14 @@ If several mods use the same code, put that code in one parent mod and have the 
 
 ### Don't Create DLLs at Runtime!
 
-All code a mod runs must be inside a reviewed Workshop item. If the DLL files in a mod change while the mod is running, loading that mod is restricted. Include every DLL in the Workshop item as is, without any compression or streaming. In other words, the following can violate the review system. Put every DLL you need in the mod when you upload it.
+All code a mod runs must be inside a reviewed Workshop item, each as its own separate DLL file. If the DLL files in a mod change while the mod is running, loading that mod is restricted. Include every DLL in the Workshop item as is, without any compression or streaming. In other words, the following violate the review system and can get a mod rejected, including one that is already published. Put every DLL you need in the mod when you upload it.
 
 - The mod downloads a DLL from outside while running and loads the assembly
 - The mod creates and runs its own DLL while running (including rewriting another DLL with Mono.Cecil or similar and then running it)
 - The mod extracts a DLL packed inside it with its own compression scheme and uses it
+- The mod keeps another DLL or EXE inside a DLL's resources or inside an image or data file and extracts it for use (even if it isn't compressed or encrypted)
+- The mod creates a file outside the mod folder while running, such as in the temp folder, and loads or runs it as code
+- The mod loads a native library directly while running
 
 ### Mods That Run Code from Outside the Workshop
 

@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **Lege `0Harmony.dll` nicht in deine Mod.** Eine mitgelieferte Kopie wird ignoriert, und selbst wenn du eine andere Version beilegst, läuft deine Mod nicht mit dieser Version.
+- Das MonoMod, das das eingebaute Harmony intern verwendet, kann von einer Mod nicht referenziert werden. Wenn du MonoMod-Funktionen direkt brauchst (RuntimeDetour usw.), lege die offizielle Veröffentlichung bei, wie unter [Hilfs-DLLs](#hilfs-dlls) beschrieben.
 - Verwendest du deine `modId` unverändert als Harmony-ID, kollidiert sie nicht mit anderen.
 - Patches gehen bei Spiel-Updates deutlich leichter kaputt als die offizielle API. Erledige, was du kannst, mit Events, und halte Patches als letztes Mittel bereit.
 - Externe Loader wie BepInEx und MelonLoader werden nicht unterstützt. Eine Mod, die wie ein externer Loader arbeitet (also Plugin-DLLs von außerhalb des Workshops findet und ausführt), erhält eine Warnung und wird erst aktiviert, nachdem der Nutzer zugestimmt hat. Details findest du unter [Mods, die Code von außerhalb des Workshops ausführen](#mods-die-code-von-außerhalb-des-workshops-ausführen).
@@ -199,7 +200,8 @@ Wenn deine Mod andere Bibliotheken verwendet (z. B. Drittanbieter-Pakete außer 
 ```
 
 - Lege keine DLLs bei, die das Spiel bereits mitbringt (Unity, Mirror, Newtonsoft.Json, 0Harmony usw.). Die Kopie des Spiels wird zuerst geladen, die Kopie deiner Mod wird also entweder ignoriert oder sorgt für Konflikte.
-- Native (C/C++) DLLs können nicht verwendet werden. Es werden nur verwaltete Assemblys geladen.
+- Wenn du ein gemeinsames Werkzeug wie MonoMod oder Mono.Cecil brauchst, lege die Dateien der offiziellen Veröffentlichung unverändert bei. Eine selbst gebaute oder veränderte Datei oder eine, die in eine andere DLL zusammengeführt wurde (ILMerge, ILRepack usw.), lässt sich nicht als offizielle Veröffentlichung bestätigen und kann abgelehnt werden.
+- Native (C/C++) DLLs können nicht verwendet werden. Es werden nur verwaltete Assemblys geladen. Eine Mod, die nativen Code in einer anderen Datei ablegt und zur Verwendung herausholt oder die zur Laufzeit direkt eine native Bibliothek lädt, wird abgelehnt. Der Aufruf von Funktionen, die bereits zu Windows gehören, über `DllImport` fällt nicht darunter.
 - Wurde eine Assembly mit demselben Namen bereits von einer anderen Mod geladen, wählt das Spiel bei einer DLL in `modules` keine der beiden aus, sondern **hält die Ausführung zurück**. Bei einer DLL in `libraries` verwendet das Spiel die bereits geladene und ignoriert deine mitgelieferte Kopie, was bei abweichenden Versionen zu Fehlfunktionen führen kann. Es ist sicherer, gemeinsam genutzte Bibliotheken in eine separate Mod auszulagern und sie über `dependencies` zu verknüpfen.
 
 ### Die Bibliothek einer anderen Mod verwenden
@@ -221,11 +223,14 @@ Wenn mehrere Mods denselben Code verwenden, lege diesen Code in eine übergeordn
 
 ### Erzeuge keine DLLs zur Laufzeit!
 
-Jeder Code, den eine Mod ausführt, muss in einem geprüften Workshop-Beitrag enthalten sein. Ändern sich die DLL-Dateien einer Mod, während die Mod läuft, wird das Laden dieser Mod eingeschränkt. Lege alle DLLs unverändert in den Workshop-Beitrag, ohne jegliche Komprimierung oder Streaming. Folgendes kann also gegen das Prüfsystem verstoßen. Lege alle benötigten DLLs beim Upload in die Mod.
+Jeder Code, den eine Mod ausführt, muss in einem geprüften Workshop-Beitrag enthalten sein, und zwar jeweils als eigene, separate DLL-Datei. Ändern sich die DLL-Dateien einer Mod, während die Mod läuft, wird das Laden dieser Mod eingeschränkt. Lege alle DLLs unverändert in den Workshop-Beitrag, ohne jegliche Komprimierung oder Streaming. Folgendes verstößt also gegen das Prüfsystem und kann zur Ablehnung der Mod führen, auch wenn sie bereits veröffentlicht ist. Lege alle benötigten DLLs beim Upload in die Mod.
 
 - Die Mod lädt während der Ausführung eine DLL von außen herunter und lädt die Assembly
 - Die Mod erzeugt während der Ausführung eine eigene DLL und führt sie aus (einschließlich des Umschreibens einer anderen DLL mit Mono.Cecil o. Ä. und anschließender Ausführung)
 - Die Mod entpackt eine DLL, die mit einem eigenen Komprimierungsverfahren in ihr verpackt ist, und verwendet sie
+- Die Mod legt eine andere DLL oder EXE in den Ressourcen einer DLL oder in einer Bild- oder Datendatei ab und holt sie zur Verwendung heraus (auch wenn sie weder komprimiert noch verschlüsselt ist)
+- Die Mod erzeugt während der Ausführung eine Datei außerhalb des Mod-Ordners, etwa im temporären Ordner, und lädt sie als Code oder führt sie aus
+- Die Mod lädt während der Ausführung direkt eine native Bibliothek
 
 ### Mods, die Code von außerhalb des Workshops ausführen
 

@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **`0Harmony.dll` dosyasını modunuzla birlikte paketlemeyin.** Paketlenmiş kopya yok sayılır; farklı bir sürüm eklemiş olsanız bile modunuz o sürümde çalışmaz.
+- Oyuna gömülü Harmony'nin dahili olarak kullandığı MonoMod'a bir moddan başvurulamaz. MonoMod özelliklerine (RuntimeDetour vb.) doğrudan ihtiyacınız varsa, [Yardımcı DLL'ler](#yardımcı-dlller) bölümünde anlatıldığı gibi resmi sürümü ekleyin.
 - Harmony kimliği olarak `modId` değerinizi olduğu gibi kullanmak başkalarıyla çakışmasını önler.
 - Yamalar, oyun güncellemelerinde resmi API'den çok daha kolay bozulur. Yapabildiklerinizi olaylarla yapın ve yamaları son çare olarak saklayın.
 - BepInEx ve MelonLoader gibi harici yükleyiciler desteklenmez. Harici bir yükleyici gibi çalışan bir mod (Atölye dışındaki eklenti DLL'lerini bulup çalıştıran bir mod) uyarı alır ve yalnızca kullanıcı onayladıktan sonra etkinleştirilir. Ayrıntılar için [Atölye Dışındaki Kodu Çalıştıran Modlar](#atölye-dışındaki-kodu-çalıştıran-modlar) bölümüne bakın.
@@ -199,7 +200,8 @@ Modunuz başka kütüphaneler kullanıyorsa (örn. Newtonsoft.Json dışındaki 
 ```
 
 - Oyunla birlikte gelen DLL'leri (Unity, Mirror, Newtonsoft.Json, 0Harmony vb.) dahil etmeyin. Önce oyunun kopyası yüklenir; bu yüzden modunuzun içerdiği kopya ya yok sayılır ya da çakışır.
-- Yerel (C/C++) DLL'ler kullanılamaz. Yalnızca yönetilen derlemeler yüklenir.
+- MonoMod veya Mono.Cecil gibi ortak bir araca ihtiyacınız varsa, resmi sürümün dosyalarını değiştirmeden olduğu gibi ekleyin. Kendi derlediğiniz veya değiştirdiğiniz bir dosya ya da başka bir DLL ile birleştirilmiş bir dosya (ILMerge, ILRepack vb.) resmi sürüm olarak doğrulanamaz ve reddedilebilir.
+- Yerel (C/C++) DLL'ler kullanılamaz. Yalnızca yönetilen derlemeler yüklenir. Yerel kodu başka bir dosyanın içinde saklayıp kullanmak üzere çıkaran ya da çalışma zamanında doğrudan yerel bir kitaplık yükleyen bir mod reddedilir. Zaten Windows'un parçası olan işlevleri `DllImport` ile çağırmak bunun kapsamına girmez.
 - Aynı ada sahip bir derleme başka bir mod tarafından zaten yüklenmişse, `modules` içindeki bir DLL için oyun ikisinden birini seçmez; çalıştırmayı **askıya alır**. `libraries` içindeki bir DLL için ise oyun zaten yüklü olanı kullanır ve sizin kopyanızı yok sayar; sürümler farklıysa bu hatalara yol açabilir. Paylaşılan kütüphaneleri ayrı bir moda ayırıp `dependencies` ile bağlamak daha güvenlidir.
 
 ### Başka Bir Modun Kütüphanesini Kullanma
@@ -221,11 +223,14 @@ Birden fazla mod aynı kodu kullanıyorsa, bu kodu tek bir üst moda koyun ve al
 
 ### Çalışma Zamanında DLL Oluşturmayın!
 
-Bir modun çalıştırdığı tüm kod, incelemeden geçmiş bir Atölye öğesinin içinde olmalıdır. Mod çalışırken moddaki DLL dosyaları değişirse o modun yüklenmesi kısıtlanır. Tüm DLL'leri herhangi bir sıkıştırma veya akış (streaming) olmadan, olduğu gibi Atölye öğesine dahil edin. Yani aşağıdakiler inceleme sistemini ihlal edebilir. İhtiyacınız olan tüm DLL'leri yüklerken moda koyun.
+Bir modun çalıştırdığı tüm kod, incelemeden geçmiş bir Atölye öğesinin içinde ve her biri ayrı bir DLL dosyası olarak bulunmalıdır. Mod çalışırken moddaki DLL dosyaları değişirse o modun yüklenmesi kısıtlanır. Tüm DLL'leri herhangi bir sıkıştırma veya akış (streaming) olmadan, olduğu gibi Atölye öğesine dahil edin. Yani aşağıdakiler inceleme sistemini ihlal eder ve modun reddedilmesine yol açabilir; mod zaten yayımlanmış olsa bile. İhtiyacınız olan tüm DLL'leri yüklerken moda koyun.
 
 - Mod çalışırken dışarıdan bir DLL indirip derlemeyi yükler
 - Mod çalışırken kendi DLL'ini oluşturup çalıştırır (Mono.Cecil gibi bir araçla başka bir DLL'i yeniden yazıp sonra çalıştırmak da dahil)
 - Mod, içinde kendi sıkıştırma yöntemiyle paketlenmiş bir DLL'i çıkarıp kullanır
+- Mod, başka bir DLL veya EXE dosyasını bir DLL'in kaynaklarında ya da bir görsel veya veri dosyasının içinde saklayıp kullanmak üzere çıkarır (sıkıştırılmamış veya şifrelenmemiş olsa bile)
+- Mod çalışırken mod klasörünün dışında, örneğin geçici klasörde bir dosya oluşturup bunu kod olarak yükler veya çalıştırır
+- Mod çalışırken doğrudan yerel bir kitaplık yükler
 
 ### Atölye Dışındaki Kodu Çalıştıran Modlar
 

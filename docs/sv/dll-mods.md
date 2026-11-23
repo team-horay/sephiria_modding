@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **Packa inte med `0Harmony.dll` i din mod.** En medföljande kopia ignoreras, och även om du tar med en annan version körs din mod inte på den versionen.
+- Den MonoMod som det inbyggda Harmony använder internt kan inte refereras från en mod. Om du behöver MonoMod-funktioner direkt (RuntimeDetour och så vidare) tar du med den officiella utgåvan enligt beskrivningen i [Hjälp-DLL:er](#hjälp-dller).
 - Om du använder ditt `modId` som det är som Harmony-ID krockar det inte med andras.
 - Patchar går sönder vid speluppdateringar betydligt lättare än det officiella API:et. Gör vad du kan med händelser och spara patchar som en sista utväg.
 - Externa laddare som BepInEx och MelonLoader stöds inte. En mod som fungerar som en extern laddare (en som hittar och kör plugin-DLL-filer utanför Workshop) får en varning och aktiveras först när användaren godkänner den. Se [Moddar som kör kod utanför Workshop](#moddar-som-kör-kod-utanför-workshop) för mer information.
@@ -199,7 +200,8 @@ Om din mod använder andra bibliotek (t.ex. tredjepartspaket utöver Newtonsoft.
 ```
 
 - Ta inte med DLL-filer som redan följer med spelet (Unity, Mirror, Newtonsoft.Json, 0Harmony och så vidare). Spelets kopia läses in först, så kopian i din mod ignoreras antingen eller orsakar konflikter.
-- Native-DLL:er (C/C++) kan inte användas. Endast hanterade assemblies läses in.
+- Om du behöver ett gemensamt verktyg som MonoMod eller Mono.Cecil tar du med filerna från den officiella utgåvan som de är, utan att ändra dem. En fil som du har byggt själv eller ändrat, eller en som har slagits ihop med en annan DLL (ILMerge, ILRepack och så vidare), kan inte bekräftas som en officiell utgåva och kan avvisas.
+- Native-DLL:er (C/C++) kan inte användas. Endast hanterade assemblies läses in. En mod som förvarar native-kod inuti en annan fil och packar upp den för användning, eller som läser in ett native-bibliotek direkt under körning, avvisas. Att anropa funktioner som redan ingår i Windows via `DllImport` räknas inte hit.
 - Om en assembly med samma namn redan har lästs in av en annan mod väljer spelet, för en DLL i `modules`, inte en av de två; det **avvaktar med att köra** den. För en DLL i `libraries` använder spelet den som redan är inläst och ignorerar din medföljande kopia, vilket kan ge fel om versionerna skiljer sig åt. Det är säkrare att bryta ut delade bibliotek till en separat mod och koppla den via `dependencies`.
 
 ### Använda en annan mods bibliotek
@@ -221,11 +223,14 @@ Om flera moddar använder samma kod, lägg koden i en överordnad mod och koppla
 
 ### Skapa inte DLL-filer under körning!
 
-All kod som en mod kör måste finnas i ett granskat Workshop-objekt. Om DLL-filerna i en mod ändras medan modden körs begränsas inläsningen av modden. Ta med alla DLL-filer i Workshop-objektet som de är, utan någon komprimering eller streaming. Det innebär att följande kan bryta mot granskningssystemets regler. Lägg alla DLL-filer du behöver i modden när du laddar upp den.
+All kod som en mod kör måste finnas i ett granskat Workshop-objekt, var och en som en egen separat DLL-fil. Om DLL-filerna i en mod ändras medan modden körs begränsas inläsningen av modden. Ta med alla DLL-filer i Workshop-objektet som de är, utan någon komprimering eller streaming. Det innebär att följande bryter mot granskningssystemets regler och kan leda till att modden avvisas, även om den redan är publicerad. Lägg alla DLL-filer du behöver i modden när du laddar upp den.
 
 - Modden laddar ner en DLL utifrån medan den körs och läser in assemblyn
 - Modden skapar och kör en egen DLL medan den körs (inklusive att skriva om en annan DLL med Mono.Cecil eller liknande och sedan köra den)
 - Modden packar upp en DLL som är packad i den med ett eget komprimeringsformat och använder den
+- Modden förvarar en annan DLL eller EXE i en DLL:s resurser eller i en bild- eller datafil och packar upp den för användning (även om den varken är komprimerad eller krypterad)
+- Modden skapar en fil utanför moddens mapp medan den körs, till exempel i temp-mappen, och läser in eller kör den som kod
+- Modden läser in ett native-bibliotek direkt medan den körs
 
 ### Moddar som kör kod utanför Workshop
 

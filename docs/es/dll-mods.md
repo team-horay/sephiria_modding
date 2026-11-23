@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **No incluyas `0Harmony.dll` en tu mod.** Una copia incluida se ignora, y aunque incluyas una versión distinta, tu mod no se ejecutará con esa versión.
+- El MonoMod que usa internamente el Harmony integrado no se puede referenciar desde un mod. Si necesitas usar directamente funciones de MonoMod (RuntimeDetour, etc.), incluye la versión oficial como se explica en [DLL auxiliares](#dll-auxiliares).
 - Usar tu `modId` tal cual como ID de Harmony evita que colisione con otros.
 - Los parches se rompen con las actualizaciones del juego mucho más fácilmente que la API oficial. Haz lo que puedas con eventos y deja los parches como último recurso.
 - No se admiten cargadores externos como BepInEx y MelonLoader. Un mod que funciona como un cargador externo (es decir, que busca y ejecuta DLL de plugins de fuera del Workshop) recibe una advertencia y solo se activa después de que el usuario la acepte. Consulta los detalles en [Mods que ejecutan código de fuera del Workshop](#mods-que-ejecutan-código-de-fuera-del-workshop).
@@ -199,7 +200,8 @@ Si tu mod usa otras bibliotecas (p. ej. paquetes de terceros distintos de Newton
 ```
 
 - No incluyas DLL que ya vienen con el juego (Unity, Mirror, Newtonsoft.Json, 0Harmony, etc.). La copia del juego se carga primero, así que la copia que incluye tu mod se ignora o entra en conflicto.
-- No se pueden usar DLL nativas (C/C++). Solo se cargan ensamblados administrados.
+- Si necesitas una herramienta común como MonoMod o Mono.Cecil, incluye los archivos de la versión oficial tal cual, sin modificarlos. Un archivo compilado por ti o modificado, o uno fusionado dentro de otra DLL (ILMerge, ILRepack, etc.), no se puede verificar como versión oficial y puede ser rechazado.
+- No se pueden usar DLL nativas (C/C++). Solo se cargan ensamblados administrados. Un mod que guarda código nativo dentro de otro archivo y lo extrae para usarlo, o que carga directamente una biblioteca nativa en tiempo de ejecución, se rechaza. Llamar mediante `DllImport` a funciones que ya forman parte de Windows no entra en este caso.
 - Si otro mod ya ha cargado un ensamblado con el mismo nombre, con una DLL de `modules` el juego no elige uno de los dos; **deja el mod sin ejecutar**. Con una DLL de `libraries`, el juego usa la que ya está cargada e ignora tu copia, lo que puede causar fallos si las versiones difieren. Es más seguro separar las bibliotecas compartidas en un mod aparte y enlazarlo mediante `dependencies`.
 
 ### Usar la biblioteca de otro mod
@@ -221,11 +223,14 @@ Si varios mods usan el mismo código, colócalo en un mod principal y haz que lo
 
 ### ¡No crees DLL en tiempo de ejecución!
 
-Todo el código que ejecuta un mod debe estar dentro de un elemento del Workshop ya revisado. Si los archivos DLL de un mod cambian mientras el mod se está ejecutando, se restringe la carga de ese mod. Incluye todas las DLL tal cual en el elemento del Workshop, sin ningún tipo de compresión ni streaming. Es decir, lo siguiente puede infringir el sistema de revisión. Incluye en el mod todas las DLL que necesites al subirlo.
+Todo el código que ejecuta un mod debe estar dentro de un elemento del Workshop ya revisado, cada parte como un archivo DLL independiente. Si los archivos DLL de un mod cambian mientras el mod se está ejecutando, se restringe la carga de ese mod. Incluye todas las DLL tal cual en el elemento del Workshop, sin ningún tipo de compresión ni streaming. Es decir, lo siguiente infringe el sistema de revisión y puede hacer que el mod sea rechazado, aunque ya esté publicado. Incluye en el mod todas las DLL que necesites al subirlo.
 
 - El mod descarga una DLL del exterior mientras se ejecuta y carga el ensamblado
 - El mod crea y ejecuta su propia DLL mientras se ejecuta (incluido reescribir otra DLL con Mono.Cecil o similar y luego ejecutarla)
 - El mod extrae una DLL empaquetada en su interior con su propio formato de compresión y la usa
+- El mod guarda otra DLL o EXE dentro de los recursos de una DLL o dentro de un archivo de imagen o de datos y lo extrae para usarlo (aunque no esté comprimido ni cifrado)
+- El mod crea un archivo fuera de la carpeta del mod mientras se ejecuta, por ejemplo en la carpeta temporal, y lo carga o lo ejecuta como código
+- El mod carga directamente una biblioteca nativa mientras se ejecuta
 
 ### Mods que ejecutan código de fuera del Workshop
 

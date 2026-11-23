@@ -185,6 +185,7 @@ protected override void OnModLoaded()
 ```
 
 - **Nie dołączaj `0Harmony.dll` do swojego moda.** Dołączona kopia jest ignorowana, a nawet jeśli dołączysz inną wersję, twój mod nie uruchomi się na tej wersji.
+- MonoMod, którego wbudowany Harmony używa wewnętrznie, nie może być używany jako odwołanie w modzie. Jeśli potrzebujesz bezpośrednio funkcji MonoMod (RuntimeDetour itp.), dołącz oficjalne wydanie zgodnie z opisem w sekcji [Pomocnicze pliki DLL](#pomocnicze-pliki-dll).
 - Użycie swojego `modId` bez zmian jako ID Harmony chroni przed kolizjami z innymi.
 - Patche psują się przy aktualizacjach gry znacznie łatwiej niż oficjalne API. Rób, co się da, za pomocą zdarzeń, a patche traktuj jako ostateczność.
 - Zewnętrzne loadery, takie jak BepInEx i MelonLoader, nie są obsługiwane. Mod, który działa jak zewnętrzny loader (znajduje i uruchamia pliki DLL wtyczek spoza Warsztatu), otrzymuje ostrzeżenie i zostaje włączony dopiero po zaakceptowaniu go przez użytkownika. Szczegóły znajdziesz w sekcji [Mody uruchamiające kod spoza Warsztatu](#mody-uruchamiające-kod-spoza-warsztatu).
@@ -199,7 +200,8 @@ Jeśli twój mod korzysta z innych bibliotek (np. pakietów zewnętrznych innych
 ```
 
 - Nie dołączaj plików DLL, które są już dostarczane z grą (Unity, Mirror, Newtonsoft.Json, 0Harmony itp.). Kopia gry ładuje się jako pierwsza, więc kopia dołączona do moda jest ignorowana albo powoduje konflikt.
-- Natywnych (C/C++) plików DLL nie można używać. Ładowane są tylko zestawy zarządzane.
+- Jeśli potrzebujesz wspólnego narzędzia, takiego jak MonoMod lub Mono.Cecil, dołącz pliki oficjalnego wydania w niezmienionej postaci. Plik zbudowany samodzielnie lub zmodyfikowany albo scalony z innym plikiem DLL (ILMerge, ILRepack itp.) nie może zostać potwierdzony jako oficjalne wydanie i może zostać odrzucony.
+- Natywnych (C/C++) plików DLL nie można używać. Ładowane są tylko zestawy zarządzane. Mod, który przechowuje kod natywny wewnątrz innego pliku i wyodrębnia go w celu użycia albo ładuje bibliotekę natywną bezpośrednio w czasie działania, jest odrzucany. Wywoływanie przez `DllImport` funkcji, które są już częścią systemu Windows, nie jest tym objęte.
 - Jeśli zestaw o tej samej nazwie został już załadowany przez innego moda, to w przypadku pliku DLL z `modules` gra nie wybiera jednego z dwóch, lecz **wstrzymuje uruchomienie**. W przypadku pliku DLL z `libraries` gra używa tego, który jest już załadowany, i ignoruje dołączoną przez ciebie kopię, co przy różnych wersjach może powodować błędy. Bezpieczniej jest wydzielić współdzielone biblioteki do osobnego moda i powiązać go przez `dependencies`.
 
 ### Korzystanie z biblioteki innego moda
@@ -221,11 +223,14 @@ Jeśli kilka modów używa tego samego kodu, umieść ten kod w jednym modzie na
 
 ### Nie twórz plików DLL w czasie działania!
 
-Cały kod uruchamiany przez moda musi znajdować się w sprawdzonym elemencie Warsztatu. Jeśli pliki DLL w modzie zmienią się podczas działania moda, ładowanie tego moda zostaje ograniczone. Umieść wszystkie pliki DLL w elemencie Warsztatu w niezmienionej postaci, bez żadnej kompresji ani strumieniowania. Innymi słowy, następujące działania mogą naruszać zasady systemu weryfikacji. Podczas przesyłania umieść w modzie wszystkie potrzebne pliki DLL.
+Cały kod uruchamiany przez moda musi znajdować się w sprawdzonym elemencie Warsztatu, każdy jako osobny plik DLL. Jeśli pliki DLL w modzie zmienią się podczas działania moda, ładowanie tego moda zostaje ograniczone. Umieść wszystkie pliki DLL w elemencie Warsztatu w niezmienionej postaci, bez żadnej kompresji ani strumieniowania. Innymi słowy, następujące działania naruszają zasady systemu weryfikacji i mogą skutkować odrzuceniem moda, także już opublikowanego. Podczas przesyłania umieść w modzie wszystkie potrzebne pliki DLL.
 
 - Mod podczas działania pobiera plik DLL z zewnątrz i ładuje zestaw
 - Mod podczas działania tworzy i uruchamia własny plik DLL (w tym przepisanie innego pliku DLL za pomocą Mono.Cecil lub podobnego narzędzia, a następnie jego uruchomienie)
 - Mod wypakowuje i wykorzystuje plik DLL spakowany w nim własną metodą kompresji
+- Mod przechowuje inny plik DLL lub EXE w zasobach pliku DLL albo w pliku obrazu lub danych i wyodrębnia go w celu użycia (nawet jeśli nie jest skompresowany ani zaszyfrowany)
+- Mod podczas działania tworzy plik poza folderem moda, na przykład w folderze tymczasowym, i ładuje go lub uruchamia jako kod
+- Mod podczas działania bezpośrednio ładuje bibliotekę natywną
 
 ### Mody uruchamiające kod spoza Warsztatu
 
